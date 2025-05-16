@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackjack Talent Tree</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="background-animation">
+        <div class="floating-soul soul-1"></div>
+        <div class="floating-soul soul-2"></div>
+        <div class="floating-soul soul-3"></div>
+        <div class="floating-rune rune-1">▲</div>
+        <div class="floating-rune rune-2">◆</div>
+        <div class="floating-rune rune-3">★</div>
+    </div>
+
+    <!-- Static UI elements -->
+    <h1 class="title">BLACKJACK - SOUL AWAKENING</h1>
+    
+    <div class="ui-panel talent-points-panel">
+        <div class="panel-header">
+            <div class="panel-icon">🔮</div>
+            <h3>TALENT POINTS</h3>
+        </div>
+        <div class="points-container">
+            <div class="points-display">
+                <span class="points-label">Available</span>
+                <span class="points-value" id="available-points">1</span>
+            </div>
+            <div class="points-display">
+                <span class="points-label">Spent</span>
+                <span class="points-value spent" id="spent-points">0</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Back to main menu button -->
+    <button class="back-button" onclick="window.location.href='index.html'">
+        <div class="button-icon">🏠</div>
+        BACK TO MENU
+    </button>
+    
+    <!-- Talent Information Panel -->
+    <div class="talent-info-panel" id="talent-info">
+        <div class="panel-header">
+            <div class="panel-icon">📜</div>
+            <h3>SOUL TALENTS</h3>
+        </div>
+        <div class="info-content">
+            <p>Click on talents to unlock them with your available points.</p>
+            <p>Some talents have multiple ranks and require prerequisites.</p>
+            <div class="info-divider"></div>
+            <p>Hover over talents to view their detailed effects.</p>
+        </div>
+    </div>
+
+    <!-- Talent Tree Content -->
+    <div class="talent-tree-container">
+        <!-- Central Soul -->
+        <div class="soul-container">
+            <div class="soul-glow"></div>
+            <div class="soul">
+                <svg viewBox="0 0 100 100">
+                    <defs>
+                        <linearGradient id="braveGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ff8c00;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#ff6600;stop-opacity:1" />
+                        </linearGradient>
+                        <linearGradient id="humilityGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#1e90ff;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#4682b4;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M50,15 L60,40 L85,40 L65,55 L70,80 L50,65 L50,50 Z" fill="url(#braveGrad)" />
+                    <path d="M50,15 L40,40 L15,40 L35,55 L30,80 L50,65 L50,50 Z" fill="url(#humilityGrad)" />
+                </svg>
+            </div>
+        </div>
+        
+        <!-- BRAVERY Talents (Right Side) -->
+        <div class="talent-branch bravery-branch">
+            <!-- Tier 1 -->
+            <div class="talent-node bravery tier-1" data-id="iron-fist" data-tier="1" 
+                 style="top: 50%; left: 65%; transform: translate(-50%, -50%);"
+                 onclick="talentClick('iron-fist')">
+                <div class="talent-icon">⚔️</div>
+                <div class="talent-name">Iron Fist</div>
+                <div class="talent-points" id="points-iron-fist">[0/3]</div>
+            </div>
+            
+            <!-- Tier 2 -->
+            <div class="talent-node bravery tier-2" data-id="berserker-rage" data-tier="2" 
+                 style="top: 50%; left: 80%; transform: translate(-50%, -50%);"
+                 onclick="talentClick('berserker-rage')">
+                <div class="talent-icon">🔥</div>
+                <div class="talent-name">Berserker<br>Rage</div>
+                <div class="talent-points" id="points-berserker-rage">[0/5]</div>
+            </div>
+            
+            <div class="talent-node bravery tier-2" data-id="parry-mastery" data-tier="2" 
+                 style="top: 30%; left: 72%; transform: translate(-50%, -50%);"
+                 onclick="talentClick('parry-mastery')">
+                <div class="talent-icon">🛡️</div>
+                <div class="talent-name">Parry<br>Mastery</div>
+                <div class="talent-points" id="points-parry-mastery">[0/3]</div>
+            </div>
+            
+            <div class="talent-node bravery tier-2" data-id="bloodlust" data-tier="2" 
+                 style="top: 70%; left: 72%; transform: translate(-50%, -50%);"
+                 onclick="talentClick('bloodlust')">
+                <div class="talent-icon">🩸</div>
+                <div class="talent-name">Bloodlust</div>
+                <div class="talent-points" id="points-bloodlust">[0/3]</div>
+            </div>
+            
+            <!-- Tier 3 -->
+            <div class="talent-node bravery tier-3" data-id="soul-rend" data-tier="3" 
+                 style="top: 50%; left: 95%; transform: translate(-50%, -50%);"
+                 onclick="talentClick('soul-rend')">
+                <div class="talent-icon">💀</div>
+                <div class="talent-name">Soul<br>Rend</div>
+                <div class="talent-points" id="points-soul-rend">[0/1]</div>
+            </div>
+            
+            <div class="talent-node bravery tier-3" data-id="executioner" data-tier="3" 
+                 style="top: 85%; left: 85%; transform: translate(-50%, -50%);"
+                 onclick="talentClick('executioner')">
+                <div class="talent-icon">⚰️</div>
+                <div class="talent-name">Executioner</div>
+                <div class="talent-points" id="points-executioner">[0/1]</div>
+            </div>
+        </div>
+        
+        <!-- HUMILITY Talents (Left Side) -->
+        <div class="talent-branch humility-branch">
+            <!-- Tier 1 -->
+            <div class="talent-node humility tier-1" data-id="swift-movement" data-tier="1" 
+                 style="top: 50%; left: 35%; transform: translate(-50%, -50%);"
+                 onclick="talentClick('swift-movement')">
+                <div class="talent-icon">💨</div>
+                <div class="talent-name">Swift<br>Movement</div>
+                <div class="talent-points" id="points-swift-movement">[0/5]</div>
+            </div>
+            
+            <!-- Tier 2 -->
+            <div class="talent-node humility tier-2" data-id="phantom-step" data-tier="2" 
+                 style="top: 50%; left: 20%; transform: translate(-50%, -50%);"
+                 onclick="talentClick('phantom-step')">
+                <div class="talent-icon">👻</div>
+                <div class="talent-name">Phantom<br>Step</div>
+                <div class="talent-points" id="points-phantom-step">[0/3]</div>
+            </div>
+            
+            <div class="talent-node humility tier-2" data-id="act-synergy" data-tier="2" 
+                 style="top: 70%; left: 28%; transform: translate(-50%, -50%);"
+                 onclick="talentClick('act-synergy')">
+                <div class="talent-icon">🎭</div>
+                <div class="talent-name">ACT<br>Synergy</div>
+                <div class="talent-points" id="points-act-synergy">[0/3]</div>
+            </div>
+            
+            <div class="talent-node humility tier-2" data-id="evasive-maneuvers" data-tier="2" 
+                 style="top: 30%; left: 28%; transform: translate(-50%, -50%);"
+                 onclick="talentClick('evasive-maneuvers')">
+                <div class="talent-icon">🌪️</div>
+                <div class="talent-name">Evasive<br>Maneuvers</div>
+                <div class="talent-points" id="points-evasive-maneuvers">[0/4]</div>
+            </div>
+            
+            <!-- Tier 3 -->
+            <div class="talent-node humility tier-3" data-id="time-dilation" data-tier="3" 
+                 style="top: 50%; left: 5%; transform: translate(-50%, -50%);"
+                 onclick="talentClick('time-dilation')">
+                <div class="talent-icon">⏰</div>
+                <div class="talent-name">Time<br>Dilation</div>
+                <div class="talent-points" id="points-time-dilation">[0/1]</div>
+            </div>
+            
+            <div class="talent-node humility tier-3" data-id="fortune-seeker" data-tier="3" 
+                 style="top: 60%; left: 12.5%; transform: translate(-50%, -50%);"
+                 onclick="talentClick('fortune-seeker')">
+                <div class="talent-icon">💰</div>
+                <div class="talent-name">Fortune<br>Seeker</div>
+                <div class="talent-points" id="points-fortune-seeker">[0/3]</div>
+            </div>
+        </div>
+        
+        <!-- MIXED/CORE Talents -->
+        <div class="talent-branch mixed-branch">
+            <div class="talent-node mixed tier-1" data-id="soul-bond" data-tier="1" 
+                 style="top: 30%; left: 50%; transform: translate(-50%, -50%);"
+                 onclick="talentClick('soul-bond')">
+                <div class="talent-icon">🔗</div>
+                <div class="talent-name">Soul<br>Bond</div>
+                <div class="talent-points" id="points-soul-bond">[0/3]</div>
+            </div>
+            
+            <div class="talent-node mixed tier-1" data-id="balance-keeper" data-tier="1" 
+                 style="top: 70%; left: 45%; transform: translate(-50%, -50%);"
+                 onclick="talentClick('balance-keeper')">
+                <div class="talent-icon">⚖️</div>
+                <div class="talent-name">Balance<br>Keeper</div>
+                <div class="talent-points" id="points-balance-keeper">[0/3]</div>
+            </div>
+            
+            <div class="talent-node mixed tier-4" data-id="soul-ascension" data-tier="4" 
+                 style="top: 12.5%; left: 50%; transform: translate(-50%, -50%);"
+                 onclick="talentClick('soul-ascension')">
+                <div class="talent-icon">✨</div>
+                <div class="talent-name">Soul<br>Fusion</div>
+                <div class="talent-points" id="points-soul-ascension">[0/1]</div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>

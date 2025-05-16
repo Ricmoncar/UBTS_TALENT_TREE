@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Tree Collection</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=Cinzel:wght@400;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cinzel', serif;
+            background: linear-gradient(135deg, #0f0f23, #1a1a2e, #16213e);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Background animations */
+        .starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        /* Main container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .title {
+            text-align: center;
+            font-family: 'Uncial Antiqua', cursive;
+            font-size: 3rem;
+            margin-bottom: 3rem;
+            color: #fff;
+            text-shadow: 
+                0 0 20px rgba(255, 255, 255, 0.5),
+                0 0 40px rgba(255, 215, 0, 0.3),
+                0 0 60px rgba(30, 144, 255, 0.3);
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            0% {
+                text-shadow: 
+                    0 0 20px rgba(255, 255, 255, 0.5),
+                    0 0 40px rgba(255, 215, 0, 0.3),
+                    0 0 60px rgba(30, 144, 255, 0.3);
+            }
+            100% {
+                text-shadow: 
+                    0 0 25px rgba(255, 255, 255, 0.8),
+                    0 0 50px rgba(255, 215, 0, 0.5),
+                    0 0 75px rgba(30, 144, 255, 0.5);
+            }
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #ccc;
+            margin-bottom: 4rem;
+            font-weight: 400;
+        }
+
+        /* Grid layout for skill trees */
+        .skill-tree-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .skill-tree-card {
+            background: linear-gradient(135deg, 
+                rgba(139, 69, 19, 0.9), 
+                rgba(101, 67, 33, 0.7),
+                rgba(139, 69, 19, 0.9));
+            border: 3px solid #8B4513;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skill-tree-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .skill-tree-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 
+                0 0 30px rgba(255, 215, 0, 0.5),
+                0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .skill-tree-card:hover::before {
+            left: 100%;
+        }
+
+        .card-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+        }
+
+        .card-title {
+            font-family: 'Uncial Antiqua', cursive;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .card-description {
+            color: #ddd;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .card-status {
+            margin-bottom: 1.5rem;
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .available {
+            background: linear-gradient(135deg, #2d5120, #4caf50);
+            color: #fff;
+        }
+
+        .coming-soon {
+            background: linear-gradient(135deg, #4a4a4a, #666);
+            color: #ccc;
+        }
+
+        .enter-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #8B0000, #A0522D);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border: 2px solid #B22222;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .enter-button:hover {
+            background: linear-gradient(135deg, #A0522D, #CD853F);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .enter-button:disabled {
+            background: linear-gradient(135deg, #333, #555);
+            color: #888;
+            cursor: not-allowed;
+            border-color: #555;
+            opacity: 0.7;
+        }
+
+        .enter-button:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2rem;
+            }
+            
+            .subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .skill-tree-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Global points display */
+        .global-points {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, 
+                rgba(25, 25, 112, 0.95), 
+                rgba(47, 79, 79, 0.95));
+            border: 2px solid #4682b4;
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .global-points h3 {
+            color: #87ceeb;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .points-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="starfield" id="starfield"></div>
+    
+    <div class="global-points">
+        <h3>Global Points</h3>
+        <div class="points-value" id="global-points">0</div>
+    </div>
+
+    <div class="container">
+        <h1 class="title">TALENT TREE COLLECTION</h1>
+
+        <div class="skill-tree-grid">
+            <!-- BlackJack Talent Tree -->
+            <div class="skill-tree-card">
+                <div class="card-icon">🃏</div>
+                <h2 class="card-title">BLACKJACK</h2>
+
+                <div class="card-status available">
+                    ✓ Available Now
+                </div>
+                <a href="blackjack.html" class="enter-button">Enter Tree</a>
+            </div>
+
+            <!-- Snaps Talent Tree -->
+            <div class="skill-tree-card">
+                <div class="card-icon">🪓</div>
+                <h2 class="card-title">SNAPS</h2>
+                <div class="card-status coming-soon">
+                    ⌛ Coming Soon
+                </div>
+                <button class="enter-button" disabled>Enter Tree</button>
+            </div>
+
+            <!-- Yuki Talent Tree -->
+            <div class="skill-tree-card">
+                <div class="card-icon">❄️</div>
+                <h2 class="card-title">YUKI</h2>
+                <div class="card-status coming-soon">
+                    ⌛ Coming Soon
+                </div>
+                <button class="enter-button" disabled>Enter Tree</button>
+            </div>
+
+            <!-- Flowey Talent Tree -->
+            <div class="skill-tree-card">
+                <div class="card-icon">🌻</div>
+                <h2 class="card-title">FLOWEY</h2>
+                <div class="card-status coming-soon">
+                    ⌛ Coming Soon?
+                </div>
+                <button class="enter-button" disabled>Enter Tree</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create starfield
+        function createStarfield() {
+            const starfield = document.getElementById('starfield');
+            const numStars = 150;
+
+            for (let i = 0; i < numStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 2 + 's';
+                starfield.appendChild(star);
+            }
+        }
+
+        // Initialize global points
+        function initGlobalPoints() {
+            // For now, just read from localStorage
+            // In the future, this would connect to a shared backend
+            const savedPoints = localStorage.getItem('global-talent-points');
+            const points = savedPoints ? parseInt(savedPoints) : 0;
+            document.getElementById('global-points').textContent = points;
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            createStarfield();
+            initGlobalPoints();
+        });
+    </script>
+</body>
+</html>
