@@ -1,12 +1,11 @@
-// Simple GitHub Sync - No tokens in code!
-import { CONFIG } from './config.js';
+// Simple GitHub Sync - No complicated setup required!
 
 class SimpleGitHubSync {
     constructor() {
-        // Get values from config file (not in code!)
-        this.username = CONFIG.GITHUB_USERNAME;
-        this.repo = CONFIG.GITHUB_REPO;
-        this.token = CONFIG.GITHUB_TOKEN;
+        // You only need to change these 3 values:
+        this.username = 'Ricmoncar';      // Replace with your GitHub username
+        this.repo = 'UBTS_TALENT_TREE';                // Replace with your repo name
+        this.token = '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';            // Replace with your GitHub token
         
         this.dataFile = 'data.json';
         this.apiUrl = `https://api.github.com/repos/${this.username}/${this.repo}/contents/${this.dataFile}`;
