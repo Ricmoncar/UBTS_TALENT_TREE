@@ -1,0 +1,7 @@
+# Ignore config file with secrets
+config.js
+
+# Ignore common files
+.DS_Store
+node_modules/
+*.log
