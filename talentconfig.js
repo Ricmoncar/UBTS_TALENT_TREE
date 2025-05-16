@@ -5,7 +5,7 @@
 // This is your control panel for the entire talent tree!
 
 // Default starting talent points - Change this to set available points globally
-export const DEFAULT_TALENT_POINTS = 10;
+export const DEFAULT_TALENT_POINTS = 1;
 
 // ===================================================
 // TALENT DEFINITIONS
