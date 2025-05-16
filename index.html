@@ -1,8 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    
+
+
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
+<script>
+
+      // Your web app's Firebase configuration
+
+      // Replace these values with your actual project configuration
+
+      const firebaseConfig = {
+
+        apiKey: "AIzaSyDhhhZsh0WtM7IIEFoUApqeKDyKzcCmSZw", // Your actual API Key
+
+        authDomain: "ubtstree.firebaseapp.com", // Your actual Auth Domain
+
+        databaseURL: "https://ubtstree-default-rtdb.firebaseio.com", // Your actual Database URL
+
+        projectId: "ubtstree", // Your actual Project ID
+
+        storageBucket: "ubtstree.firebasestorage.app", // Your actual Storage Bucket
+
+        messagingSenderId: "601038328524", // Your actual Sender ID
+
+        appId: "1:601038328524:web:885456f979249065f76869", // Your actual App ID
+
+        measurementId: "G-WPZKZPKWCW" // Your actual Measurement ID (if using Analytics)
+
+      };
+
+
+      // Initialize Firebase
+
+      firebase.initializeApp(firebaseConfig);
+
+    </script>
+
     <title>Skill Tree Collection</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=Cinzel:wght@400;600;700&display=swap');

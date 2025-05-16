@@ -1,0 +1,10 @@
+{
+  "globalPoints": 10,
+  "talentTrees": {
+    "blackjack": {
+      "spentPoints": 0,
+      "talents": {}
+    }
+  },
+  "lastUpdated": "2024-01-01T00:00:00Z"
+}
