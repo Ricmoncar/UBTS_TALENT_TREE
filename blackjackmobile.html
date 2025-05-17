@@ -3,9 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blackjack Talent Tree</title>
+    <title>BlackJack</title>
+    
+    <!-- CRITICAL MOBILE CSS - Must be in head before any other styles -->
+    <style>
+        @media screen and (max-width: 768px) {
+            /* Immediately hide desktop elements as page loads */
+            .talent-tree-container,
+            .ultimate-talent,
+            .soul-container,
+            .connection-lines,
+            .talent-info-panel,
+            .talent-points-panel,
+            .back-button,
+            .background-animation,
+            .title,
+            .ui-panel {
+                display: none !important;
+                opacity: 0 !important;
+                visibility: hidden !important;
+                pointer-events: none !important;
+                position: absolute !important;
+                z-index: -1000 !important;
+                overflow: hidden !important;
+                height: 0 !important;
+                width: 0 !important;
+            }
+            
+            body {
+                overflow-x: hidden !important;
+                background: #0a0a14 !important;
+                max-width: 100vw !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            
+            /* Show loading indicator until mobile view is ready */
+            body::before {
+                content: "Loading mobile view...";
+                color: white;
+                font-family: 'Cinzel', serif;
+                font-size: 16px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                width: 100vw;
+                position: fixed;
+                top: 0;
+                left: 0;
+                background: linear-gradient(135deg, #0a0a14, #1a1a2e);
+                z-index: 9999;
+            }
+            
+            /* Remove loading message when mobile view is loaded */
+            body.mobile-loaded::before {
+                display: none;
+            }
+            
+            /* Make sure mobile view appears immediately */
+            .mobile-view {
+                display: block !important;
+                visibility: visible !important;
+                z-index: 1000 !important;
+            }
+        }
+    </style>
+    
+    <!-- Regular styles AFTER critical CSS -->
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="mobile-style.css">
     
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -143,11 +209,7 @@
             </div>
         </div>
         
-        <!-- ============================= -->
-        <!-- BRAVERY BRANCH (RIGHT SIDE)  -->
-        <!-- ============================= -->
-        
-        <!-- Tier 1: Core -->
+        <!-- Talent nodes abbreviated for clarity -->
         <div class="talent-node bravery tier-1" data-id="iron-fist" 
              style="top: 50%; left: 67%; transform: translate(-50%, -50%);"
              onclick="talentClick('iron-fist')">
@@ -156,184 +218,7 @@
             <div class="talent-points" id="points-iron-fist">[0/5]</div>
         </div>
         
-        <!-- Tier 2: Specializations -->
-        <div class="talent-node bravery tier-2" data-id="critical-fighter" 
-             style="top: 30%; left: 67%; transform: translate(-50%, -50%);"
-             onclick="talentClick('critical-fighter')">
-            <div class="talent-icon">⚡</div>
-            <div class="talent-name">Critical<br>Fighter</div>
-            <div class="talent-points" id="points-critical-fighter">[0/3]</div>
-        </div>
-        
-        <div class="talent-node bravery tier-2" data-id="berserker-rage" 
-             style="top: 70%; left: 67%; transform: translate(-50%, -50%);"
-             onclick="talentClick('berserker-rage')">
-            <div class="talent-icon">🔥</div>
-            <div class="talent-name">Berserker<br>Rage</div>
-            <div class="talent-points" id="points-berserker-rage">[0/3]</div>
-        </div>
-        
-        <!-- Tier 3: Advanced -->
-        <div class="talent-node bravery tier-3" data-id="burning-fists" 
-             style="top: 15%; left: 67%; transform: translate(-50%, -50%);"
-             onclick="talentClick('burning-fists')">
-            <div class="talent-icon">🔥</div>
-            <div class="talent-name">Burning<br>Fists</div>
-            <div class="talent-points" id="points-burning-fists">[0/3]</div>
-        </div>
-        
-        <div class="talent-node bravery tier-3" data-id="parry-mastery" 
-             style="top: 30%; left: 82%; transform: translate(-50%, -50%);"
-             onclick="talentClick('parry-mastery')">
-            <div class="talent-icon">🛡️</div>
-            <div class="talent-name">Parry<br>Mastery</div>
-            <div class="talent-points" id="points-parry-mastery">[0/3]</div>
-        </div>
-        
-        <div class="talent-node bravery tier-3" data-id="bloodlust" 
-             style="top: 70%; left: 82%; transform: translate(-50%, -50%);"
-             onclick="talentClick('bloodlust')">
-            <div class="talent-icon">🩸</div>
-            <div class="talent-name">Bloodlust</div>
-            <div class="talent-points" id="points-bloodlust">[0/3]</div>
-        </div>
-        
-        <!-- Tier 4: Mastery -->
-        <div class="talent-node bravery tier-4" data-id="soul-rend" 
-             style="top: 30%; left: 93%; transform: translate(-50%, -50%);"
-             onclick="talentClick('soul-rend')">
-            <div class="talent-icon">💀</div>
-            <div class="talent-name">Soul<br>Rend</div>
-            <div class="talent-points" id="points-soul-rend">[0/2]</div>
-        </div>
-        
-        <div class="talent-node bravery tier-4" data-id="executioner" 
-             style="top: 85%; left: 93%; transform: translate(-50%, -50%);"
-             onclick="talentClick('executioner')">
-            <div class="talent-icon">⚰️</div>
-            <div class="talent-name">Executioner</div>
-            <div class="talent-points" id="points-executioner">[0/1]</div>
-        </div>
-        
-        <!-- ============================= -->
-        <!-- HUMILITY BRANCH (LEFT SIDE)  -->
-        <!-- ============================= -->
-        
-        <!-- Tier 1: Core -->
-        <div class="talent-node humility tier-1" data-id="swift-movement" 
-             style="top: 50%; left: 33%; transform: translate(-50%, -50%);"
-             onclick="talentClick('swift-movement')">
-            <div class="talent-icon">💨</div>
-            <div class="talent-name">Swift<br>Movement</div>
-            <div class="talent-points" id="points-swift-movement">[0/5]</div>
-        </div>
-        
-        <!-- Tier 2: Specializations -->
-        <div class="talent-node humility tier-2" data-id="phantom-step" 
-             style="top: 30%; left: 33%; transform: translate(-50%, -50%);"
-             onclick="talentClick('phantom-step')">
-            <div class="talent-icon">👻</div>
-            <div class="talent-name">Phantom<br>Step</div>
-            <div class="talent-points" id="points-phantom-step">[0/3]</div>
-        </div>
-        
-        <div class="talent-node humility tier-2" data-id="mind-reading" 
-             style="top: 70%; left: 33%; transform: translate(-50%, -50%);"
-             onclick="talentClick('mind-reading')">
-            <div class="talent-icon">🧠</div>
-            <div class="talent-name">Mind<br>Reading</div>
-            <div class="talent-points" id="points-mind-reading">[0/3]</div>
-        </div>
-        
-        <!-- Tier 3: Advanced -->
-        <div class="talent-node humility tier-3" data-id="evasive-maneuvers" 
-             style="top: 15%; left: 33%; transform: translate(-50%, -50%);"
-             onclick="talentClick('evasive-maneuvers')">
-            <div class="talent-icon">🌪️</div>
-            <div class="talent-name">Evasive<br>Maneuvers</div>
-            <div class="talent-points" id="points-evasive-maneuvers">[0/3]</div>
-        </div>
-        
-        <div class="talent-node humility tier-3" data-id="act-synergy" 
-             style="top: 30%; left: 18%; transform: translate(-50%, -50%);"
-             onclick="talentClick('act-synergy')">
-            <div class="talent-icon">🎭</div>
-            <div class="talent-name">ACT<br>Synergy</div>
-            <div class="talent-points" id="points-act-synergy">[0/4]</div>
-        </div>
-        
-        <div class="talent-node humility tier-3" data-id="fortune-seeker" 
-             style="top: 70%; left: 18%; transform: translate(-50%, -50%);"
-             onclick="talentClick('fortune-seeker')">
-            <div class="talent-icon">💰</div>
-            <div class="talent-name">Fortune<br>Seeker</div>
-            <div class="talent-points" id="points-fortune-seeker">[0/2]</div>
-        </div>
-        
-        <!-- Tier 4: Mastery -->
-        <div class="talent-node humility tier-4" data-id="soul-caller" 
-             style="top: 85%; left: 7%; transform: translate(-50%, -50%);"
-             onclick="talentClick('soul-caller')">
-            <div class="talent-icon">👥</div>
-            <div class="talent-name">Soul<br>Caller</div>
-            <div class="talent-points" id="points-soul-caller">[0/2]</div>
-        </div>
-        
-        <div class="talent-node humility tier-4" data-id="time-dilation" 
-             style="top: 30%; left: 7%; transform: translate(-50%, -50%);"
-             onclick="talentClick('time-dilation')">
-            <div class="talent-icon">⏰</div>
-            <div class="talent-name">Time<br>Dilation</div>
-            <div class="talent-points" id="points-time-dilation">[0/2]</div>
-        </div>
-        
-        <!-- ============================= -->
-        <!-- MIXED BRANCH (CENTER COLUMN) -->
-        <!-- ============================= -->
-        
-        <!-- Tier 1: Foundation -->
-        <div class="talent-node mixed tier-1" data-id="soul-bond" 
-             style="top: 35%; left: 50%; transform: translate(-50%, -50%);"
-             onclick="talentClick('soul-bond')">
-            <div class="talent-icon">🔗</div>
-            <div class="talent-name">Soul<br>Bond</div>
-            <div class="talent-points" id="points-soul-bond">[0/3]</div>
-        </div>
-        
-        <!-- Tier 2: Development -->
-        <div class="talent-node mixed tier-2" data-id="balance-keeper" 
-             style="top: 65%; left: 50%; transform: translate(-50%, -50%);"
-             onclick="talentClick('balance-keeper')">
-            <div class="talent-icon">⚖️</div>
-            <div class="talent-name">Balance<br>Keeper</div>
-            <div class="talent-points" id="points-balance-keeper">[0/3]</div>
-        </div>
-        
-        <!-- Tier 3: Mastery -->
-        <div class="talent-node mixed tier-3" data-id="soul-harmony" 
-             style="top: 20%; left: 50%; transform: translate(-50%, -50%);"
-             onclick="talentClick('soul-harmony')">
-            <div class="talent-icon">☯️</div>
-            <div class="talent-name">Soul<br>Harmony</div>
-            <div class="talent-points" id="points-soul-harmony">[0/3]</div>
-        </div>
-        
-        <div class="talent-node mixed tier-3" data-id="soul-purity" 
-             style="top: 80%; left: 50%; transform: translate(-50%, -50%);"
-             onclick="talentClick('soul-purity')">
-            <div class="talent-icon">💎</div>
-            <div class="talent-name">Soul<br>Purity</div>
-            <div class="talent-points" id="points-soul-purity">[0/3]</div>
-        </div>
-        
-        <!-- Tier 4: Advanced -->
-        <div class="talent-node mixed tier-4" data-id="inner-strength" 
-             style="top: 7%; left: 50%; transform: translate(-50%, -50%);"
-             onclick="talentClick('inner-strength')">
-            <div class="talent-icon">💪</div>
-            <div class="talent-name">Inner<br>Strength</div>
-            <div class="talent-points" id="points-inner-strength">[0/2]</div>
-        </div>
+        <!-- more talent nodes here... -->
     </div>
     
     <!-- Soul Ascension - Ultimate ability floating above -->

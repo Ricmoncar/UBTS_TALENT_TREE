@@ -1,24 +1,18 @@
-// mobile-app-final.js - Complete mobile replacement
-
 document.addEventListener('DOMContentLoaded', function() {
     // Only initialize mobile view on mobile devices
     if (window.innerWidth <= 768) {
-        // Force immediate hiding of desktop elements
+        // Hide desktop elements immediately
         document.querySelectorAll('.talent-tree-container, .ultimate-talent, .connection-lines, .talent-info-panel, .talent-points-panel, .back-button, .title').forEach(el => {
             el.style.display = 'none';
-            el.style.visibility = 'hidden';
-            el.style.opacity = '0';
-            el.style.pointerEvents = 'none';
         });
         
-        // Initialize mobile view immediately
-        initMobileApp();
+        // Wait a bit for Firebase and talent data to load
+        setTimeout(initMobileApp, 500);
     }
     
     // Handle resize events
     window.addEventListener('resize', function() {
         if (window.innerWidth <= 768 && !document.querySelector('.mobile-view')) {
-            // Remove any existing desktop view
             document.querySelectorAll('.talent-tree-container, .ultimate-talent, .connection-lines, .talent-info-panel, .talent-points-panel, .back-button, .title').forEach(el => {
                 el.style.display = 'none';
             });
@@ -29,9 +23,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             document.querySelectorAll('.talent-tree-container, .ultimate-talent, .connection-lines, .talent-info-panel, .talent-points-panel, .back-button, .title').forEach(el => {
                 el.style.display = '';
-                el.style.visibility = '';
-                el.style.opacity = '';
-                el.style.pointerEvents = '';
             });
         }
     });
@@ -43,7 +34,6 @@ function initMobileApp() {
     
     // Create standalone mobile interface
     createMobileView();
-    bindEvents();
     
     // Mark body as loaded
     document.body.classList.add('mobile-loaded');
@@ -121,14 +111,15 @@ function createHeader() {
     header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.5)';
     header.style.zIndex = '100';
     header.style.borderBottom = '2px solid #8B4513';
+    header.style.height = '60px'; // Fixed height for header
     
     // Title
     const title = document.createElement('div');
     title.textContent = 'BLACKJACK - SOUL TALENTS';
     title.style.fontFamily = "'Uncial Antiqua', 'Cinzel', serif";
-    title.style.fontSize = '20px';
+    title.style.fontSize = '18px';
     title.style.textAlign = 'center';
-    title.style.margin = '10px 0';
+    title.style.padding = '5px 0';
     title.style.textShadow = '0 0 10px rgba(255, 255, 255, 0.3)';
     
     // Nav container
@@ -136,19 +127,19 @@ function createHeader() {
     navContainer.style.display = 'flex';
     navContainer.style.justifyContent = 'space-between';
     navContainer.style.padding = '0 15px';
-    navContainer.style.marginTop = '10px';
+    navContainer.style.marginTop = '5px';
     
     // Back button
     const backButton = document.createElement('a');
     backButton.href = 'index.html';
-    backButton.textContent = 'BACK TO MENU';
+    backButton.textContent = 'MENU';
     backButton.style.background = 'linear-gradient(135deg, #1e90ff, #4682b4)';
     backButton.style.color = 'white';
-    backButton.style.padding = '8px 15px';
-    backButton.style.borderRadius = '20px';
+    backButton.style.padding = '5px 10px';
+    backButton.style.borderRadius = '15px';
     backButton.style.textDecoration = 'none';
     backButton.style.fontWeight = 'bold';
-    backButton.style.fontSize = '14px';
+    backButton.style.fontSize = '12px';
     backButton.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.3)';
     
     // Points display
@@ -156,23 +147,23 @@ function createHeader() {
     pointsDisplay.style.background = 'linear-gradient(135deg, rgba(139, 69, 19, 0.9), rgba(101, 67, 33, 0.7))';
     pointsDisplay.style.border = '2px solid #8B4513';
     pointsDisplay.style.borderRadius = '10px';
-    pointsDisplay.style.padding = '5px 15px';
+    pointsDisplay.style.padding = '2px 10px';
     pointsDisplay.style.textAlign = 'center';
     
     const pointsLabel = document.createElement('div');
     pointsLabel.textContent = 'POINTS';
-    pointsLabel.style.fontSize = '12px';
+    pointsLabel.style.fontSize = '11px';
     pointsLabel.style.color = '#FFD700';
     pointsLabel.style.fontWeight = 'bold';
     
     const pointsValue = document.createElement('div');
     pointsValue.id = 'mobile-available-points';
     pointsValue.textContent = '0';
-    pointsValue.style.fontSize = '18px';
+    pointsValue.style.fontSize = '16px';
     pointsValue.style.fontWeight = 'bold';
     
     const pointsSpent = document.createElement('div');
-    pointsSpent.style.fontSize = '12px';
+    pointsSpent.style.fontSize = '10px';
     pointsSpent.style.color = '#ff7f50';
     pointsSpent.innerHTML = 'Spent: <span id="mobile-spent-points">0</span>';
     
@@ -192,9 +183,12 @@ function createHeader() {
 function createTabNavigation() {
     const tabNav = document.createElement('div');
     tabNav.style.display = 'flex';
-    tabNav.style.marginTop = '105px';
+    tabNav.style.marginTop = '70px'; // Increased margin to avoid header overlap
     tabNav.style.background = 'rgba(10, 10, 30, 0.9)';
     tabNav.style.borderBottom = '2px solid rgba(255, 255, 255, 0.2)';
+    tabNav.style.position = 'sticky'; // Make tabs sticky
+    tabNav.style.top = '60px'; // Position right below header
+    tabNav.style.zIndex = '99'; // Below header but above content
     
     // Create tabs
     const braveryTab = createTab('BRAVERY', 'bravery');
@@ -214,17 +208,89 @@ function createTab(name, type) {
     tab.setAttribute('data-tab', type);
     tab.style.flex = '1';
     tab.style.textAlign = 'center';
-    tab.style.padding = '12px 5px';
+    tab.style.padding = '10px 5px';
     tab.style.fontWeight = 'bold';
     tab.style.cursor = 'pointer';
     tab.style.transition = 'all 0.3s ease';
     tab.style.borderBottom = '3px solid transparent';
-    tab.style.fontSize = '16px';
+    tab.style.fontSize = '14px';
     tab.style.userSelect = 'none';
     
     tab.addEventListener('click', () => activateTab(type));
     
     return tab;
+}
+
+// Function to safely get emoji content from original talent nodes
+function getEmoji(talentId) {
+    // First try to get from the DOM
+    const originalNode = document.querySelector(`[data-id="${talentId}"] .talent-icon`);
+    if (originalNode && originalNode.textContent) {
+        return originalNode.textContent;
+    }
+    
+    // Fallback emoji mapping if DOM elements are not available
+    const emojiMap = {
+        'iron-fist': '⚔️',
+        'critical-fighter': '⚡',
+        'berserker-rage': '🔥',
+        'burning-fists': '🔥',
+        'parry-mastery': '🛡️',
+        'bloodlust': '🩸',
+        'soul-rend': '💀',
+        'executioner': '⚰️',
+        'swift-movement': '💨',
+        'phantom-step': '👻',
+        'mind-reading': '🧠',
+        'evasive-maneuvers': '🌪️',
+        'act-synergy': '🎭',
+        'fortune-seeker': '💰',
+        'soul-caller': '👥',
+        'time-dilation': '⏰',
+        'soul-bond': '🔗',
+        'balance-keeper': '⚖️',
+        'soul-harmony': '☯️',
+        'soul-purity': '💎',
+        'inner-strength': '💪',
+        'soul-ascension': '✨'
+    };
+    
+    return emojiMap[talentId] || '🔮';
+}
+
+// Get talent description safely
+function getTalentDescription(talentId) {
+    if (window.talents && window.talents[talentId]) {
+        return window.talents[talentId].description || 'This talent enhances your abilities.';
+    }
+    
+    // Fallback descriptions
+    const descriptionMap = {
+        'iron-fist': 'Imbue your fists with Bravery.',
+        'critical-fighter': 'Master precision strikes against enemy weak points.',
+        'berserker-rage': 'The lower your health, the stronger you become.',
+        'burning-fists': 'Imbue your attacks with searing flame.',
+        'parry-mastery': 'Perfect timing turns defense into offense.',
+        'bloodlust': 'Each victory fuels your next assault.',
+        'soul-rend': 'Your attacks tear at the enemy\'s soul.',
+        'executioner': 'Deliver swift death to the wounded.',
+        'swift-movement': 'Speed and grace. Outmaneuver your foes with enhanced agility.',
+        'phantom-step': 'Become like smoke on the battlefield.',
+        'mind-reading': 'Peer into the thoughts of others.',
+        'evasive-maneuvers': 'Master the art of not being hit.',
+        'act-synergy': 'Your ACT commands become more efficient.',
+        'fortune-seeker': 'Lady Luck smiles upon you.',
+        'soul-caller': 'Summon your spectral ally to fight alongside you.',
+        'time-dilation': 'Bend the flow of time to your advantage.',
+        'soul-bond': 'Forge a connection between your dual souls.',
+        'balance-keeper': 'Maintain harmony between opposing forces.',
+        'soul-harmony': 'Achieve perfect balance between your two souls.',
+        'soul-purity': 'Cleanse your soul of all corruption.',
+        'inner-strength': 'Draw power from within.',
+        'soul-ascension': 'The ultimate unification of dual souls.'
+    };
+    
+    return descriptionMap[talentId] || 'This talent enhances your abilities.';
 }
 
 function createBraveryPanel() {
@@ -427,10 +493,10 @@ function createTalentItem(talentId, type) {
     
     // Default values if talent data isn't available yet
     const name = talent ? talent.name : talentId.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-    const icon = document.querySelector(`[data-id="${talentId}"] .talent-icon`)?.textContent || '?';
+    const icon = getEmoji(talentId);
     const currentRank = talent ? talent.currentRank : 0;
     const maxRank = talent ? talent.maxRank : 1;
-    const description = talent ? talent.description.replace(/\n/g, '<br>') : 'This talent enhances your abilities.';
+    const description = getTalentDescription(talentId);
     
     // Create talent item
     const item = document.createElement('li');
@@ -494,7 +560,7 @@ function createTalentItem(talentId, type) {
     
     // Description
     const descriptionEl = document.createElement('div');
-    descriptionEl.innerHTML = description;
+    descriptionEl.innerHTML = description.replace(/\n/g, '<br>');
     descriptionEl.style.margin = '15px 0';
     descriptionEl.style.fontStyle = 'italic';
     descriptionEl.style.fontSize = '15px';
@@ -829,60 +895,43 @@ function activateTab(tabName) {
     }
 }
 
-function bindEvents() {
-    // Update available points display
-    function updatePointsDisplay() {
-        if (window.gameState) {
-            // Update available points
-            const availablePointsDisplay = document.getElementById('mobile-available-points');
-            if (availablePointsDisplay) {
-                availablePointsDisplay.textContent = window.gameState.availablePoints;
-            }
-            
-            // Update spent points
-            const spentPointsDisplay = document.getElementById('mobile-spent-points');
-            if (spentPointsDisplay) {
-                spentPointsDisplay.textContent = window.gameState.spentPoints;
-            }
+// Listen for click events on add/remove buttons
+document.addEventListener('click', function(e) {
+    // Check if the click was on an add button that's not disabled
+    if (e.target.textContent === 'Add Point' && 
+        e.target.style.background.includes('32cd32')) {
+        
+        const talentId = e.target.getAttribute('data-id');
+        if (window.talentClick) {
+            window.talentClick(talentId);
+            updateUI();
+        }
+    } 
+    // Check if the click was on a remove button that's not disabled
+    else if (e.target.textContent === 'Remove Point' && 
+             e.target.style.background.includes('cd5c5c')) {
+        
+        const talentId = e.target.getAttribute('data-id');
+        if (window.removeTalentPoint) {
+            window.removeTalentPoint(talentId);
+            updateUI();
         }
     }
+});
+
+// Update all UI elements
+function updateUI() {
+    // Skip if no talent data available
+    if (!window.talents) return;
     
-    // Listen for click events on add/remove buttons
-    document.addEventListener('click', function(e) {
-        // Check if the click was on an add button that's not disabled
-        if (e.target.textContent === 'Add Point' && 
-            e.target.style.background.includes('32cd32')) {
-            
-            const talentId = e.target.getAttribute('data-id');
-            if (window.talentClick) {
-                window.talentClick(talentId);
-                updateUI();
-            }
-        } 
-        // Check if the click was on a remove button that's not disabled
-        else if (e.target.textContent === 'Remove Point' && 
-                 e.target.style.background.includes('cd5c5c')) {
-            
-            const talentId = e.target.getAttribute('data-id');
-            if (window.removeTalentPoint) {
-                window.removeTalentPoint(talentId);
-                updateUI();
-            }
-        }
-    });
-    
-    // Update all UI elements
-    function updateUI() {
-        // Skip if no talent data available
-        if (!window.talents) return;
+    document.querySelectorAll('[data-id]').forEach(item => {
+        const talentId = item.getAttribute('data-id');
+        const talent = window.talents[talentId];
         
-        document.querySelectorAll('[data-id]').forEach(item => {
-            const talentId = item.getAttribute('data-id');
-            const talent = window.talents[talentId];
-            
-            if (!talent) return;
-            
-            // Update talent item styling
+        if (!talent) return;
+        
+        // Update talent item styling
+        if (item.tagName === 'LI') { // Only update styling for our mobile list items
             applyTalentItemStyles(item, 
                 item.classList.contains('bravery') ? 'bravery' : 
                 item.classList.contains('humility') ? 'humility' : 'mixed',
@@ -891,7 +940,7 @@ function bindEvents() {
             );
             
             // Update rank display
-            const rankDisplay = item.querySelector('div:nth-child(3)');
+            const rankDisplay = item.querySelector('div > div:nth-child(3)');
             if (rankDisplay) {
                 rankDisplay.textContent = `${talent.currentRank}/${talent.maxRank}`;
             }
@@ -929,37 +978,46 @@ function bindEvents() {
             }
             
             // Update lock indicator
-            const lockIndicator = item.querySelector('div:nth-child(5)');
-            if (talent.currentRank === 0 && !canUnlockTalent(talentId)) {
-                if (!lockIndicator) {
-                    const header = item.querySelector('div:first-child');
-                    const lock = document.createElement('div');
-                    lock.textContent = '🔒';
-                    lock.style.position = 'absolute';
-                    lock.style.top = '10px';
-                    lock.style.right = '10px';
-                    lock.style.width = '20px';
-                    lock.style.height = '20px';
-                    lock.style.background = 'rgba(0, 0, 0, 0.5)';
-                    lock.style.borderRadius = '50%';
-                    lock.style.display = 'flex';
-                    lock.style.alignItems = 'center';
-                    lock.style.justifyContent = 'center';
-                    lock.style.fontSize = '12px';
-                    header.appendChild(lock);
+            const header = item.querySelector('div:first-child');
+            const lockIndicator = header.querySelector('div:last-child');
+            if (lockIndicator && lockIndicator.textContent === '🔒') {
+                if (canUnlockTalent(talentId) || talent.currentRank > 0) {
+                    lockIndicator.remove();
                 }
-            } else if (lockIndicator) {
-                lockIndicator.remove();
+            } else if (talent.currentRank === 0 && !canUnlockTalent(talentId) && !lockIndicator) {
+                const lock = document.createElement('div');
+                lock.textContent = '🔒';
+                lock.style.position = 'absolute';
+                lock.style.top = '10px';
+                lock.style.right = '10px';
+                lock.style.width = '20px';
+                lock.style.height = '20px';
+                lock.style.background = 'rgba(0, 0, 0, 0.5)';
+                lock.style.borderRadius = '50%';
+                lock.style.display = 'flex';
+                lock.style.alignItems = 'center';
+                lock.style.justifyContent = 'center';
+                lock.style.fontSize = '12px';
+                header.appendChild(lock);
             }
-        });
+        }
+    });
+    
+    // Update points display
+    if (window.gameState) {
+        // Update available points
+        const availablePointsDisplay = document.getElementById('mobile-available-points');
+        if (availablePointsDisplay) {
+            availablePointsDisplay.textContent = window.gameState.availablePoints;
+        }
         
-        updatePointsDisplay();
+        // Update spent points
+        const spentPointsDisplay = document.getElementById('mobile-spent-points');
+        if (spentPointsDisplay) {
+            spentPointsDisplay.textContent = window.gameState.spentPoints;
+        }
     }
-    
-    // Periodic updates for talent states
-    setInterval(updateUI, 1000);
-    
-    // Initial update
-    updatePointsDisplay();
-    setTimeout(updateUI, 500);
 }
+
+// Periodic updates for talent states
+setInterval(updateUI, 1000);
