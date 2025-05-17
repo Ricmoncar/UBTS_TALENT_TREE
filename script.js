@@ -360,3 +360,259 @@ document.addEventListener('DOMContentLoaded', () => {
 // Make functions global for HTML onclick handlers
 window.talentClick = talentClick;
 window.removeTalentPoint = removeTalentPoint;
+
+// Add this to the bottom of your script.js file
+
+// ===================================================
+// PANZOOM IMPLEMENTATION FOR TALENT TREE NAVIGATION
+// ===================================================
+
+// Variables for panning functionality
+let isPanning = false;
+let startPoint = { x: 0, y: 0 };
+let currentTranslate = { x: 0, y: 0 };
+let startTranslate = { x: 0, y: 0 };
+let scale = 1;
+const MIN_SCALE = 0.5;
+const MAX_SCALE = 1.5;
+const PAN_SPEED = 1;
+
+function initPanZoom() {
+    const container = document.querySelector('.talent-tree-container');
+    
+    // Create a wrapper for panning/zooming
+    const wrapper = document.createElement('div');
+    wrapper.className = 'talent-tree-panzoom';
+    
+    // Move all children except the SVG into the wrapper
+    const svg = container.querySelector('.connection-lines');
+    const childNodes = Array.from(container.childNodes);
+    
+    childNodes.forEach(child => {
+        if (child !== svg) {
+            wrapper.appendChild(child);
+        }
+    });
+    
+    // Add the wrapper back to the container (after the SVG)
+    container.appendChild(wrapper);
+    
+    // Set up mouse events for panning
+    wrapper.addEventListener('mousedown', startPan);
+    document.addEventListener('mousemove', pan);
+    document.addEventListener('mouseup', endPan);
+    
+    // Set up touch events for mobile
+    wrapper.addEventListener('touchstart', startPanTouch);
+    wrapper.addEventListener('touchmove', panTouch);
+    wrapper.addEventListener('touchend', endPanTouch);
+    
+    // Add zoom with mouse wheel
+    container.addEventListener('wheel', zoom);
+    
+    // Double tap to reset on mobile
+    let lastTap = 0;
+    wrapper.addEventListener('touchend', function(e) {
+        const currentTime = new Date().getTime();
+        const tapLength = currentTime - lastTap;
+        if (tapLength < 300 && tapLength > 0) {
+            resetView();
+            e.preventDefault();
+        }
+        lastTap = currentTime;
+    });
+    
+    // Double click to reset on desktop
+    wrapper.addEventListener('dblclick', resetView);
+    
+    // Add reset button to talent info panel
+    const infoPanel = document.getElementById('talent-info');
+    const resetButton = document.createElement('button');
+    resetButton.className = 'reset-view-button';
+    resetButton.textContent = 'Reset View';
+    resetButton.onclick = resetView;
+    infoPanel.querySelector('.info-content').appendChild(resetButton);
+    
+    // Add pinch zoom for mobile
+    const hammer = new Hammer.Manager(wrapper);
+    const pinch = new Hammer.Pinch();
+    hammer.add(pinch);
+    
+    let baseScale = scale;
+    
+    hammer.on('pinchstart', function() {
+        baseScale = scale;
+    });
+    
+    hammer.on('pinch', function(e) {
+        handleZoom(e.center.x, e.center.y, baseScale * e.scale);
+        applyTransform();
+    });
+}
+
+function startPan(e) {
+    isPanning = true;
+    startPoint = { x: e.clientX, y: e.clientY };
+    startTranslate = { ...currentTranslate };
+    document.body.style.cursor = 'grabbing';
+    e.preventDefault();
+}
+
+function pan(e) {
+    if (!isPanning) return;
+    
+    const dx = (e.clientX - startPoint.x) * PAN_SPEED / scale;
+    const dy = (e.clientY - startPoint.y) * PAN_SPEED / scale;
+    
+    currentTranslate.x = startTranslate.x + dx;
+    currentTranslate.y = startTranslate.y + dy;
+    
+    applyTransform();
+    e.preventDefault();
+}
+
+function endPan() {
+    isPanning = false;
+    document.body.style.cursor = 'default';
+}
+
+function startPanTouch(e) {
+    if (e.touches.length === 1) {
+        isPanning = true;
+        startPoint = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        startTranslate = { ...currentTranslate };
+        e.preventDefault();
+    }
+}
+
+function panTouch(e) {
+    if (!isPanning || e.touches.length !== 1) return;
+    
+    const dx = (e.touches[0].clientX - startPoint.x) * PAN_SPEED / scale;
+    const dy = (e.touches[0].clientY - startPoint.y) * PAN_SPEED / scale;
+    
+    currentTranslate.x = startTranslate.x + dx;
+    currentTranslate.y = startTranslate.y + dy;
+    
+    applyTransform();
+    e.preventDefault();
+}
+
+function endPanTouch() {
+    isPanning = false;
+}
+
+function zoom(e) {
+    e.preventDefault();
+    
+    // Get mouse position
+    const rect = e.currentTarget.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    
+    // Determine zoom direction
+    const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
+    
+    handleZoom(mouseX, mouseY, scale * zoomFactor);
+}
+
+function handleZoom(mouseX, mouseY, newScale) {
+    // Constrain scale
+    newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScale));
+    
+    // Calculate new position based on mouse position
+    const factor = newScale / scale;
+    const dx = mouseX - mouseX * factor;
+    const dy = mouseY - mouseY * factor;
+    
+    scale = newScale;
+    currentTranslate.x += dx / scale;
+    currentTranslate.y += dy / scale;
+    
+    applyTransform();
+}
+
+function applyTransform() {
+    const container = document.querySelector('.talent-tree-panzoom');
+    container.style.transform = `translate(${currentTranslate.x}px, ${currentTranslate.y}px) scale(${scale})`;
+    
+    // Update SVG connections to match the transform
+    updateConnections();
+}
+
+function updateConnections() {
+    const svg = document.querySelector('.connection-lines');
+    svg.style.transform = `translate(${currentTranslate.x}px, ${currentTranslate.y}px) scale(${scale})`;
+}
+
+function resetView() {
+    scale = 1;
+    currentTranslate = { x: 0, y: 0 };
+    applyTransform();
+}
+
+// NEW FUNCTION: Fix connection lines visibility issue
+function fixConnectionLines() {
+    const connectionLines = document.querySelectorAll('.connection-line');
+    connectionLines.forEach(line => {
+        line.setAttribute('fill', 'none');
+        
+        // Add explicit inline styling as a backup
+        const type = line.classList.contains('bravery') ? 'bravery' : 
+                    line.classList.contains('humility') ? 'humility' : 
+                    line.classList.contains('mixed-req') ? 'mixed-req' : 'mixed';
+        
+        let strokeColor;
+        switch(type) {
+            case 'bravery': strokeColor = '#ff8c00'; break;
+            case 'humility': strokeColor = '#1e90ff'; break;
+            case 'mixed': strokeColor = '#ffffff'; break;
+            case 'mixed-req': strokeColor = '#a64aff'; break;
+        }
+        
+        line.style.stroke = strokeColor;
+        line.style.strokeWidth = '4px';
+        line.style.fill = 'none';
+        
+        if (type === 'mixed-req') {
+            line.style.strokeDasharray = '5, 5';
+        }
+    });
+    
+    // Ensure the connection lines are visible during pan-zoom
+    document.addEventListener('mousemove', updateConnections);
+    document.addEventListener('wheel', updateConnections);
+}
+
+// Load Hammer.js for touch gestures
+function loadHammerJS() {
+    return new Promise((resolve, reject) => {
+        if (window.Hammer) {
+            resolve();
+            return;
+        }
+        
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js';
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+    });
+}
+
+// Initialize panzoom after page loads
+document.addEventListener('DOMContentLoaded', async () => {
+    // Wait for Hammer.js to load
+    try {
+        await loadHammerJS();
+    } catch (error) {
+        console.error('Failed to load Hammer.js. Touch gestures may not work properly.', error);
+    }
+    
+    // Wait a moment for the game to initialize
+    setTimeout(() => {
+        initPanZoom();
+        // Call the fix connection lines function after pan-zoom is initialized
+        setTimeout(fixConnectionLines, 500);
+    }, 1000);
+});

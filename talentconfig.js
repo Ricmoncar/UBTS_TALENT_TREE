@@ -1,62 +1,78 @@
 // ===================================================
-// BLACKJACK TALENT TREE CONFIGURATION
+// BLACKJACK TALENT TREE CONFIGURATION - REDESIGNED
 // ===================================================
-// Edit this file to change talents, descriptions, and requirements
-// This is your control panel for the entire talent tree!
+// Complete redesign with reimagined talents structure
 
-// Default starting talent points - Changed to 0 by default
+// Default starting talent points
 export const DEFAULT_TALENT_POINTS = 0;
 
 // ===================================================
 // TALENT DEFINITIONS
 // ===================================================
-// How to edit talents:
-// - name: Display name of the talent
-// - emoji: Icon shown on the talent node
-// - description: Detailed description (use \n for new lines)
-// - maxRank: Maximum number of points you can put in this talent
-// - type: 'bravery', 'humility', or 'mixed'
-// - tier: 1, 2, 3, or 4 (determines position/unlock order)
-// - requirements: Array of talents that must be unlocked first
-//   Example: [{ talent: 'iron-fist', minRank: 2 }]
-// - effects: Array of descriptions for each rank
 
 export const TALENT_DEFINITIONS = {
     // ===================================================
-    // BRAVERY BRANCH (Orange - Combat/Offense)
+    // BRAVERY BRANCH (Red/Orange - Combat/Offense)
     // ===================================================
     'iron-fist': {
         name: 'Iron Fist',
         emoji: '⚔️',
-        description: 'Your fists imbue with Bravery..\nEach rank increases your combat prowess.',
-        maxRank: 6,
+        description: 'Your fists imbue with Bravery.\nEach rank increases your combat prowess.',
+        maxRank: 5,
         type: 'bravery',
         tier: 1,
         requirements: [],
         effects: [
             '+100 ATK',
             '+250 ATK (Total)',
-            '+500 ATK (Total) + Critical hits stun enemies',
-            '+1000 ATK (Total) + Critical hits stun enemies + 5% critical strike chance',
-            '+1500 ATK (Total) + Critical hits stun enemies + 10% critical strike chance',
-            '+5000 ATK (Total) + Critical hits stun enemies + 30% critical strike chance',
+            '+500 ATK (Total) + Critical hits stun enemies for 1s',
+            '+1000 ATK (Total) + Critical hits stun enemies for 2s',
+            '+2000 ATK (Total) + Critical hits stun enemies for 3s + 15% critical strike chance'
         ]
     },
     
-    'berserker-rage': {
-        name: 'Berserker',
-        emoji: '🔥',
-        description: 'The lower your health, the stronger you become.\nRage fuels you in combat.',
-        maxRank: 5,
+    'critical-fighter': {
+        name: 'Critical Fighter',
+        emoji: '⚡',
+        description: 'Master precision strikes against enemy weak points.\nIncreases critical hit chance and damage.',
+        maxRank: 3,
         type: 'bravery',
         tier: 2,
         requirements: [{ talent: 'iron-fist', minRank: 2 }],
         effects: [
-            '+2% ATK per 10% missing HP',
-            '+4% ATK per 10% missing HP',
-            '+6% ATK per 10% missing HP',
-            '+8% ATK per 10% missing HP',
-            '+10% ATK per 10% missing HP + critical hits deal 50% more damage'
+            '+10% Critical Hit Chance, +25% Critical Hit Damage',
+            '+20% Critical Hit Chance, +50% Critical Hit Damage',
+            '+30% Critical Hit Chance, +100% Critical Hit Damage + Critical hits heal you for 5% max HP'
+        ]
+    },
+    
+    'berserker-rage': {
+        name: 'Berserker Rage',
+        emoji: '🔥',
+        description: 'The lower your health, the stronger you become.\nRage fuels you in combat.',
+        maxRank: 3,
+        type: 'bravery',
+        tier: 2,
+        requirements: [{ talent: 'iron-fist', minRank: 3 }],
+        effects: [
+            '+5% ATK per 10% missing HP',
+            '+10% ATK per 10% missing HP, +5% Critical Chance when below 50% HP',
+            '+15% ATK per 10% missing HP, +15% Critical Chance when below 50% HP'
+        ]
+    },
+    
+    'burning-fists': {
+        name: 'Burning Fists',
+        emoji: '🔥',
+        description: 'Imbue your attacks with searing flame.\nEnemies burn with each strike.',
+        maxRank: 3,
+        type: 'bravery',
+        tier: 3,
+        requirements: [{ talent: 'critical-fighter', minRank: 2 }],
+        effects: [
+            'Attacks apply Burning, dealing 10% ATK as fire damage',
+            'Attacks apply Burning, dealing 20% ATK as fire damage',
+            'Attacks apply Burning, dealing 30% ATK as fire damage + Burning effect stacks up to 3 times'
         ]
     },
     
@@ -66,12 +82,12 @@ export const TALENT_DEFINITIONS = {
         description: 'Perfect timing turns defense into offense.\nMaster the art of deflecting attacks.',
         maxRank: 3,
         type: 'bravery',
-        tier: 2,
-        requirements: [{ talent: 'iron-fist', minRank: 1 }],
+        tier: 3,
+        requirements: [{ talent: 'iron-fist', minRank: 3 }],
         effects: [
-            '+10% Parry Chance',
-            '+20% Parry Chance, +15% Parry Damage',
-            '+30% Parry Chance, +35% Parry Damage'
+            '+10% Parry Chance, Successful parries deal 50% ATK as counter damage',
+            '+15% Parry Chance, Successful parries deal 100% ATK as counter damage',
+            '+30% Parry Chance, Successful parries deal 150% ATK as counter damage and stun enemies for 2s'
         ]
     },
     
@@ -79,74 +95,44 @@ export const TALENT_DEFINITIONS = {
         name: 'Bloodlust',
         emoji: '🩸',
         description: 'Each victory fuels your next assault.\nThe thrill of combat enhances your abilities.',
-        maxRank: 4,
+        maxRank: 3,
         type: 'bravery',
-        tier: 2,
-        requirements: [{ talent: 'iron-fist', minRank: 2 }],
+        tier: 3,
+        requirements: [{ talent: 'berserker-rage', minRank: 2 }],
         effects: [
-            '+1% damage after kill',
-            '+2% damage after kill + 5% critical strike chance',
-            '+3% damage after kill + heal 300 HP on kill + 10% critical strike chance',
-            '+5% damage after kill + heal 780 HP on kill + 20% critical strike chance'
+            'Killing an enemy grants +1% ATK',
+            'Killing an enemy grants +2% ATK and heals for 5% max HP',
+            'Killing an enemy grants +3.5% ATK, heals for 10% max HP, and grants 20% Critical Chance for 10s (stacks up to 3 times)'
         ]
     },
     
     'soul-rend': {
         name: 'Soul Rend',
         emoji: '💀',
-        description: 'Your attacks now tear at the their soul.\nWeakens enemies beyond physical damage.',
-        maxRank: 3,
+        description: 'Your attacks tear at the enemy\'s soul.\nWeakens enemies beyond physical damage.',
+        maxRank: 2,
         type: 'bravery',
-        tier: 3,
-        requirements: [{ talent: 'berserker-rage', minRank: 3 }],
+        tier: 4,
+        requirements: [
+            { talent: 'burning-fists', minRank: 2 },
+            { talent: 'bloodlust', minRank: 2 }
+        ],
         effects: [
-            'Attacks reduce enemy stats by 20% (non-stacking)',
-            'Attacks reduce enemy stats by 30% (non-stacking)',
-            'Attacks reduce enemy stats by 50% (non-stacking), harvest their soul for 300 HP'
+            'Attacks reduce enemy DEF and ATK by 30% for 1 round',
+            'Attacks reduce enemy DEF and ATK by 50% for  2 rounds + you can absorb your enemies souls.'
         ]
     },
     
     'executioner': {
         name: 'Executioner',
         emoji: '⚰️',
-        description: 'Deliver swift hits to the wounded.\nNo mercy for those who falter.',
+        description: 'Deliver swift death to the wounded.\nNo mercy for those who falter.',
         maxRank: 1,
         type: 'bravery',
-        tier: 3,
+        tier: 4,
         requirements: [{ talent: 'bloodlust', minRank: 3 }],
         effects: [
-            'Instantly execute enemies below 25% HP'
-        ]
-    },
-    
-    'critical-fighter': {
-        name: 'Critical Fighter',
-        emoji: '⚔️',
-        description: 'Master the art of critical strikes.\nEach blow has a chance to deal devastating damage.',
-        maxRank: 3,
-        type: 'bravery',
-        tier: 2,
-        requirements: [{ talent: 'iron-fist', minRank: 3 }],
-        effects: [
-            '+15% critical strike chance',
-            '+25% critical strike chance, +10% critical damage',
-            '+40% critical strike chance, +20% critical damage'
-        ]
-    },
-    
-    'fire-wave': {
-        name: 'Fire Wave',
-        emoji: '🔥',
-        description: 'Channel the burning soul of Bravery.\nRelease waves of destructive flames.',
-        maxRank: 4,
-        type: 'bravery',
-        tier: 3,
-        requirements: [{ talent: 'critical-fighter', minRank: 2 }],
-        effects: [
-            'AOE fire attack dealing 500 damage. 1 time per fight',
-            'AOE fire attack dealing 1000 damage + burning effect. 1 time per fight',
-            'AOE fire attack dealing 2000 damage + burning effect. 1 time per fight',
-            'AOE fire attack dealing 3500 damage + burning effect + any damage applies burning. 1 time per fight'
+            'Instantly execute non-boss enemies below 30% HP'
         ]
     },
 
@@ -166,7 +152,7 @@ export const TALENT_DEFINITIONS = {
             '+30% Speed',
             '+45% Speed, +5% Dodge',
             '+60% Speed, +10% Dodge',
-            '+75% Speed, +15% Dodge + 15% parry chance'
+            '+75% Speed, +15% Dodge + 15% chance to take no damage from attacks'
         ]
     },
     
@@ -179,27 +165,24 @@ export const TALENT_DEFINITIONS = {
         tier: 2,
         requirements: [{ talent: 'swift-movement', minRank: 2 }],
         effects: [
-            'Dodging grants +5% Speed buff',
-            '+10% Dodge Chance, dodging grants +10% Speed buff',
-            '+20% Dodge Chance, dodging grants +40% Speed buff + Leave afterimage upon dodging'
+            'Dodging grants +10% Speed during fights (stacks up to 3 times)',
+            'Dodging grants +20% Speed during fights (stacks up to 3 times)',
+            'Dodging grants +30% Speed during fights (stacks up to 10 times), and leaves an afterimage that confuses enemies'
         ]
     },
     
-    'act-synergy': {
-        name: 'ACT Synergy',
-        emoji: '🎭',
-        description: 'Your ACT commands become more efficient.\nWords and actions work in perfect harmony.',
-        maxRank: 6,
+    'mind-reading': {
+        name: 'Mind Reading',
+        emoji: '🧠',
+        description: 'Peer into the thoughts of others.\nAnticipate intentions and actions.',
+        maxRank: 3,
         type: 'humility',
         tier: 2,
-        requirements: [{ talent: 'swift-movement', minRank: 1 }],
+        requirements: [{ talent: 'swift-movement', minRank: 3 }],
         effects: [
-            'ACT empowered by 20%',
-            'ACT empowered by 40%',
-            'ACT empowered by 80%',
-            'ACT empowered by 100% + HUMILITY can chain act with you. (10% effectiveness)',
-            'ACT empowered by 125% + HUMILITY can chain act with you. (50% effectiveness)',
-            'ACT empowered by 150% + HUMILITY can chain act with you. (100% effectiveness)'
+            'Reveal basic thoughts of NPCs, 20% chance to predict enemy attacks',
+            'Reveal detailed intentions of NPCs, 40% chance to predict enemy attacks',
+            'Reveal all thoughts and memories of NPCs, 60% chance to predict enemy attacks + predicted attacks can be automatically dodged'
         ]
     },
     
@@ -207,28 +190,61 @@ export const TALENT_DEFINITIONS = {
         name: 'Evasive Maneuvers',
         emoji: '🌪️',
         description: 'Master the art of not being hit.\nDodge with style and grace.',
+        maxRank: 3,
+        type: 'humility',
+        tier: 3,
+        requirements: [{ talent: 'phantom-step', minRank: 2 }],
+        effects: [
+            '+20% Dodge Chance',
+            '+35% Dodge Chance + Successful dodges restore 3% max HP',
+            '+50% Dodge Chance + Successful dodges restore 6% max HP'
+        ]
+    },
+    
+    'act-synergy': {
+        name: 'ACT Synergy',
+        emoji: '🎭',
+        description: 'Your ACT commands become more efficient.\nWords and actions work in perfect harmony.',
         maxRank: 4,
         type: 'humility',
-        tier: 2,
-        requirements: [{ talent: 'swift-movement', minRank: 1 }],
+        tier: 3,
+        requirements: [{ talent: 'mind-reading', minRank: 2 }],
         effects: [
-            '+10% Dodge Chance',
-            '+20% Dodge Chance',
-            '+30% Dodge Chance',
-            '+40% Dodge Chance + Dodging grants brief invincibility'
+            'ACT commands are 50% more effective',
+            'ACT commands are 100% more effective',
+            'ACT commands are 150% more effective + HUMILITY can chain ACT with you (25% effectiveness)',
+            'ACT commands are 200% more effective + HUMILITY can chain ACT with you (50% effectiveness)'
+        ]
+    },
+    
+    'soul-caller': {
+        name: 'Soul Caller',
+        emoji: '👥',
+        description: 'Summon your spectral ally to fight alongside you.',
+        maxRank: 2,
+        type: 'humility',
+        tier: 4,
+        requirements: [{ talent: 'act-synergy', minRank: 3 }],
+        effects: [
+            'Summon HUMILITY with 2000 HP and 1000 ATK for 2 rounds',
+            'Summon HUMILITY with 5000 HP and 2000 ATK for 3 rounds'
         ]
     },
     
     'time-dilation': {
         name: 'Time Dilation',
         emoji: '⏰',
-        description: 'Occasionally act twice in a single turn.',
-        maxRank: 1,
+        description: 'Bend the flow of time to your advantage.\nGain extra actions in critical moments.',
+        maxRank: 2,
         type: 'humility',
-        tier: 3,
-        requirements: [{ talent: 'phantom-step', minRank: 3 }],
+        tier: 4,
+        requirements: [
+            { talent: 'evasive-maneuvers', minRank: 2 },
+            { talent: 'act-synergy', minRank: 2 }
+        ],
         effects: [
-            '40% chance to take an extra turn'
+            '30% chance to act twice in a single turn',
+            '50% chance to act twice in a single turn + Once per battle, can stop time for 3s, allowing free movement while enemies are frozen'
         ]
     },
     
@@ -236,49 +252,18 @@ export const TALENT_DEFINITIONS = {
         name: 'Fortune Seeker',
         emoji: '💰',
         description: 'Lady Luck smiles upon you.\nFind greater rewards in your adventures.',
-        maxRank: 3,
-        type: 'humility',
-        tier: 3,
-        requirements: [{ talent: 'act-synergy', minRank: 3 }],
-        effects: [
-            '+50% LOVE gained, +25% Gold',
-            '+100% LOVE gained, +50% Gold',
-            '+150% LOVE gained, +100% Gold'
-        ]
-    },
-    
-
-    'mind-reading': {
-        name: 'Mind Reading',
-        emoji: '🧠',
-        description: 'Peer into the thoughts of others.\nGain insights and anticipate intentions.',
-        maxRank: 3,
-        type: 'humility',
-        tier: 2,
-        requirements: [{ talent: 'swift-movement', minRank: 3 }],
-        effects: [
-            'Reveal basic thoughts of NPCs',
-            'Reveal detailed intentions of NPCs, 25% chance to see next enemy action',
-            'Reveal all thoughts and memories of NPCs, 50% chance to see next enemy action'
-        ]
-    },
-    
-    'soul-caller': {
-        name: 'Soul Caller',
-        emoji: '👥',
-        description: 'Summon HUMILITY.',
         maxRank: 2,
         type: 'humility',
         tier: 3,
         requirements: [{ talent: 'mind-reading', minRank: 2 }],
         effects: [
-            'Summon your spectral ally with 1000 HP and 500 ATK',
-            'Summon your spectral ally with 2000 HP and 2000 ATK'
+            '+75% LOVE gained, +50% Gold',
+            '+150% LOVE gained, +100% Gold'
         ]
     },
 
     // ===================================================
-    // MIXED/SOUL CORE (White - Balance/Ultimate)
+    // MIXED/SOUL CORE (Purple - Balance/Ultimate)
     // ===================================================
     'soul-bond': {
         name: 'Soul Bond',
@@ -289,70 +274,35 @@ export const TALENT_DEFINITIONS = {
         tier: 1,
         requirements: [],
         effects: [
-            '+500 HP, +15% DEF',
-            '+1500 HP, +25% DEF',
-            '+3500 HP, +35% DEF + HUMILITY and BRAVERY can ACT and FIGHT together (rare).'
+            '+200 HP, +2% DEF',
+            '+400 HP, +5% DEF',
+            '+3000 HP, +40% DEF + HUMILITY and BRAVERY can communicate directly with the enemy'
         ]
     },
     
     'balance-keeper': {
         name: 'Balance Keeper',
         emoji: '⚖️',
-        description: 'Maintain the harmony between.\nTrue power comes from perfect equilibrium.',
+        description: 'Maintain harmony between opposing forces.\nTrue power comes from equilibrium.',
         maxRank: 3,
         type: 'mixed',
-        tier: 1,
-        requirements: [],
+        tier: 2,
+        requirements: [{ talent: 'soul-bond', minRank: 1 }],
         effects: [
-            '+10% Damage and ACT effectiveness',
-            '+20% Damage and ACT effectiveness',
-            '+40% Damage and ACT effectiveness, Immunity to debuffs'
+            '+15% Damage and ACT effectiveness',
+            '+30% Damage and ACT effectiveness, 50% resistance to status effects',
+            '+45% Damage and ACT effectiveness, Immunity to debuffs + Regenerate 5% max HP every round'
         ]
     },
     
-    'soul-ascension': {
-        name: 'Soul Ascension',
-        emoji: '✨',
-        description: 'Get the two together.\nUnlock the true potential of your dual soul.',
-        maxRank: 1,
-        type: 'mixed',
-        tier: 4,
-        requirements: [
-            { talent: 'soul-bond', minRank: 3 },
-            { talent: 'soul-rend', minRank: 2 },
-            { talent: 'time-dilation', minRank: 1 },
-            { talent: 'dual-soul-synergy', minRank: 2 }
-        ],
-        effects: [
-            '???'
-        ]
-    },
-    
-    // NEW TALENTS - MIXED
-    'elemental-affinity': {
-        name: 'Elemental Affinity',
-        emoji: '🔮',
-        description: 'Attune your soul..',
-        maxRank: 1,
-        type: 'mixed',
-        tier: 1,
-        requirements: [],
-        effects: [
-            'Killing grants LOVE. Sparing grants LV.',
-        ]
-    },
-    
-    'dual-soul-synergy': {
-        name: 'Dual Soul Synergy',
+    'soul-harmony': {
+        name: 'Soul Harmony',
         emoji: '☯️',
-        description: 'Harmonize the voices!',
+        description: 'Achieve perfect balance between your two souls.\nUnlock latent potential through inner peace.',
         maxRank: 3,
         type: 'mixed',
         tier: 3,
-        requirements: [
-            { talent: 'soul-bond', minRank: 2 },
-            { talent: 'elemental-affinity', minRank: 3 }
-        ],
+        requirements: [{ talent: 'balance-keeper', minRank: 2 }],
         effects: [
             'Bravery abilities gain +20% effectiveness when used by Humility, and vice versa',
             'Bravery abilities gain +40% effectiveness when used by Humility, and vice versa',
@@ -363,18 +313,49 @@ export const TALENT_DEFINITIONS = {
     'soul-purity': {
         name: 'Soul Purity',
         emoji: '💎',
-        description: 'Cleanse your soul of corruption.\nA pure soul enhances all abilities.',
+        description: 'Cleanse your soul of all corruption.\nA pure soul enhances all abilities.',
         maxRank: 3,
         type: 'mixed',
         tier: 3,
+        requirements: [{ talent: 'soul-bond', minRank: 2 }],
+        effects: [
+            'Killing grants a bit of LOVE. Sparing grants a bit of LV. \n+10% to all stats',
+            'Killing grants LOVE. Sparing grants LV. \n+20% to all stats',
+            'SPARING enemies grants massive LV. +30% to all stats, rapidly regenerate HP + Protective aura extends to allies'
+        ]
+    },
+    
+    'inner-strength': {
+        name: 'Inner Strength',
+        emoji: '💪',
+        description: 'Draw power from within.\nUnlock your full potential in times of need.',
+        maxRank: 2,
+        type: 'mixed',
+        tier: 4,
         requirements: [
-            { talent: 'balance-keeper', minRank: 2 },
-            { talent: 'elemental-affinity', minRank: 3 }
+            { talent: 'soul-harmony', minRank: 2 },
+            { talent: 'soul-purity', minRank: 2 }
         ],
         effects: [
-            '+10% to all stats',
-            '+50% to all stats',
-            '+100% to all stats. HP Regen.'
+            'When below 30% HP, gain +50% to all stats for 1 round',
+            'When below 30% HP, gain +100% to all stats for 2 rounds'
+        ]
+    },
+    
+    'soul-ascension': {
+        name: 'Soul Ascension',
+        emoji: '✨',
+        description: 'The ultimate unification of dual souls.\nTranscend mortal limitations.',
+        maxRank: 1,
+        type: 'mixed',
+        tier: 5,
+        requirements: [
+            { talent: 'soul-rend', minRank: 2 },
+            { talent: 'time-dilation', minRank: 1 },
+            { talent: 'inner-strength', minRank: 2 }
+        ],
+        effects: [
+            'Fuse your souls, and transform based on your LV or LOVE. (Higher LV = bravery transformation. Higher LOVE = humility transformation).'
         ]
     }
 };

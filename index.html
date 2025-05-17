@@ -3,332 +3,320 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackjack Talent Tree</title>
+    <link rel="stylesheet" href="styles.css">
     
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-
-    <title>Skill Tree Collection</title>
+    <!-- Hammer.js for touch gestures -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+    
+    <!-- Add new connection line styles -->
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=Cinzel:wght@400;600;700&display=swap');
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* Additional fix for SVG line elements */
+        .connection-line {
+            stroke-width: 4px !important;
+            stroke-linecap: round !important;
+            fill: none !important;
+            opacity: 0.8 !important;
         }
-
-        body {
-            font-family: 'Cinzel', serif;
-            background: linear-gradient(135deg, #0f0f23, #1a1a2e, #16213e);
-            color: #fff;
-            min-height: 100vh;
-            overflow-x: hidden;
+        
+        .connection-line.bravery {
+            stroke: #ff8c00 !important;
         }
-
-        /* Background animations */
-        .starfield {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
+        
+        .connection-line.humility {
+            stroke: #1e90ff !important;
         }
-
-        .star {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: white;
-            border-radius: 50%;
-            animation: twinkle 2s infinite ease-in-out;
+        
+        .connection-line.mixed {
+            stroke: #ffffff !important;
         }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
-        }
-
-        /* Main container */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        .title {
-            text-align: center;
-            font-family: 'Uncial Antiqua', cursive;
-            font-size: 3rem;
-            margin-bottom: 3rem;
-            color: #fff;
-            text-shadow: 
-                0 0 20px rgba(255, 255, 255, 0.5),
-                0 0 40px rgba(255, 215, 0, 0.3),
-                0 0 60px rgba(30, 144, 255, 0.3);
-            animation: titleGlow 3s ease-in-out infinite alternate;
-        }
-
-        @keyframes titleGlow {
-            0% {
-                text-shadow: 
-                    0 0 20px rgba(255, 255, 255, 0.5),
-                    0 0 40px rgba(255, 215, 0, 0.3),
-                    0 0 60px rgba(30, 144, 255, 0.3);
-            }
-            100% {
-                text-shadow: 
-                    0 0 25px rgba(255, 255, 255, 0.8),
-                    0 0 50px rgba(255, 215, 0, 0.5),
-                    0 0 75px rgba(30, 144, 255, 0.5);
-            }
-        }
-
-        .subtitle {
-            text-align: center;
-            font-size: 1.5rem;
-            color: #ccc;
-            margin-bottom: 4rem;
-            font-weight: 400;
-        }
-
-        /* Grid layout for skill trees */
-        .skill-tree-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        .skill-tree-card {
-            background: linear-gradient(135deg, 
-                rgba(139, 69, 19, 0.9), 
-                rgba(101, 67, 33, 0.7),
-                rgba(139, 69, 19, 0.9));
-            border: 3px solid #8B4513;
-            border-radius: 15px;
-            padding: 2rem;
-            text-align: center;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .skill-tree-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
-            transition: left 0.6s ease;
-        }
-
-        .skill-tree-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 
-                0 0 30px rgba(255, 215, 0, 0.5),
-                0 20px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .skill-tree-card:hover::before {
-            left: 100%;
-        }
-
-        .card-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
-        }
-
-        .card-title {
-            font-family: 'Uncial Antiqua', cursive;
-            font-size: 1.8rem;
-            margin-bottom: 1rem;
-            color: #fff;
-        }
-
-        .card-description {
-            color: #ddd;
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
-            font-size: 1.1rem;
-        }
-
-        .card-status {
-            margin-bottom: 1.5rem;
-            padding: 0.8rem;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 1rem;
-        }
-
-        .available {
-            background: linear-gradient(135deg, #2d5120, #4caf50);
-            color: #fff;
-        }
-
-        .coming-soon {
-            background: linear-gradient(135deg, #4a4a4a, #666);
-            color: #ccc;
-        }
-
-        .enter-button {
-            display: inline-block;
-            padding: 1rem 2rem;
-            background: linear-gradient(135deg, #8B0000, #A0522D);
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 1.1rem;
-            border: 2px solid #B22222;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .enter-button:hover {
-            background: linear-gradient(135deg, #A0522D, #CD853F);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-            transform: translateY(-2px);
-        }
-
-        .enter-button:disabled {
-            background: linear-gradient(135deg, #333, #555);
-            color: #888;
-            cursor: not-allowed;
-            border-color: #555;
-            opacity: 0.7;
-        }
-
-        .enter-button:disabled:hover {
-            transform: none;
-            box-shadow: none;
-        }
-
-        /* Responsive design */
-        @media (max-width: 768px) {
-            .title {
-                font-size: 2rem;
-            }
-            
-            .subtitle {
-                font-size: 1.2rem;
-            }
-            
-            .skill-tree-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Points display for characters */
-        .character-points {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, 
-                rgba(25, 25, 112, 0.95), 
-                rgba(47, 79, 79, 0.95));
-            border: 2px solid #4682b4;
-            border-radius: 10px;
-            padding: 1rem;
-            text-align: center;
-            backdrop-filter: blur(10px);
-        }
-
-        .character-points h3 {
-            color: #87ceeb;
-            font-size: 1rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .points-container {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .character-point {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .character-name {
-            color: #ddd;
-            margin-right: 15px;
-        }
-
-        .points-value {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #FFD700;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        
+        .connection-line.mixed-req {
+            stroke: #a64aff !important;
+            stroke-dasharray: 5, 5 !important;
         }
     </style>
 </head>
 <body>
-    <div class="starfield" id="starfield"></div>
+    <div class="background-animation">
+        <div class="floating-soul soul-1"></div>
+        <div class="floating-soul soul-2"></div>
+        <div class="floating-soul soul-3"></div>
+        <div class="floating-rune rune-1">▲</div>
+        <div class="floating-rune rune-2">◆</div>
+        <div class="floating-rune rune-3">★</div>
+    </div>
+
+    <!-- Static UI elements -->
+    <h1 class="title">BLACKJACK - SOUL AWAKENING</h1>
     
-    <div class="character-points">
-        <h3>Character Points</h3>
-        <div class="points-container" id="character-points-container">
-            <!-- Points will be populated here -->
-            <div class="character-point">
-                <span class="character-name">Blackjack:</span>
-                <span class="points-value" id="blackjack-points">0</span>
+    <div class="ui-panel talent-points-panel">
+        <div class="panel-header">
+            <div class="panel-icon">🔮</div>
+            <h3>TALENT POINTS</h3>
+        </div>
+        <div class="points-container">
+            <div class="points-display">
+                <span class="points-label">Available</span>
+                <span class="points-value" id="available-points">0</span>
+            </div>
+            <div class="points-display">
+                <span class="points-label">Spent</span>
+                <span class="points-value spent" id="spent-points">0</span>
             </div>
         </div>
     </div>
+    
+    <!-- Back to main menu button -->
+    <a href="index.html" class="back-button">
+        <div class="button-icon">🏠</div>
+        BACK TO MENU
+    </a>
+    
+    <!-- Talent Information Panel -->
+    <div class="talent-info-panel" id="talent-info">
+        <div class="panel-header">
+            <div class="panel-icon">📜</div>
+            <h3>SOUL TALENTS</h3>
+        </div>
+        <div class="info-content">
+            <p>Click on talents to unlock them with your available points.</p>
+            <p>Left-click to add points, right-click to remove points.</p>
+            <div class="info-divider"></div>
+            <p>Hover over talents to view their detailed effects.</p>
+            <p>Drag to move around the tree or use the mouse wheel to zoom.</p>
+            <p>Double click or tap to reset the view.</p>
+        </div>
+    </div>
 
-    <div class="container">
-        <h1 class="title">TALENT TREE COLLECTION</h1>
-
-        <div class="skill-tree-grid">
-            <!-- BlackJack Talent Tree -->
-            <div class="skill-tree-card">
-                <div class="card-icon">🃏</div>
-                <h2 class="card-title">BLACKJACK</h2>
-
-                <div class="card-status available">
-                    ✓ Available Now
-                </div>
-                <a href="blackjack.html" class="enter-button">Enter Tree</a>
+    <!-- Talent Tree Content -->
+    <div class="talent-tree-container">
+        <!-- Connection Lines SVG will be created dynamically with JS -->
+        
+        <!-- Central Soul -->
+        <div class="soul-container">
+            <div class="soul-glow"></div>
+            <div class="soul">
+                <svg viewBox="0 0 100 100">
+                    <defs>
+                        <linearGradient id="braveGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ff8c00;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#ff6600;stop-opacity:1" />
+                        </linearGradient>
+                        <linearGradient id="humilityGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#1e90ff;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#4682b4;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M50,15 L60,40 L85,40 L65,55 L70,80 L50,65 L50,50 Z" fill="url(#braveGrad)" />
+                    <path d="M50,15 L40,40 L15,40 L35,55 L30,80 L50,65 L50,50 Z" fill="url(#humilityGrad)" />
+                </svg>
             </div>
-
-            <!-- Snaps Talent Tree -->
-            <div class="skill-tree-card">
-                <div class="card-icon">🪓</div>
-                <h2 class="card-title">SNAPS</h2>
-                <div class="card-status coming-soon">
-                    ⌛ Coming Soon
-                </div>
-                <button class="enter-button" disabled>Enter Tree</button>
-            </div>
-
-            <!-- Yuki Talent Tree -->
-            <div class="skill-tree-card">
-                <div class="card-icon">❄️</div>
-                <h2 class="card-title">YUKI</h2>
-                <div class="card-status coming-soon">
-                    ⌛ Coming Soon
-                </div>
-                <button class="enter-button" disabled>Enter Tree</button>
-            </div>
-
-            <!-- Flowey Talent Tree -->
-            <div class="skill-tree-card">
-                <div class="card-icon">🌻</div>
-                <h2 class="card-title">FLOWEY</h2>
-                <div class="card-status coming-soon">
-                    ⌛ Coming Soon?
-                </div>
-                <button class="enter-button" disabled>Enter Tree</button>
-            </div>
+        </div>
+        
+        <!-- ============================= -->
+        <!-- BRAVERY BRANCH (RIGHT SIDE)  -->
+        <!-- ============================= -->
+        
+        <!-- Tier 1: Core -->
+        <div class="talent-node bravery tier-1" data-id="iron-fist" 
+             style="top: 50%; left: 67%; transform: translate(-50%, -50%);"
+             onclick="talentClick('iron-fist')">
+            <div class="talent-icon">⚔️</div>
+            <div class="talent-name">Iron Fist</div>
+            <div class="talent-points" id="points-iron-fist">[0/5]</div>
+        </div>
+        
+        <!-- Tier 2: Specializations -->
+        <div class="talent-node bravery tier-2" data-id="critical-fighter" 
+             style="top: 30%; left: 67%; transform: translate(-50%, -50%);"
+             onclick="talentClick('critical-fighter')">
+            <div class="talent-icon">⚡</div>
+            <div class="talent-name">Critical<br>Fighter</div>
+            <div class="talent-points" id="points-critical-fighter">[0/3]</div>
+        </div>
+        
+        <div class="talent-node bravery tier-2" data-id="berserker-rage" 
+             style="top: 70%; left: 67%; transform: translate(-50%, -50%);"
+             onclick="talentClick('berserker-rage')">
+            <div class="talent-icon">🔥</div>
+            <div class="talent-name">Berserker<br>Rage</div>
+            <div class="talent-points" id="points-berserker-rage">[0/3]</div>
+        </div>
+        
+        <!-- Tier 3: Advanced -->
+        <div class="talent-node bravery tier-3" data-id="burning-fists" 
+             style="top: 15%; left: 67%; transform: translate(-50%, -50%);"
+             onclick="talentClick('burning-fists')">
+            <div class="talent-icon">🔥</div>
+            <div class="talent-name">Burning<br>Fists</div>
+            <div class="talent-points" id="points-burning-fists">[0/3]</div>
+        </div>
+        
+        <div class="talent-node bravery tier-3" data-id="parry-mastery" 
+             style="top: 30%; left: 82%; transform: translate(-50%, -50%);"
+             onclick="talentClick('parry-mastery')">
+            <div class="talent-icon">🛡️</div>
+            <div class="talent-name">Parry<br>Mastery</div>
+            <div class="talent-points" id="points-parry-mastery">[0/3]</div>
+        </div>
+        
+        <div class="talent-node bravery tier-3" data-id="bloodlust" 
+             style="top: 70%; left: 82%; transform: translate(-50%, -50%);"
+             onclick="talentClick('bloodlust')">
+            <div class="talent-icon">🩸</div>
+            <div class="talent-name">Bloodlust</div>
+            <div class="talent-points" id="points-bloodlust">[0/3]</div>
+        </div>
+        
+        <!-- Tier 4: Mastery -->
+        <div class="talent-node bravery tier-4" data-id="soul-rend" 
+             style="top: 30%; left: 93%; transform: translate(-50%, -50%);"
+             onclick="talentClick('soul-rend')">
+            <div class="talent-icon">💀</div>
+            <div class="talent-name">Soul<br>Rend</div>
+            <div class="talent-points" id="points-soul-rend">[0/2]</div>
+        </div>
+        
+        <div class="talent-node bravery tier-4" data-id="executioner" 
+             style="top: 85%; left: 93%; transform: translate(-50%, -50%);"
+             onclick="talentClick('executioner')">
+            <div class="talent-icon">⚰️</div>
+            <div class="talent-name">Executioner</div>
+            <div class="talent-points" id="points-executioner">[0/1]</div>
+        </div>
+        
+        <!-- ============================= -->
+        <!-- HUMILITY BRANCH (LEFT SIDE)  -->
+        <!-- ============================= -->
+        
+        <!-- Tier 1: Core -->
+        <div class="talent-node humility tier-1" data-id="swift-movement" 
+             style="top: 50%; left: 33%; transform: translate(-50%, -50%);"
+             onclick="talentClick('swift-movement')">
+            <div class="talent-icon">💨</div>
+            <div class="talent-name">Swift<br>Movement</div>
+            <div class="talent-points" id="points-swift-movement">[0/5]</div>
+        </div>
+        
+        <!-- Tier 2: Specializations -->
+        <div class="talent-node humility tier-2" data-id="phantom-step" 
+             style="top: 30%; left: 33%; transform: translate(-50%, -50%);"
+             onclick="talentClick('phantom-step')">
+            <div class="talent-icon">👻</div>
+            <div class="talent-name">Phantom<br>Step</div>
+            <div class="talent-points" id="points-phantom-step">[0/3]</div>
+        </div>
+        
+        <div class="talent-node humility tier-2" data-id="mind-reading" 
+             style="top: 70%; left: 33%; transform: translate(-50%, -50%);"
+             onclick="talentClick('mind-reading')">
+            <div class="talent-icon">🧠</div>
+            <div class="talent-name">Mind<br>Reading</div>
+            <div class="talent-points" id="points-mind-reading">[0/3]</div>
+        </div>
+        
+        <!-- Tier 3: Advanced -->
+        <div class="talent-node humility tier-3" data-id="evasive-maneuvers" 
+             style="top: 15%; left: 33%; transform: translate(-50%, -50%);"
+             onclick="talentClick('evasive-maneuvers')">
+            <div class="talent-icon">🌪️</div>
+            <div class="talent-name">Evasive<br>Maneuvers</div>
+            <div class="talent-points" id="points-evasive-maneuvers">[0/3]</div>
+        </div>
+        
+        <div class="talent-node humility tier-3" data-id="act-synergy" 
+             style="top: 30%; left: 18%; transform: translate(-50%, -50%);"
+             onclick="talentClick('act-synergy')">
+            <div class="talent-icon">🎭</div>
+            <div class="talent-name">ACT<br>Synergy</div>
+            <div class="talent-points" id="points-act-synergy">[0/4]</div>
+        </div>
+        
+        <div class="talent-node humility tier-3" data-id="fortune-seeker" 
+             style="top: 70%; left: 18%; transform: translate(-50%, -50%);"
+             onclick="talentClick('fortune-seeker')">
+            <div class="talent-icon">💰</div>
+            <div class="talent-name">Fortune<br>Seeker</div>
+            <div class="talent-points" id="points-fortune-seeker">[0/2]</div>
+        </div>
+        
+        <!-- Tier 4: Mastery -->
+        <div class="talent-node humility tier-4" data-id="soul-caller" 
+             style="top: 85%; left: 7%; transform: translate(-50%, -50%);"
+             onclick="talentClick('soul-caller')">
+            <div class="talent-icon">👥</div>
+            <div class="talent-name">Soul<br>Caller</div>
+            <div class="talent-points" id="points-soul-caller">[0/2]</div>
+        </div>
+        
+        <div class="talent-node humility tier-4" data-id="time-dilation" 
+             style="top: 30%; left: 7%; transform: translate(-50%, -50%);"
+             onclick="talentClick('time-dilation')">
+            <div class="talent-icon">⏰</div>
+            <div class="talent-name">Time<br>Dilation</div>
+            <div class="talent-points" id="points-time-dilation">[0/2]</div>
+        </div>
+        
+        <!-- ============================= -->
+        <!-- MIXED BRANCH (CENTER COLUMN) -->
+        <!-- ============================= -->
+        
+        <!-- Tier 1: Foundation -->
+        <div class="talent-node mixed tier-1" data-id="soul-bond" 
+             style="top: 35%; left: 50%; transform: translate(-50%, -50%);"
+             onclick="talentClick('soul-bond')">
+            <div class="talent-icon">🔗</div>
+            <div class="talent-name">Soul<br>Bond</div>
+            <div class="talent-points" id="points-soul-bond">[0/3]</div>
+        </div>
+        
+        <!-- Tier 2: Development -->
+        <div class="talent-node mixed tier-2" data-id="balance-keeper" 
+             style="top: 65%; left: 50%; transform: translate(-50%, -50%);"
+             onclick="talentClick('balance-keeper')">
+            <div class="talent-icon">⚖️</div>
+            <div class="talent-name">Balance<br>Keeper</div>
+            <div class="talent-points" id="points-balance-keeper">[0/3]</div>
+        </div>
+        
+        <!-- Tier 3: Mastery -->
+        <div class="talent-node mixed tier-3" data-id="soul-harmony" 
+             style="top: 20%; left: 50%; transform: translate(-50%, -50%);"
+             onclick="talentClick('soul-harmony')">
+            <div class="talent-icon">☯️</div>
+            <div class="talent-name">Soul<br>Harmony</div>
+            <div class="talent-points" id="points-soul-harmony">[0/3]</div>
+        </div>
+        
+        <div class="talent-node mixed tier-3" data-id="soul-purity" 
+             style="top: 80%; left: 50%; transform: translate(-50%, -50%);"
+             onclick="talentClick('soul-purity')">
+            <div class="talent-icon">💎</div>
+            <div class="talent-name">Soul<br>Purity</div>
+            <div class="talent-points" id="points-soul-purity">[0/3]</div>
+        </div>
+        
+        <!-- Tier 4: Advanced -->
+        <div class="talent-node mixed tier-4" data-id="inner-strength" 
+             style="top: 7%; left: 50%; transform: translate(-50%, -50%);"
+             onclick="talentClick('inner-strength')">
+            <div class="talent-icon">💪</div>
+            <div class="talent-name">Inner<br>Strength</div>
+            <div class="talent-points" id="points-inner-strength">[0/2]</div>
+        </div>
+    </div>
+    
+    <!-- Soul Ascension - Ultimate ability floating above -->
+    <div class="ultimate-talent">
+        <div class="talent-node mixed ultimate" data-id="soul-ascension" 
+             onclick="talentClick('soul-ascension')">
+            <div class="talent-icon">✨</div>
+            <div class="talent-name">Soul<br>Ascension</div>
+            <div class="talent-points" id="points-soul-ascension">[0/1]</div>
         </div>
     </div>
 
@@ -344,70 +332,24 @@
             appId: "1:601038328524:web:885456f979249065f76869",
             measurementId: "G-WPZKZPKWCW"
         };
-        
-        // Create starfield
-        function createStarfield() {
-            const starfield = document.getElementById('starfield');
-            const numStars = 150;
 
-            for (let i = 0; i < numStars; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.animationDelay = Math.random() * 2 + 's';
-                starfield.appendChild(star);
-            }
-        }
-
-        // Initialize character points from Firebase
-        function initCharacterPoints() {
+        // Initialize Firebase
+        document.addEventListener('DOMContentLoaded', () => {
             try {
                 // Initialize Firebase
                 if (!firebase.apps.length) {
                     firebase.initializeApp(firebaseConfig);
                 }
-                
-                const db = firebase.database();
-                const charactersRef = db.ref('characters');
-                
-                // Real-time listener for character points
-                charactersRef.on('value', (snapshot) => {
-                    const characters = snapshot.val() || {};
-                    
-                    // Update Blackjack points
-                    const blackjackPoints = characters.blackjack ? characters.blackjack.points || 0 : 0;
-                    document.getElementById('blackjack-points').textContent = blackjackPoints;
-                    
-                    // Add this code if you want to show points for other characters as well
-                    /*
-                    // Clear existing points display
-                    const container = document.getElementById('character-points-container');
-                    container.innerHTML = '';
-                    
-                    // Add each character's points
-                    Object.keys(characters).forEach(characterName => {
-                        const points = characters[characterName].points || 0;
-                        const pointElement = document.createElement('div');
-                        pointElement.className = 'character-point';
-                        pointElement.innerHTML = `
-                            <span class="character-name">${characterName.charAt(0).toUpperCase() + characterName.slice(1)}:</span>
-                            <span class="points-value" id="${characterName}-points">${points}</span>
-                        `;
-                        container.appendChild(pointElement);
-                    });
-                    */
-                });
+                console.log("Firebase initialized successfully");
             } catch (error) {
                 console.error('Error initializing Firebase:', error);
             }
-        }
-
-        // Initialize page
-        document.addEventListener('DOMContentLoaded', () => {
-            createStarfield();
-            initCharacterPoints();
         });
     </script>
+    
+    <script type="module" src="script.js"></script>
+    <script type="module" src="animations.js"></script>
+    <!-- Add the new connection fixer script -->
+    <script src="connection-fixer.js"></script>
 </body>
 </html>

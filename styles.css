@@ -567,3 +567,708 @@ body {
     font-weight: bold;
     font-size: 16px;
 }
+
+/* Add to your styles.css file */
+
+/* Connection lines styling */
+.connection-lines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.connection-line {
+    stroke-width: 4px;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.3));
+    opacity: 0.7;
+    transition: all 0.3s ease;
+}
+
+.connection-line.bravery {
+    stroke: #ff8c00;
+}
+
+.connection-line.humility {
+    stroke: #1e90ff;
+}
+
+.connection-line.mixed {
+    stroke: #ffffff;
+}
+
+/* When a node is hovered, highlight its connections */
+.talent-node:hover + .connection-line,
+.talent-node:hover ~ .connection-line {
+    opacity: 1;
+    stroke-width: 6px;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6));
+}
+
+/* Fix for the center node - reposition elemental affinity */
+.talent-node[data-id="elemental-affinity"] {
+    top: 40%; 
+    left: 60%; 
+    transform: translate(-50%, -50%);
+}
+
+/* Enhanced mobile responsiveness */
+@media (max-width: 768px) {
+    .talent-tree-container {
+        min-width: auto;
+        height: auto;
+        overflow: hidden;
+    }
+    
+    .talent-node {
+        width: 80px;
+        height: 80px;
+        font-size: 14px;
+    }
+    
+    .talent-icon {
+        font-size: 16px;
+    }
+    
+    .talent-name {
+        font-size: 12px;
+    }
+    
+    .talent-points {
+        font-size: 12px;
+        bottom: -16px;
+    }
+    
+    .talent-info-panel {
+        width: 300px;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 20px;
+    }
+    
+    .ui-panel.talent-points-panel {
+        top: 20px;
+        left: 20px;
+        width: 160px;
+    }
+    
+    .back-button {
+        top: 20px;
+        right: 20px;
+        padding: 8px 16px;
+        font-size: 12px;
+    }
+}
+
+/* Movable tree styling */
+.talent-tree-panzoom {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    cursor: grab;
+    transform-origin: center center;
+}
+
+.talent-tree-panzoom:active {
+    cursor: grabbing;
+}
+
+/* Fix the UI panels in place */
+.ui-panel, .back-button, .talent-info-panel {
+    position: fixed;
+    z-index: 1000;
+}
+
+/* Additional styles for reset button and mobile improvements */
+
+.reset-view-button {
+    display: block;
+    margin: 15px auto 0;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #4682b4, #1e90ff);
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-family: 'Cinzel', serif;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.reset-view-button:hover {
+    background: linear-gradient(135deg, #1e90ff, #4682b4);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(30, 144, 255, 0.5);
+}
+
+/* Mobile optimization improvements */
+@media (max-width: 480px) {
+    .title {
+        font-size: 1.5rem;
+        top: 10px;
+    }
+    
+    .talent-node {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .talent-icon {
+        font-size: 14px;
+    }
+    
+    .talent-name {
+        font-size: 10px;
+    }
+    
+    .talent-points {
+        font-size: 10px;
+        bottom: -14px;
+    }
+    
+    .ui-panel.talent-points-panel {
+        width: 120px;
+        padding: 10px;
+    }
+    
+    .back-button {
+        padding: 6px 12px;
+        font-size: 10px;
+    }
+    
+    .panel-header h3 {
+        font-size: 14px;
+    }
+    
+    .talent-info-panel {
+        width: 250px;
+        padding: 15px;
+        max-height: 250px;
+        overflow-y: auto;
+    }
+    
+    .talent-info-panel .info-content p {
+        font-size: 12px;
+        line-height: 1.4;
+    }
+}
+
+/* Fix for overlapping nodes on smaller screens */
+@media (max-height: 600px) {
+    .talent-node {
+        transform: scale(0.8) translate(-60%, -60%);
+    }
+}
+
+/* Touch device optimizations */
+@media (pointer: coarse) {
+    .talent-node {
+        min-width: 70px;
+        min-height: 70px;
+    }
+    
+    .talent-icon {
+        font-size: 18px;
+    }
+    
+    /* Add more space for touch targets */
+    .talent-info-panel {
+        padding-bottom: 30px;
+    }
+    
+    /* Make the reset button bigger on touch devices */
+    .reset-view-button {
+        padding: 12px 24px;
+        font-size: 16px;
+        margin-top: 20px;
+    }
+}
+
+/* Visual indicator for panning */
+.talent-tree-container::after {
+    content: "Drag to explore";
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 14px;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 1s ease;
+    animation: fadeOut 5s forwards 3s;
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+/* New styles for the redesigned talent tree */
+
+/* Main Container Styles */
+.talent-tree-container {
+    position: relative;
+    width: 100%;
+    min-width: 1000px; 
+    height: 100vh;
+    min-height: 700px;
+    background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.9) 70%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    z-index: 1;
+}
+
+/* Connection Lines */
+.connection-lines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.connection-line {
+    stroke-width: 3px;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.2));
+    opacity: 0.6;
+    transition: all 0.3s ease;
+}
+
+.connection-line.bravery {
+    stroke: #ff7b25; /* Warm orange */
+}
+
+.connection-line.humility {
+    stroke: #4285f4; /* Bright blue */
+}
+
+.connection-line.mixed {
+    stroke: #a64aff; /* Purple */
+}
+
+.connection-line.mixed-req {
+    stroke: #a64aff; /* Purple */
+    stroke-dasharray: 5, 5; /* Dashed line for requirements */
+    opacity: 0.4;
+}
+
+/* Talent Node Styles */
+.talent-node {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 2;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Bravery branch theme */
+.talent-node.bravery {
+    background: radial-gradient(circle, #2a1a12, #1a0d09); /* Dark brown */
+    border: 2px solid #8b4513; /* Sienna */
+    color: #ffa07a; /* Light salmon */
+}
+
+.talent-node.bravery:hover,
+.talent-node.bravery.unlocked {
+    background: radial-gradient(circle, #622a0f, #3d1a0a); /* Darker sienna */
+    border-color: #ff7b25; /* Warm orange */
+    color: #ffe4b5; /* Moccasin */
+    box-shadow: 0 0 20px rgba(255, 123, 37, 0.5);
+}
+
+.talent-node.bravery.unlocked {
+    background: radial-gradient(circle, #8b4513, #603000); /* Rich sienna */
+}
+
+.talent-node.bravery.max-rank {
+    background: radial-gradient(circle, #ff7b25, #8b4513); /* Orange to sienna */
+    border-color: #ffd700; /* Gold */
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+    animation: braveryPulse 2s infinite alternate;
+}
+
+@keyframes braveryPulse {
+    0% { box-shadow: 0 0 15px rgba(255, 123, 37, 0.5); }
+    100% { box-shadow: 0 0 30px rgba(255, 123, 37, 0.8); }
+}
+
+/* Humility branch theme */
+.talent-node.humility {
+    background: radial-gradient(circle, #0a1a2a, #050d14); /* Dark navy */
+    border: 2px solid #4682b4; /* Steel blue */
+    color: #add8e6; /* Light blue */
+}
+
+.talent-node.humility:hover,
+.talent-node.humility.unlocked {
+    background: radial-gradient(circle, #102a45, #0a1f33); /* Deeper navy */
+    border-color: #4285f4; /* Bright blue */
+    color: #e0ffff; /* Light cyan */
+    box-shadow: 0 0 20px rgba(66, 133, 244, 0.5);
+}
+
+.talent-node.humility.unlocked {
+    background: radial-gradient(circle, #4682b4, #2a4d69); /* Rich blue */
+}
+
+.talent-node.humility.max-rank {
+    background: radial-gradient(circle, #4285f4, #4682b4); /* Bright to steel blue */
+    border-color: #87ceeb; /* Sky blue */
+    box-shadow: 0 0 25px rgba(135, 206, 235, 0.6);
+    animation: humilityPulse 2s infinite alternate;
+}
+
+@keyframes humilityPulse {
+    0% { box-shadow: 0 0 15px rgba(66, 133, 244, 0.5); }
+    100% { box-shadow: 0 0 30px rgba(66, 133, 244, 0.8); }
+}
+
+/* Mixed branch theme */
+.talent-node.mixed {
+    background: radial-gradient(circle, #2a1a2a, #140914); /* Dark purple */
+    border: 2px solid #8a2be2; /* Blue violet */
+    color: #e6e6fa; /* Lavender */
+}
+
+.talent-node.mixed:hover,
+.talent-node.mixed.unlocked {
+    background: radial-gradient(circle, #462a46, #33203d); /* Deeper purple */
+    border-color: #a64aff; /* Bright purple */
+    color: #fff0f5; /* Lavender blush */
+    box-shadow: 0 0 20px rgba(166, 74, 255, 0.5);
+}
+
+.talent-node.mixed.unlocked {
+    background: radial-gradient(circle, #8a2be2, #551a8b); /* Rich purple */
+}
+
+.talent-node.mixed.max-rank {
+    background: radial-gradient(circle, #a64aff, #8a2be2); /* Bright to blue violet */
+    border-color: #e6e6fa; /* Lavender */
+    box-shadow: 0 0 25px rgba(230, 230, 250, 0.6);
+    animation: mixedPulse 2s infinite alternate;
+}
+
+@keyframes mixedPulse {
+    0% { box-shadow: 0 0 15px rgba(166, 74, 255, 0.5); }
+    100% { box-shadow: 0 0 30px rgba(166, 74, 255, 0.8); }
+}
+
+/* Ultimate ability special styling */
+.ultimate-talent {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+}
+
+.talent-node.ultimate {
+    width: 120px;
+    height: 120px;
+    background: radial-gradient(circle, #2c0240, #1a0127); /* Deep purple */
+    border: 3px solid #d6b6fc; /* Light purple */
+    box-shadow: 0 0 30px rgba(214, 182, 252, 0.3);
+    color: #fff;
+}
+
+.talent-node.ultimate:hover {
+    box-shadow: 0 0 40px rgba(214, 182, 252, 0.5);
+    transform: scale(1.05);
+}
+
+.talent-node.ultimate.unlocked {
+    background: radial-gradient(circle, #a020f0, #7b1fa2); /* Purple */
+    animation: ultimatePulse 3s infinite alternate;
+}
+
+@keyframes ultimatePulse {
+    0% { box-shadow: 0 0 20px rgba(214, 182, 252, 0.5); }
+    50% { box-shadow: 0 0 40px rgba(214, 182, 252, 0.8), 0 0 80px rgba(166, 74, 255, 0.4); }
+    100% { box-shadow: 0 0 20px rgba(214, 182, 252, 0.5); }
+}
+
+.talent-node.ultimate .talent-icon {
+    font-size: 32px;
+    margin-bottom: 5px;
+}
+
+.talent-node.ultimate .talent-name {
+    font-size: 14px;
+}
+
+/* Inner node elements */
+.talent-icon {
+    font-size: 28px;
+    margin-bottom: 8px;
+    filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.5));
+}
+
+.talent-name {
+    font-size: 12px;
+    text-align: center;
+    font-weight: bold;
+    line-height: 1.2;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.talent-points {
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100%);
+    font-size: 14px;
+    font-weight: bold;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 2px 8px;
+    border-radius: 12px;
+    white-space: nowrap;
+}
+
+/* Node hover effects */
+.talent-node:not(.locked):hover {
+    transform: scale(1.1);
+    z-index: 10;
+}
+
+.connection-line:hover,
+.talent-node:hover + .connection-line,
+.talent-node:hover ~ .connection-line {
+    opacity: 1;
+    stroke-width: 4px;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));
+}
+
+/* Panzoom styles */
+.talent-tree-panzoom {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    cursor: grab;
+    transform-origin: center center;
+}
+
+.talent-tree-panzoom:active {
+    cursor: grabbing;
+}
+
+/* Fixed UI elements */
+.ui-panel, .back-button, .talent-info-panel {
+    position: fixed;
+    z-index: 1000;
+}
+
+/* Reset button */
+.reset-view-button {
+    display: block;
+    margin: 15px auto 0;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #9932cc, #800080);
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-family: 'Cinzel', serif;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.reset-view-button:hover {
+    background: linear-gradient(135deg, #800080, #9932cc);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(153, 50, 204, 0.5);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .talent-tree-container {
+        min-width: auto;
+        width: 100%;
+        overflow: hidden;
+    }
+    
+    .talent-node {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .talent-icon {
+        font-size: 20px;
+    }
+    
+    .talent-name {
+        font-size: 10px;
+    }
+    
+    .talent-points {
+        font-size: 10px;
+    }
+    
+    .talent-node.ultimate {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .talent-node.ultimate .talent-icon {
+        font-size: 24px;
+    }
+    
+    .ui-panel.talent-points-panel {
+        top: 10px;
+        left: 10px;
+        width: 120px;
+    }
+    
+    .back-button {
+        top: 10px;
+        right: 10px;
+        padding: 8px 12px;
+    }
+    
+    .talent-info-panel {
+        width: 250px;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 10px;
+    }
+}
+
+/* Additional hover effects */
+.talent-node.unlocked:not(.max-rank):hover::after {
+    content: '+';
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(0, 255, 0, 0.7);
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.talent-node.unlocked:hover::before {
+    content: attr(data-id);
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 20;
+}
+
+/* Visual indication for panning */
+.talent-tree-container::after {
+    content: "Drag to explore";
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 14px;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 1s ease;
+    animation: fadeOut 5s forwards 3s;
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+/* Additional CSS to ensure connection lines are visible */
+.connection-line {
+    stroke-width: 4px !important;
+    stroke-linecap: round !important;
+    fill: none !important;
+    opacity: 0.7 !important;
+}
+
+.connection-line.bravery {
+    stroke: #ff8c00 !important;
+}
+
+.connection-line.humility {
+    stroke: #1e90ff !important;
+}
+
+.connection-line.mixed {
+    stroke: #ffffff !important;
+}
+
+.connection-line.mixed-req {
+    stroke: #a64aff !important;
+    stroke-dasharray: 5, 5 !important;
+}
+
+/* Additional fixes for connection lines */
+.connection-line {
+    stroke-width: 4px !important;
+    stroke-linecap: round !important;
+    fill: none !important;
+    opacity: 0.8 !important;
+    transition: all 0.3s ease;
+}
+
+.connection-line.bravery {
+    stroke: #ff8c00 !important;
+    filter: drop-shadow(0 0 5px rgba(255, 140, 0, 0.5)) !important;
+}
+
+.connection-line.humility {
+    stroke: #1e90ff !important;
+    filter: drop-shadow(0 0 5px rgba(30, 144, 255, 0.5)) !important;
+}
+
+.connection-line.mixed {
+    stroke: #ffffff !important;
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5)) !important;
+}
+
+.connection-line.mixed-req {
+    stroke: #a64aff !important;
+    stroke-dasharray: 5, 5 !important;
+    filter: drop-shadow(0 0 5px rgba(166, 74, 255, 0.5)) !important;
+}
+
+/* Make sure SVG container is properly positioned */
+.connection-lines {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: 1 !important;
+    pointer-events: none !important;
+}
