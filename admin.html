@@ -64,6 +64,22 @@
             border-color: #4dab3c;
             box-shadow: 0 0 30px rgba(77, 171, 60, 0.5);
         }
+        
+        .admin-panel.yuki-theme {
+            background: linear-gradient(135deg, 
+                rgba(84, 154, 199, 0.9), 
+                rgba(63, 127, 169, 0.7));
+            border-color: #a8d8ff;
+            box-shadow: 0 0 30px rgba(168, 216, 255, 0.5);
+        }
+        
+        .admin-panel.flowey-theme {
+            background: linear-gradient(135deg, 
+                rgba(76, 175, 80, 0.9), 
+                rgba(139, 195, 74, 0.7));
+            border-color: #ffeb3b;
+            box-shadow: 0 0 30px rgba(255, 235, 59, 0.5);
+        }
 
         .login-section {
             text-align: center;
@@ -154,6 +170,16 @@
         .snaps-theme .current-points {
             color: #90ee7e;
             text-shadow: 0 0 10px rgba(144, 238, 126, 0.5);
+        }
+        
+        .yuki-theme .current-points {
+            color: #a8d8ff;
+            text-shadow: 0 0 10px rgba(168, 216, 255, 0.5);
+        }
+        
+        .flowey-theme .current-points {
+            color: #ffeb3b;
+            text-shadow: 0 0 10px rgba(255, 235, 59, 0.5);
         }
 
         .points-controls {
@@ -265,7 +291,7 @@
                         <option value="blackjack">🃏 Blackjack</option>
                         <option value="snaps">🪓 Snaps</option>
                         <option value="yuki">❄️ Yuki</option>
-                        <option value="flowey" disabled>🌻 Flowey (Coming Soon)</option>
+                        <option value="flowey">🌻 Flowey</option>
                     </select>
                 </div>
                 
@@ -384,6 +410,10 @@
                 adminPanel.classList.add('blackjack-theme');
             } else if (currentCharacter === 'snaps') {
                 adminPanel.classList.add('snaps-theme');
+            } else if (currentCharacter === 'yuki') {
+                adminPanel.classList.add('yuki-theme');
+            } else if (currentCharacter === 'flowey') {
+                adminPanel.classList.add('flowey-theme');
             }
             
             updatePointsDisplay();
