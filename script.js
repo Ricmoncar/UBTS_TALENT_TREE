@@ -24,32 +24,44 @@ let gameState = {
     talents: {}
 };
 
-// Initialize Firebase Database reference
-const db = firebase.database();
-const blackjackRef = db.ref('characters/blackjack');
+// Firebase references
+let db;
+let blackjackRef;
 
 // Initialize the game
 function initGame() {
-    loadGameState();
-    updateUI();
-    setupEventListeners();
+    if (!firebase) {
+        console.error('Firebase is not initialized. Please check your Firebase setup.');
+        return;
+    }
     
-    // Set up real-time sync for blackjack character data
-    blackjackRef.on('value', (snapshot) => {
-        const data = snapshot.val() || { points: DEFAULT_TALENT_POINTS, talents: {}, spentPoints: 0 };
+    try {
+        db = firebase.database();
+        blackjackRef = db.ref('characters/blackjack');
         
-        // Update local game state
-        gameState.availablePoints = data.points || DEFAULT_TALENT_POINTS;
-        gameState.spentPoints = data.spentPoints || 0;
-        
-        // Update talent ranks
-        Object.keys(talents).forEach(talentId => {
-            talents[talentId].currentRank = data.talents && data.talents[talentId] ? 
-                data.talents[talentId] : 0;
-        });
-        
+        loadGameState();
         updateUI();
-    });
+        setupEventListeners();
+        
+        // Set up real-time sync for blackjack character data
+        blackjackRef.on('value', (snapshot) => {
+            const data = snapshot.val() || { points: DEFAULT_TALENT_POINTS, talents: {}, spentPoints: 0 };
+            
+            // Update local game state
+            gameState.availablePoints = data.points || DEFAULT_TALENT_POINTS;
+            gameState.spentPoints = data.spentPoints || 0;
+            
+            // Update talent ranks
+            Object.keys(talents).forEach(talentId => {
+                talents[talentId].currentRank = data.talents && data.talents[talentId] ? 
+                    data.talents[talentId] : 0;
+            });
+            
+            updateUI();
+        });
+    } catch (error) {
+        console.error('Error initializing game:', error);
+    }
 }
 
 // Setup event listeners
@@ -79,43 +91,51 @@ function updateNodeIcons() {
 
 // Load game state from Firebase
 function loadGameState() {
-    blackjackRef.once('value').then((snapshot) => {
-        const data = snapshot.val() || { points: DEFAULT_TALENT_POINTS, talents: {}, spentPoints: 0 };
-        
-        // Update local game state
-        gameState.availablePoints = data.points || DEFAULT_TALENT_POINTS;
-        gameState.spentPoints = data.spentPoints || 0;
-        
-        // Update talent ranks
-        Object.keys(talents).forEach(talentId => {
-            talents[talentId].currentRank = data.talents && data.talents[talentId] ? 
-                data.talents[talentId] : 0;
+    try {
+        blackjackRef.once('value').then((snapshot) => {
+            const data = snapshot.val() || { points: DEFAULT_TALENT_POINTS, talents: {}, spentPoints: 0 };
+            
+            // Update local game state
+            gameState.availablePoints = data.points || DEFAULT_TALENT_POINTS;
+            gameState.spentPoints = data.spentPoints || 0;
+            
+            // Update talent ranks
+            Object.keys(talents).forEach(talentId => {
+                talents[talentId].currentRank = data.talents && data.talents[talentId] ? 
+                    data.talents[talentId] : 0;
+            });
+            
+            updateUI();
+        }).catch((error) => {
+            console.error('Error loading game state:', error);
         });
-        
-        updateUI();
-    }).catch((error) => {
+    } catch (error) {
         console.error('Error loading game state:', error);
-    });
+    }
 }
 
 // Save game state to Firebase
 function saveGameState() {
-    const stateToSave = {
-        points: gameState.availablePoints,
-        spentPoints: gameState.spentPoints,
-        talents: {}
-    };
-    
-    // Save current talent ranks
-    Object.keys(talents).forEach(talentId => {
-        if (talents[talentId].currentRank > 0) {
-            stateToSave.talents[talentId] = talents[talentId].currentRank;
-        }
-    });
-    
-    blackjackRef.update(stateToSave).catch((error) => {
+    try {
+        const stateToSave = {
+            points: gameState.availablePoints,
+            spentPoints: gameState.spentPoints,
+            talents: {}
+        };
+        
+        // Save current talent ranks
+        Object.keys(talents).forEach(talentId => {
+            if (talents[talentId].currentRank > 0) {
+                stateToSave.talents[talentId] = talents[talentId].currentRank;
+            }
+        });
+        
+        blackjackRef.update(stateToSave).catch((error) => {
+            console.error('Error saving game state:', error);
+        });
+    } catch (error) {
         console.error('Error saving game state:', error);
-    });
+    }
 }
 
 // Update UI elements
@@ -245,15 +265,12 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// Initialize Firebase after page loads
+// Initialize when page loads
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize Firebase once the page is loaded
-    if (typeof firebase === 'undefined') {
-        console.error('Firebase is not loaded! Make sure Firebase scripts are included in the HTML.');
-        return;
-    }
-    
-    initGame();
+    // Wait a short time to make sure Firebase is fully initialized
+    setTimeout(() => {
+        initGame();
+    }, 500);
 });
 
 // Make functions global for HTML onclick handlers

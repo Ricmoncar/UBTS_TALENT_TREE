@@ -5,24 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- Firebase SDK -->
-    <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
-    <script>
-      // Your web app's Firebase configuration
-      const firebaseConfig = {
-        apiKey: "AIzaSyDhhhZsh0WtM7IIEFoUApqeKDyKzcCmSZw",
-        authDomain: "ubtstree.firebaseapp.com",
-        databaseURL: "https://ubtstree-default-rtdb.firebaseio.com",
-        projectId: "ubtstree",
-        storageBucket: "ubtstree.firebasestorage.app",
-        messagingSenderId: "601038328524",
-        appId: "1:601038328524:web:885456f979249065f76869",
-        measurementId: "G-WPZKZPKWCW"
-      };
-
-      // Initialize Firebase
-      firebase.initializeApp(firebaseConfig);
-    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
     <title>Skill Tree Collection</title>
     <style>
@@ -349,6 +333,18 @@
     </div>
 
     <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDhhhZsh0WtM7IIEFoUApqeKDyKzcCmSZw",
+            authDomain: "ubtstree.firebaseapp.com",
+            databaseURL: "https://ubtstree-default-rtdb.firebaseio.com",
+            projectId: "ubtstree",
+            storageBucket: "ubtstree.firebasestorage.app",
+            messagingSenderId: "601038328524",
+            appId: "1:601038328524:web:885456f979249065f76869",
+            measurementId: "G-WPZKZPKWCW"
+        };
+        
         // Create starfield
         function createStarfield() {
             const starfield = document.getElementById('starfield');
@@ -366,48 +362,51 @@
 
         // Initialize character points from Firebase
         function initCharacterPoints() {
-            const db = firebase.database();
-            const charactersRef = db.ref('characters');
-            
-            // Real-time listener for character points
-            charactersRef.on('value', (snapshot) => {
-                const characters = snapshot.val() || {};
+            try {
+                // Initialize Firebase
+                if (!firebase.apps.length) {
+                    firebase.initializeApp(firebaseConfig);
+                }
                 
-                // Update Blackjack points
-                const blackjackPoints = characters.blackjack ? characters.blackjack.points || 0 : 0;
-                document.getElementById('blackjack-points').textContent = blackjackPoints;
+                const db = firebase.database();
+                const charactersRef = db.ref('characters');
                 
-                // Add this code if you want to show points for other characters as well
-                /*
-                // Clear existing points display
-                const container = document.getElementById('character-points-container');
-                container.innerHTML = '';
-                
-                // Add each character's points
-                Object.keys(characters).forEach(characterName => {
-                    const points = characters[characterName].points || 0;
-                    const pointElement = document.createElement('div');
-                    pointElement.className = 'character-point';
-                    pointElement.innerHTML = `
-                        <span class="character-name">${characterName.charAt(0).toUpperCase() + characterName.slice(1)}:</span>
-                        <span class="points-value" id="${characterName}-points">${points}</span>
-                    `;
-                    container.appendChild(pointElement);
+                // Real-time listener for character points
+                charactersRef.on('value', (snapshot) => {
+                    const characters = snapshot.val() || {};
+                    
+                    // Update Blackjack points
+                    const blackjackPoints = characters.blackjack ? characters.blackjack.points || 0 : 0;
+                    document.getElementById('blackjack-points').textContent = blackjackPoints;
+                    
+                    // Add this code if you want to show points for other characters as well
+                    /*
+                    // Clear existing points display
+                    const container = document.getElementById('character-points-container');
+                    container.innerHTML = '';
+                    
+                    // Add each character's points
+                    Object.keys(characters).forEach(characterName => {
+                        const points = characters[characterName].points || 0;
+                        const pointElement = document.createElement('div');
+                        pointElement.className = 'character-point';
+                        pointElement.innerHTML = `
+                            <span class="character-name">${characterName.charAt(0).toUpperCase() + characterName.slice(1)}:</span>
+                            <span class="points-value" id="${characterName}-points">${points}</span>
+                        `;
+                        container.appendChild(pointElement);
+                    });
+                    */
                 });
-                */
-            });
+            } catch (error) {
+                console.error('Error initializing Firebase:', error);
+            }
         }
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', () => {
             createStarfield();
-            
-            // Initialize Firebase references and listeners
-            if (typeof firebase !== 'undefined') {
-                initCharacterPoints();
-            } else {
-                console.error('Firebase is not loaded! Make sure Firebase scripts are included properly.');
-            }
+            initCharacterPoints();
         });
     </script>
 </body>

@@ -6,24 +6,9 @@
     <title>Admin Panel - Skill Tree System</title>
     
     <!-- Firebase SDK -->
-    <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
-    <script>
-      // Your web app's Firebase configuration
-      const firebaseConfig = {
-        apiKey: "AIzaSyDhhhZsh0WtM7IIEFoUApqeKDyKzcCmSZw",
-        authDomain: "ubtstree.firebaseapp.com",
-        databaseURL: "https://ubtstree-default-rtdb.firebaseio.com",
-        projectId: "ubtstree",
-        storageBucket: "ubtstree.firebasestorage.app",
-        messagingSenderId: "601038328524",
-        appId: "1:601038328524:web:885456f979249065f76869",
-        measurementId: "G-WPZKZPKWCW"
-      };
-
-      // Initialize Firebase
-      firebase.initializeApp(firebaseConfig);
-    </script>
+    <!-- Import Firebase using traditional script tags instead of modules -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=Cinzel:wght@400;600&display=swap');
@@ -283,6 +268,18 @@
         // Admin configuration
         const ADMIN_PASSWORD = 'admin123'; // Change this to your desired password
         
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDhhhZsh0WtM7IIEFoUApqeKDyKzcCmSZw",
+            authDomain: "ubtstree.firebaseapp.com",
+            databaseURL: "https://ubtstree-default-rtdb.firebaseio.com",
+            projectId: "ubtstree",
+            storageBucket: "ubtstree.firebasestorage.app",
+            messagingSenderId: "601038328524",
+            appId: "1:601038328524:web:885456f979249065f76869",
+            measurementId: "G-WPZKZPKWCW"
+        };
+        
         // Firebase references
         let db;
         let currentCharacter = 'blackjack';
@@ -291,17 +288,24 @@
         
         // Initialize Firebase when page loads
         document.addEventListener('DOMContentLoaded', () => {
-            if (typeof firebase !== 'undefined') {
+            try {
+                // Initialize Firebase
+                if (!firebase.apps.length) {
+                    firebase.initializeApp(firebaseConfig);
+                }
+                
                 db = firebase.database();
                 charactersRef = db.ref('characters');
                 currentCharacterRef = charactersRef.child(currentCharacter);
+                
+                console.log("Firebase initialized successfully");
                 
                 // Check if user is already logged in
                 if (sessionStorage.getItem('admin-logged-in') === 'true') {
                     showAdminContent();
                 }
-            } else {
-                console.error('Firebase is not loaded! Make sure Firebase scripts are included properly.');
+            } catch (error) {
+                console.error('Error initializing Firebase:', error);
             }
         });
         
@@ -336,13 +340,25 @@
         }
 
         function updatePointsDisplay() {
+            if (!currentCharacterRef) {
+                console.error('Firebase references not initialized');
+                return;
+            }
+            
             currentCharacterRef.once('value').then((snapshot) => {
                 const data = snapshot.val() || { points: 0 };
                 document.getElementById('current-points').textContent = data.points || 0;
+            }).catch(error => {
+                console.error('Error fetching points:', error);
             });
         }
 
         function addPoints() {
+            if (!currentCharacterRef) {
+                showError('Firebase references not initialized');
+                return;
+            }
+            
             const amount = parseInt(document.getElementById('points-input').value);
             if (isNaN(amount) || amount < 0) {
                 showError('Please enter a valid positive number');
@@ -363,10 +379,17 @@
                     .catch((error) => {
                         showError(`Error adding points: ${error.message}`);
                     });
+            }).catch(error => {
+                showError(`Error fetching points: ${error.message}`);
             });
         }
 
         function setPoints() {
+            if (!currentCharacterRef) {
+                showError('Firebase references not initialized');
+                return;
+            }
+            
             const amount = parseInt(document.getElementById('points-input').value);
             if (isNaN(amount) || amount < 0) {
                 showError('Please enter a valid positive number');
@@ -385,6 +408,11 @@
         }
 
         function resetPoints() {
+            if (!currentCharacterRef) {
+                showError('Firebase references not initialized');
+                return;
+            }
+            
             if (confirm(`Are you sure you want to reset ${currentCharacter}'s points to 0?`)) {
                 currentCharacterRef.update({ points: 0 })
                     .then(() => {
@@ -398,6 +426,11 @@
         }
 
         function resetAllTalents() {
+            if (!currentCharacterRef) {
+                showError('Firebase references not initialized');
+                return;
+            }
+            
             if (confirm(`Are you sure you want to reset ALL talent progress for ${currentCharacter}? This will clear all unlocked talents!`)) {
                 currentCharacterRef.once('value').then((snapshot) => {
                     const data = snapshot.val() || { points: 0 };
@@ -413,11 +446,18 @@
                     }).catch((error) => {
                         showError(`Error resetting talents: ${error.message}`);
                     });
+                }).catch(error => {
+                    showError(`Error fetching data: ${error.message}`);
                 });
             }
         }
 
         function exportState() {
+            if (!currentCharacterRef) {
+                showError('Firebase references not initialized');
+                return;
+            }
+            
             currentCharacterRef.once('value').then((snapshot) => {
                 const state = snapshot.val() || { points: 0, talents: {}, spentPoints: 0 };
                 state.timestamp = new Date().toISOString();
@@ -430,10 +470,17 @@
                 a.click();
                 URL.revokeObjectURL(url);
                 showSuccess('State exported successfully!');
+            }).catch(error => {
+                showError(`Error exporting state: ${error.message}`);
             });
         }
 
         function importState() {
+            if (!currentCharacterRef) {
+                showError('Firebase references not initialized');
+                return;
+            }
+            
             const input = document.createElement('input');
             input.type = 'file';
             input.accept = '.json';
@@ -484,16 +531,25 @@
         }
 
         // Handle enter key in password field
-        document.getElementById('admin-password').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                login();
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add event listener for password field
+            const passwordField = document.getElementById('admin-password');
+            if (passwordField) {
+                passwordField.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        login();
+                    }
+                });
             }
-        });
-
-        // Handle enter key in points input
-        document.getElementById('points-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                addPoints();
+            
+            // Add event listener for points input
+            const pointsInput = document.getElementById('points-input');
+            if (pointsInput) {
+                pointsInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        addPoints();
+                    }
+                });
             }
         });
 
