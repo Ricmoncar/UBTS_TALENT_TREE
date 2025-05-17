@@ -1,0 +1,630 @@
+/* Yuki Talent Tree - Arctic Fox Style */
+@import url('https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=Cinzel:wght@400;600&display=swap');
+/* Override some base styles for Yuki's winter theme */
+.title {
+color: #a8d8ff;
+text-shadow:
+0 0 10px rgba(168, 216, 255, 0.5),
+0 0 20px rgba(168, 216, 255, 0.3),
+0 0 30px rgba(255, 255, 255, 0.3);
+animation: yukiGlow 3s ease-in-out infinite alternate;
+}
+@keyframes yukiGlow {
+0% {
+text-shadow:
+0 0 10px rgba(168, 216, 255, 0.5),
+0 0 20px rgba(168, 216, 255, 0.3),
+0 0 30px rgba(255, 255, 255, 0.3);
+}
+100% {
+text-shadow:
+0 0 15px rgba(168, 216, 255, 0.8),
+0 0 30px rgba(168, 216, 255, 0.5),
+0 0 45px rgba(255, 255, 255, 0.5);
+}
+}
+/* Background theme */
+body {
+background-color: #0a0a14;
+background-image:
+radial-gradient(circle at 30% 50%, rgba(168, 216, 255, 0.05) 0%, transparent 70%),
+radial-gradient(circle at 70% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 70%),
+radial-gradient(circle at center, rgba(176, 196, 222, 0.02) 0%, transparent 70%);
+}
+/* Snow and frost animations */
+.floating-snow {
+position: absolute;
+font-size: 24px;
+color: rgba(255, 255, 255, 0.7);
+animation: floatingSnow 20s infinite linear;
+opacity: 0.7;
+}
+.floating-frost {
+position: absolute;
+font-size: 18px;
+color: rgba(168, 216, 255, 0.5);
+animation: floatingFrost 25s infinite linear;
+opacity: 0.5;
+}
+.snow-1 {
+top: 15%;
+left: -30px;
+animation-delay: 0s;
+}
+.snow-2 {
+top: 45%;
+left: -30px;
+animation-delay: 5s;
+}
+.snow-3 {
+top: 75%;
+left: -30px;
+animation-delay: 10s;
+}
+.frost-1 {
+top: 30%;
+left: -30px;
+animation-delay: 2s;
+}
+.frost-2 {
+top: 60%;
+left: -30px;
+animation-delay: 7s;
+}
+.frost-3 {
+top: 90%;
+left: -30px;
+animation-delay: 12s;
+}
+@keyframes floatingSnow {
+0% {
+transform: translateX(-50px) rotate(0deg);
+opacity: 0;
+}
+10% {
+opacity: 0.7;
+}
+90% {
+opacity: 0.7;
+}
+100% {
+transform: translateX(calc(100vw + 50px)) rotate(360deg);
+opacity: 0;
+}
+}
+@keyframes floatingFrost {
+0% {
+transform: translateX(-50px) rotate(0deg) translateY(0px);
+opacity: 0;
+}
+10% {
+opacity: 0.5;
+}
+50% {
+transform: translateX(calc(50vw)) rotate(180deg) translateY(20px);
+}
+90% {
+opacity: 0.5;
+}
+100% {
+transform: translateX(calc(100vw + 50px)) rotate(360deg) translateY(0px);
+opacity: 0;
+}
+}
+/* Color theme for the snowflake container */
+.soul-container {
+filter: drop-shadow(0 0 15px rgba(168, 216, 255, 0.7));
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+width: 180px;
+height: 180px;
+z-index: 3;
+}
+.soul-glow {
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+width: 250px;
+height: 250px;
+background: radial-gradient(circle,
+rgba(255, 255, 255, 0.3),
+rgba(168, 216, 255, 0.2),
+rgba(176, 196, 222, 0.1),
+transparent);
+border-radius: 50%;
+animation: snowflakePulse 4s ease-in-out infinite;
+z-index: 1;
+}
+@keyframes snowflakePulse {
+0%, 100% {
+transform: translate(-50%, -50%) scale(1);
+opacity: 0.6;
+}
+50% {
+transform: translate(-50%, -50%) scale(1.2);
+opacity: 1;
+}
+}
+/* Fix for the soul - make it a proper snowflake */
+.soul {
+position: relative;
+width: 100%;
+height: 100%;
+z-index: 2;
+}
+.soul svg {
+width: 100%;
+height: 100%;
+filter: drop-shadow(0 0 15px rgba(168, 216, 255, 0.8));
+}
+/* Ensure no nodes appear inside the star */
+.talent-node {
+z-index: 5;
+}
+/* Talent Nodes Theme /
+/ Ice Branch (Left - Light Blue) */
+.talent-node.ice {
+background: radial-gradient(circle, #101828, #080e1a);
+border: 3px solid #4c9ddd;
+color: #b8e2ff;
+}
+.talent-node.ice:hover,
+.talent-node.ice.unlocked {
+background: radial-gradient(circle, #1c2a40, #101828);
+border-color: #a8d8ff;
+color: #e0f0ff;
+box-shadow: 0 0 20px rgba(168, 216, 255, 0.5);
+}
+.talent-node.ice.unlocked {
+background: radial-gradient(circle, #4c9ddd, #3678a8);
+}
+.talent-node.ice.max-rank {
+background: radial-gradient(circle, #a8d8ff, #4c9ddd);
+border-color: #d6f0ff;
+box-shadow: 0 0 25px rgba(214, 240, 255, 0.6);
+animation: icePulse 2s infinite alternate;
+}
+@keyframes icePulse {
+0% { box-shadow: 0 0 15px rgba(168, 216, 255, 0.5); }
+100% { box-shadow: 0 0 30px rgba(168, 216, 255, 0.8); }
+}
+/* Speed Branch (Right - White/Silver) */
+.talent-node.speed {
+background: radial-gradient(circle, #20253a, #10121c);
+border: 3px solid #b8c6db;
+color: #e8f0ff;
+}
+.talent-node.speed:hover,
+.talent-node.speed.unlocked {
+background: radial-gradient(circle, #303858, #20253a);
+border-color: #d8e6ff;
+color: #f0f8ff;
+box-shadow: 0 0 20px rgba(216, 230, 255, 0.5);
+}
+.talent-node.speed.unlocked {
+background: radial-gradient(circle, #b8c6db, #8896b3);
+}
+.talent-node.speed.max-rank {
+background: radial-gradient(circle, #d8e6ff, #b8c6db);
+border-color: #f0f8ff;
+box-shadow: 0 0 25px rgba(240, 248, 255, 0.6);
+animation: speedPulse 2s infinite alternate;
+}
+@keyframes speedPulse {
+0% { box-shadow: 0 0 15px rgba(216, 230, 255, 0.5); }
+100% { box-shadow: 0 0 30px rgba(216, 230, 255, 0.8); }
+}
+/* Mercy Branch (Center - Soft Purple) */
+.talent-node.mercy {
+background: radial-gradient(circle, #25203a, #121028);
+border: 3px solid #b29dd9;
+color: #e0d5ff;
+}
+.talent-node.mercy:hover,
+.talent-node.mercy.unlocked {
+background: radial-gradient(circle, #382f58, #25203a);
+border-color: #c5b7e8;
+color: #f0e8ff;
+box-shadow: 0 0 20px rgba(197, 183, 232, 0.5);
+}
+.talent-node.mercy.unlocked {
+background: radial-gradient(circle, #b29dd9, #8878b3);
+}
+.talent-node.mercy.max-rank {
+background: radial-gradient(circle, #c5b7e8, #b29dd9);
+border-color: #e0d5ff;
+box-shadow: 0 0 25px rgba(224, 213, 255, 0.6);
+animation: mercyPulse 2s infinite alternate;
+}
+@keyframes mercyPulse {
+0% { box-shadow: 0 0 15px rgba(197, 183, 232, 0.5); }
+100% { box-shadow: 0 0 30px rgba(197, 183, 232, 0.8); }
+}
+/* Ultimate talent */
+.ultimate-talent {
+position: absolute;
+top: 10px;
+left: 50%;
+transform: translateX(-50%);
+z-index: 10;
+}
+.talent-node.ultimate {
+width: 120px;
+height: 120px;
+background: radial-gradient(circle, #151837, #0a0c1a);
+border: 3px solid #d6f0ff;
+color: #f0f8ff;
+box-shadow: 0 0 30px rgba(214, 240, 255, 0.3);
+}
+.talent-node.ultimate:hover {
+box-shadow: 0 0 40px rgba(214, 240, 255, 0.5);
+}
+.talent-node.ultimate.unlocked {
+background: radial-gradient(circle, #4c9ddd, #3678a8);
+border-color: #d6f0ff;
+animation: ultimatePulse 3s infinite alternate;
+}
+@keyframes ultimatePulse {
+0% {
+box-shadow: 0 0 20px rgba(214, 240, 255, 0.5);
+border-color: #d6f0ff;
+}
+50% {
+box-shadow: 0 0 40px rgba(214, 240, 255, 0.8), 0 0 80px rgba(168, 216, 255, 0.4);
+border-color: #f0f8ff;
+}
+100% {
+box-shadow: 0 0 20px rgba(214, 240, 255, 0.5);
+border-color: #d6f0ff;
+}
+}
+/* Connection Lines */
+.connection-line.ice {
+stroke: #a8d8ff;
+filter: drop-shadow(0 0 3px rgba(168, 216, 255, 0.5));
+}
+.connection-line.speed {
+stroke: #d8e6ff;
+filter: drop-shadow(0 0 3px rgba(216, 230, 255, 0.5));
+}
+.connection-line.mercy {
+stroke: #c5b7e8;
+filter: drop-shadow(0 0 3px rgba(197, 183, 232, 0.5));
+}
+.connection-line.mercy-req {
+stroke: #e0d5ff;
+stroke-dasharray: 5, 5;
+filter: drop-shadow(0 0 3px rgba(224, 213, 255, 0.5));
+}
+/* UI Panels */
+.ui-panel {
+background: linear-gradient(135deg,
+rgba(76, 157, 221, 0.9),
+rgba(54, 120, 168, 0.7),
+rgba(76, 157, 221, 0.9));
+border: 2px solid #a8d8ff;
+box-shadow:
+0 0 15px rgba(168, 216, 255, 0.5),
+inset 0 0 15px rgba(255, 255, 255, 0.1);
+}
+.panel-header h3 {
+color: #f0f8ff;
+text-shadow: 0 0 5px rgba(214, 240, 255, 0.5);
+}
+.points-value {
+color: #d6f0ff;
+text-shadow: 0 0 10px rgba(214, 240, 255, 0.5);
+}
+/* Back to menu button styling */
+.back-button {
+position: fixed;
+top: 20px;
+right: 20px;
+background: linear-gradient(135deg, #4c9ddd, #3678a8);
+color: white;
+padding: 12px 20px;
+border-radius: 8px;
+border: 2px solid #a8d8ff;
+text-decoration: none;
+font-weight: bold;
+z-index: 1000;
+display: flex;
+align-items: center;
+gap: 10px;
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+transition: all 0.3s ease;
+}
+.back-button:hover {
+background: linear-gradient(135deg, #3678a8, #4c9ddd);
+transform: translateY(-2px);
+box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+.back-button .button-icon {
+font-size: 18px;
+}
+/* Talent Info Panel */
+.talent-info-panel {
+background: linear-gradient(135deg,
+rgba(28, 42, 64, 0.95),
+rgba(16, 24, 40, 0.95));
+border: 2px solid #4c9ddd;
+box-shadow:
+0 0 20px rgba(76, 157, 221, 0.4),
+inset 0 0 20px rgba(255, 255, 255, 0.05);
+}
+.info-divider {
+background: linear-gradient(90deg, transparent, #4c9ddd, transparent);
+}
+.current-effect {
+color: #a8d8ff;
+}
+.next-effect {
+color: #d6f0ff;
+}
+.reset-view-button {
+background: linear-gradient(135deg, #4c9ddd, #3678a8);
+}
+.reset-view-button:hover {
+background: linear-gradient(135deg, #3678a8, #4c9ddd);
+box-shadow: 0 2px 5px rgba(76, 157, 221, 0.5);
+}
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+.title {
+font-size: 2rem;
+}
+.talent-node {
+    width: 80px;
+    height: 80px;
+}
+
+.talent-icon {
+    font-size: 20px;
+}
+
+.talent-name {
+    font-size: 10px;
+}
+
+.talent-node[data-id="compassionate-act"] .talent-name {
+    font-size: 9px;
+}
+}
+/* Animation for talent activation */
+.talent-node.point-spent-effect {
+animation: pointSpentEffect 0.5s ease-out;
+}
+@keyframes pointSpentEffect {
+0% {
+transform: translate(-50%, -50%) scale(1);
+filter: brightness(1);
+}
+50% {
+transform: translate(-50%, -50%) scale(1.3);
+filter: brightness(1.8);
+}
+100% {
+transform: translate(-50%, -50%) scale(1);
+filter: brightness(1);
+}
+}
+/* Special effects for Fox Spirit */
+.fox-spirit-particle {
+position: fixed;
+width: 6px;
+height: 6px;
+border-radius: 50%;
+background: radial-gradient(circle, rgba(168, 216, 255, 0.9), rgba(168, 216, 255, 0.1));
+box-shadow: 0 0 5px rgba(168, 216, 255, 0.7);
+z-index: 1;
+pointer-events: none;
+animation: foxSpiritFloat 4s ease-out;
+opacity: 0;
+}
+@keyframes foxSpiritFloat {
+0% {
+transform: translateY(0) scale(1);
+opacity: 0;
+}
+10% {
+opacity: 0.8;
+}
+100% {
+transform: translateY(-70px) scale(0.2);
+opacity: 0;
+}
+}
+/* Additional snow effects when hovering over ice talents */
+.talent-node.ice:hover::before {
+content: '❄';
+position: absolute;
+top: -20px;
+left: 50%;
+transform: translateX(-50%);
+color: rgba(168, 216, 255, 0.8);
+font-size: 18px;
+animation: snowFall 2s infinite;
+pointer-events: none;
+}
+@keyframes snowFall {
+0% {
+transform: translateX(-50%) translateY(-10px) rotate(0deg);
+opacity: 0.8;
+}
+100% {
+transform: translateX(-50%) translateY(30px) rotate(360deg);
+opacity: 0;
+}
+}
+/* Fox paw prints appear when hovering over speed talents */
+.talent-node.speed:hover::after {
+content: '🐾';
+position: absolute;
+bottom: -25px;
+left: 50%;
+transform: translateX(-50%);
+color: rgba(216, 230, 255, 0.8);
+font-size: 14px;
+animation: pawPrint 1s infinite alternate;
+pointer-events: none;
+}
+@keyframes pawPrint {
+0% {
+transform: translateX(-50%) scale(1);
+opacity: 0.8;
+}
+100% {
+transform: translateX(-50%) scale(1.2);
+opacity: 0.4;
+}
+}
+/* Hearts appear when hovering over mercy talents */
+.talent-node.mercy:hover::before {
+content: '💗';
+position: absolute;
+top: -20px;
+left: 50%;
+transform: translateX(-50%);
+font-size: 14px;
+animation: heartbeat 1s infinite;
+pointer-events: none;
+}
+@keyframes heartbeat {
+0% {
+transform: translateX(-50%) scale(1);
+opacity: 0.8;
+}
+50% {
+transform: translateX(-50%) scale(1.3);
+opacity: 1;
+}
+100% {
+transform: translateX(-50%) scale(1);
+opacity: 0.8;
+}
+}
+/* Special effect for ultimate fox spirit */
+.talent-node.ultimate:hover::after {
+content: '';
+position: absolute;
+width: 150%;
+height: 150%;
+top: -25%;
+left: -25%;
+background: radial-gradient(ellipse at center,
+rgba(168, 216, 255, 0),
+rgba(168, 216, 255, 0.1) 30%,
+rgba(168, 216, 255, 0) 70%);
+border-radius: 50%;
+z-index: -1;
+animation: foxSpiritAura 2s infinite alternate;
+}
+@keyframes foxSpiritAura {
+0% {
+transform: scale(1);
+opacity: 0.3;
+}
+100% {
+transform: scale(1.2);
+opacity: 0.7;
+}
+}
+/* Enhanced effects for parry talents */
+.talent-node[data-id="perfect-parry"]:hover::before {
+content: '⚔️';
+position: absolute;
+top: -25px;
+left: 50%;
+transform: translateX(-50%);
+font-size: 16px;
+animation: parrySlash 1s infinite;
+}
+@keyframes parrySlash {
+0% {
+transform: translateX(-50%) rotate(-30deg);
+opacity: 0.8;
+}
+50% {
+transform: translateX(-50%) rotate(30deg);
+opacity: 1;
+}
+100% {
+transform: translateX(-50%) rotate(-30deg);
+opacity: 0.8;
+}
+}
+/* Custom animation for Absolute Zero talent */
+.talent-node[data-id="absolute-zero"].unlocked {
+animation: freezeEffect 4s infinite alternate;
+}
+@keyframes freezeEffect {
+0% {
+box-shadow: 0 0 20px rgba(168, 216, 255, 0.5);
+}
+100% {
+box-shadow: 0 0 40px rgba(168, 216, 255, 0.8), 0 0 60px rgba(255, 255, 255, 0.4);
+}
+}
+/* Aurora effect for Aurora Trail */
+.talent-node[data-id="aurora-trail"].unlocked::before {
+content: '';
+position: absolute;
+width: 150%;
+height: 150%;
+top: -25%;
+left: -25%;
+background: conic-gradient(
+rgba(168, 216, 255, 0.5),
+rgba(197, 183, 232, 0.5),
+rgba(214, 240, 255, 0.5),
+rgba(168, 216, 255, 0.5)
+);
+border-radius: 50%;
+z-index: -1;
+animation: auroraRotate 8s linear infinite;
+opacity: 0.7;
+mix-blend-mode: screen;
+}
+@keyframes auroraRotate {
+0% {
+transform: rotate(0deg);
+}
+100% {
+transform: rotate(360deg);
+}
+}
+/* Fix for connection lines */
+.connection-line {
+stroke-width: 4px !important;
+stroke-linecap: round !important;
+fill: none !important;
+opacity: 0.8 !important;
+}
+/* Enhanced snow particle system */
+.snowflake {
+position: fixed;
+top: -10px;
+background: white;
+border-radius: 50%;
+filter: blur(1px);
+box-shadow: 0 0 3px rgba(255, 255, 255, 0.8);
+z-index: 1;
+pointer-events: none;
+opacity: 0.8;
+}
+@keyframes snowfall {
+0% {
+transform: translateY(0) rotate(0deg);
+}
+100% {
+transform: translateY(100vh) rotate(360deg);
+}
+}
+/* Ensure the emoji is always visible in the talent info panel */
+.panel-icon {
+font-size: 24px;
+margin-right: 10px;
+}

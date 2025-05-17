@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yuki Talent Tree</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="yuki-style.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+    <!-- Hammer.js for touch gestures -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+</head>
+<body>
+    <div class="background-animation">
+        <div class="floating-snow snow-1">❄</div>
+        <div class="floating-snow snow-2">❄</div>
+        <div class="floating-snow snow-3">❄</div>
+        <div class="floating-frost frost-1">∗</div>
+        <div class="floating-frost frost-2">∗</div>
+        <div class="floating-frost frost-3">∗</div>
+    </div>
+
+    <!-- Static UI elements -->
+    <h1 class="title">YUKI TALENT TREE</h1>
+    
+    <div class="ui-panel talent-points-panel">
+        <div class="panel-header">
+            <div class="panel-icon">❄️</div>
+            <h3>TALENT POINTS</h3>
+        </div>
+        <div class="points-container">
+            <div class="points-display">
+                <span class="points-label">Available</span>
+                <span class="points-value" id="available-points">0</span>
+            </div>
+            <div class="points-display">
+                <span class="points-label">Spent</span>
+                <span class="points-value spent" id="spent-points">0</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Back to main menu button -->
+    <a href="index.html" class="back-button">
+        <div class="button-icon">🏠</div>
+        BACK TO MENU
+    </a>
+    
+    <!-- Talent Information Panel -->
+    <div class="talent-info-panel" id="talent-info">
+        <div class="panel-header">
+            <div class="panel-icon">📜</div>
+            <h3>ARCTIC TALENTS</h3>
+        </div>
+        <div class="info-content">
+            <p>Click on talents to unlock them with your available points.</p>
+            <p>Left-click to add points, right-click to remove points.</p>
+            <div class="info-divider"></div>
+            <p>Hover over talents to view their detailed effects.</p>
+            <p>Drag to move around the tree or use the mouse wheel to zoom.</p>
+            <p>Double click or tap to reset the view.</p>
+        </div>
+    </div>
+
+    <!-- Talent Tree Content -->
+    <div class="talent-tree-container">
+        <!-- Connection Lines SVG -->
+        <svg class="connection-lines" width="100%" height="100%" preserveAspectRatio="none">
+            <!-- ICE Path (Left) -->
+            <path class="connection-line ice" d="M 50% 50% L 33% 50%" fill="none" />
+            <path class="connection-line ice" d="M 33% 50% L 33% 30%" fill="none" />
+            <path class="connection-line ice" d="M 33% 50% L 33% 70%" fill="none" />
+            <path class="connection-line ice" d="M 33% 30% L 33% 15%" fill="none" />
+            <path class="connection-line ice" d="M 33% 70% L 33% 85%" fill="none" />
+            
+            <!-- Secondary ice connections -->
+            <path class="connection-line ice" d="M 33% 15% L 18% 15%" fill="none" />
+            <path class="connection-line ice" d="M 33% 30% L 18% 30%" fill="none" />
+            <path class="connection-line ice" d="M 33% 85% L 18% 85%" fill="none" />
+            <path class="connection-line ice" d="M 33% 70% L 18% 70%" fill="none" />
+            
+            <!-- Final tier ice connections -->
+            <path class="connection-line ice" d="M 18% 15% L 18% 30%" fill="none" />
+            <path class="connection-line ice" d="M 18% 30% L 7% 30%" fill="none" />
+            <path class="connection-line ice" d="M 18% 70% L 18% 85%" fill="none" />
+            <path class="connection-line ice" d="M 18% 85% L 7% 85%" fill="none" />
+            
+            <!-- SPEED Path (Right) -->
+            <path class="connection-line speed" d="M 50% 50% L 67% 50%" fill="none" />
+            <path class="connection-line speed" d="M 67% 50% L 67% 30%" fill="none" />
+            <path class="connection-line speed" d="M 67% 50% L 67% 70%" fill="none" />
+            <path class="connection-line speed" d="M 67% 30% L 67% 15%" fill="none" />
+            <path class="connection-line speed" d="M 67% 70% L 67% 85%" fill="none" />
+            
+            <!-- Secondary speed connections -->
+            <path class="connection-line speed" d="M 67% 15% L 82% 15%" fill="none" />
+            <path class="connection-line speed" d="M 67% 30% L 82% 30%" fill="none" />
+            <path class="connection-line speed" d="M 67% 85% L 82% 85%" fill="none" />
+            <path class="connection-line speed" d="M 67% 70% L 82% 70%" fill="none" />
+            
+            <!-- Final tier speed connections -->
+            <path class="connection-line speed" d="M 82% 15% L 82% 30%" fill="none" />
+            <path class="connection-line speed" d="M 82% 30% L 93% 30%" fill="none" />
+            <path class="connection-line speed" d="M 82% 70% L 82% 85%" fill="none" />
+            <path class="connection-line speed" d="M 82% 85% L 93% 85%" fill="none" />
+            
+            <!-- MERCY Path (Center) -->
+            <path class="connection-line mercy" d="M 50% 50% L 50% 35%" fill="none" />
+            <path class="connection-line mercy" d="M 50% 50% L 50% 65%" fill="none" />
+            <path class="connection-line mercy" d="M 50% 35% L 50% 20%" fill="none" />
+            <path class="connection-line mercy" d="M 50% 65% L 50% 80%" fill="none" />
+            <path class="connection-line mercy" d="M 50% 20% L 50% 7%" fill="none" />
+            
+            <!-- Special requirement connections -->
+            <path class="connection-line mercy-req" d="M 40% 20% L 33% 15%" fill="none" /> 
+            <path class="connection-line mercy-req" d="M 60% 20% L 67% 15%" fill="none" /> 
+            <path class="connection-line mercy-req" d="M 63% 55% L 7% 85%" fill="none" /> 
+            
+            <!-- Ultimate connections -->
+            <path class="connection-line mercy-req" d="M 93% 30% L 50% 7%" fill="none" />
+            <path class="connection-line mercy-req" d="M 7% 30% L 50% 7%" fill="none" />
+        </svg>
+        
+        <!-- Central Snowflake Core -->
+        <div class="soul-container">
+            <div class="soul-glow"></div>
+            <div class="soul">
+                <svg viewBox="0 0 100 100">
+                    <defs>
+                        <linearGradient id="snowflakeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#a8d8ff;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#84c1ff;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M50,10 L54,30 L70,14 L62,32 L90,30 L65,40 L90,50 L65,60 L90,70 L62,68 L70,86 L54,70 L50,90 L46,70 L30,86 L38,68 L10,70 L35,60 L10,50 L35,40 L10,30 L38,32 L30,14 L46,30 Z" fill="url(#snowflakeGrad)" />
+                </svg>
+            </div>
+        </div>
+        
+        <!-- ============================= -->
+        <!-- ICE BRANCH (LEFT SIDE)       -->
+        <!-- ============================= -->
+        
+        <!-- Tier 1: Core -->
+        <div class="talent-node ice tier-1" data-id="frost-arrow" 
+             style="top: 50%; left: 33%; transform: translate(-50%, -50%);"
+             onclick="talentClick('frost-arrow')">
+            <div class="talent-icon">❄️</div>
+            <div class="talent-name">Frost Arrow</div>
+            <div class="talent-points" id="points-frost-arrow">[0/5]</div>
+        </div>
+        
+        <!-- Tier 2: Specializations -->
+        <div class="talent-node ice tier-2" data-id="ice-shards" 
+             style="top: 30%; left: 33%; transform: translate(-50%, -50%);"
+             onclick="talentClick('ice-shards')">
+            <div class="talent-icon">💎</div>
+            <div class="talent-name">Ice<br>Shards</div>
+            <div class="talent-points" id="points-ice-shards">[0/3]</div>
+        </div>
+        
+        <div class="talent-node ice tier-2" data-id="freezing-trap" 
+             style="top: 70%; left: 33%; transform: translate(-50%, -50%);"
+             onclick="talentClick('freezing-trap')">
+            <div class="talent-icon">❄</div>
+            <div class="talent-name">Freezing<br>Trap</div>
+            <div class="talent-points" id="points-freezing-trap">[0/3]</div>
+        </div>
+        
+        <!-- Tier 3: Advanced -->
+        <div class="talent-node ice tier-3" data-id="glacier-shot" 
+             style="top: 15%; left: 33%; transform: translate(-50%, -50%);"
+             onclick="talentClick('glacier-shot')">
+            <div class="talent-icon">🏔️</div>
+            <div class="talent-name">Glacier<br>Shot</div>
+            <div class="talent-points" id="points-glacier-shot">[0/3]</div>
+        </div>
+        
+        <div class="talent-node ice tier-3" data-id="arctic-wind" 
+             style="top: 30%; left: 18%; transform: translate(-50%, -50%);"
+             onclick="talentClick('arctic-wind')">
+            <div class="talent-icon">🌬️</div>
+            <div class="talent-name">Arctic<br>Wind</div>
+            <div class="talent-points" id="points-arctic-wind">[0/3]</div>
+        </div>
+        
+        <div class="talent-node ice tier-3" data-id="bitter-cold" 
+             style="top: 70%; left: 18%; transform: translate(-50%, -50%);"
+             onclick="talentClick('bitter-cold')">
+            <div class="talent-icon">🥶</div>
+            <div class="talent-name">Bitter<br>Cold</div>
+            <div class="talent-points" id="points-bitter-cold">[0/3]</div>
+        </div>
+        
+        <!-- Tier 4: Mastery -->
+        <div class="talent-node ice tier-4" data-id="winter-embrace" 
+             style="top: 30%; left: 7%; transform: translate(-50%, -50%);"
+             onclick="talentClick('winter-embrace')">
+            <div class="talent-icon">☃️</div>
+            <div class="talent-name">Winter<br>Embrace</div>
+            <div class="talent-points" id="points-winter-embrace">[0/2]</div>
+        </div>
+        
+        <div class="talent-node ice tier-4" data-id="absolute-zero" 
+             style="top: 85%; left: 7%; transform: translate(-50%, -50%);"
+             onclick="talentClick('absolute-zero')">
+            <div class="talent-icon">🧊</div>
+            <div class="talent-name">Absolute<br>Zero</div>
+            <div class="talent-points" id="points-absolute-zero">[0/1]</div>
+        </div>
+        
+        <!-- ============================= -->
+        <!-- SPEED BRANCH (RIGHT SIDE)    -->
+        <!-- ============================= -->
+        
+        <!-- Tier 1: Core -->
+        <div class="talent-node speed tier-1" data-id="swift-paws" 
+             style="top: 50%; left: 67%; transform: translate(-50%, -50%);"
+             onclick="talentClick('swift-paws')">
+            <div class="talent-icon">🦊</div>
+            <div class="talent-name">Swift Paws</div>
+            <div class="talent-points" id="points-swift-paws">[0/5]</div>
+        </div>
+        
+        <!-- Tier 2: Specializations -->
+        <div class="talent-node speed tier-2" data-id="rapid-fire" 
+             style="top: 30%; left: 67%; transform: translate(-50%, -50%);"
+             onclick="talentClick('rapid-fire')">
+            <div class="talent-icon">🏹</div>
+            <div class="talent-name">Rapid<br>Fire</div>
+            <div class="talent-points" id="points-rapid-fire">[0/3]</div>
+        </div>
+        
+        <div class="talent-node speed tier-2" data-id="blink-step" 
+             style="top: 70%; left: 67%; transform: translate(-50%, -50%);"
+             onclick="talentClick('blink-step')">
+            <div class="talent-icon">✨</div>
+            <div class="talent-name">Blink<br>Step</div>
+            <div class="talent-points" id="points-blink-step">[0/3]</div>
+        </div>
+        
+        <!-- Tier 3: Advanced -->
+        <div class="talent-node speed tier-3" data-id="arctic-agility" 
+             style="top: 15%; left: 67%; transform: translate(-50%, -50%);"
+             onclick="talentClick('arctic-agility')">
+            <div class="talent-icon">🌟</div>
+            <div class="talent-name">Arctic<br>Agility</div>
+            <div class="talent-points" id="points-arctic-agility">[0/3]</div>
+        </div>
+        
+        <div class="talent-node speed tier-3" data-id="perfect-parry" 
+             style="top: 30%; left: 82%; transform: translate(-50%, -50%);"
+             onclick="talentClick('perfect-parry')">
+            <div class="talent-icon">🛡️</div>
+            <div class="talent-name">Perfect<br>Parry</div>
+            <div class="talent-points" id="points-perfect-parry">[0/3]</div>
+        </div>
+        
+        <div class="talent-node speed tier-3" data-id="snow-dash" 
+             style="top: 70%; left: 82%; transform: translate(-50%, -50%);"
+             onclick="talentClick('snow-dash')">
+            <div class="talent-icon">💨</div>
+            <div class="talent-name">Snow<br>Dash</div>
+            <div class="talent-points" id="points-snow-dash">[0/3]</div>
+        </div>
+        
+        <!-- Tier 4: Mastery -->
+        <div class="talent-node speed tier-4" data-id="fox-reflexes" 
+             style="top: 30%; left: 93%; transform: translate(-50%, -50%);"
+             onclick="talentClick('fox-reflexes')">
+            <div class="talent-icon">⚡</div>
+            <div class="talent-name">Fox<br>Reflexes</div>
+            <div class="talent-points" id="points-fox-reflexes">[0/2]</div>
+        </div>
+        
+        <div class="talent-node speed tier-4" data-id="aurora-trail" 
+             style="top: 85%; left: 93%; transform: translate(-50%, -50%);"
+             onclick="talentClick('aurora-trail')">
+            <div class="talent-icon">🌈</div>
+            <div class="talent-name">Aurora<br>Trail</div>
+            <div class="talent-points" id="points-aurora-trail">[0/1]</div>
+        </div>
+        
+        <!-- ============================= -->
+        <!-- MERCY BRANCH (CENTER COLUMN) -->
+        <!-- ============================= -->
+        
+        <!-- Tier 1: Foundation -->
+        <div class="talent-node mercy tier-1" data-id="gentle-presence" 
+             style="top: 35%; left: 50%; transform: translate(-50%, -50%);"
+             onclick="talentClick('gentle-presence')">
+            <div class="talent-icon">💗</div>
+            <div class="talent-name">Gentle<br>Presence</div>
+            <div class="talent-points" id="points-gentle-presence">[0/3]</div>
+        </div>
+        
+        <!-- Tier 2: Development -->
+        <div class="talent-node mercy tier-2" data-id="compassionate-act" 
+             style="top: 20%; left: 50%; transform: translate(-50%, -50%);"
+             onclick="talentClick('compassionate-act')">
+            <div class="talent-icon">🙏</div>
+            <div class="talent-name">Compassionate<br>ACT</div>
+            <div class="talent-points" id="points-compassionate-act">[0/3]</div>
+        </div>
+        
+        <div class="talent-node mercy tier-2" data-id="peaceful-aura" 
+             style="top: 65%; left: 50%; transform: translate(-50%, -50%);"
+             onclick="talentClick('peaceful-aura')">
+            <div class="talent-icon">😇</div>
+            <div class="talent-name">Peaceful<br>Aura</div>
+            <div class="talent-points" id="points-peaceful-aura">[0/3]</div>
+        </div>
+        
+        <!-- Tier 3: Mastery -->
+        <div class="talent-node mercy tier-3" data-id="calming-touch" 
+             style="top: 15%; left: 40%; transform: translate(-50%, -50%);"
+             onclick="talentClick('calming-touch')">
+            <div class="talent-icon">👋</div>
+            <div class="talent-name">Calming<br>Touch</div>
+            <div class="talent-points" id="points-calming-touch">[0/3]</div>
+        </div>
+        
+        <div class="talent-node mercy tier-3" data-id="inspiring-hope" 
+             style="top: 15%; left: 60%; transform: translate(-50%, -50%);"
+             onclick="talentClick('inspiring-hope')">
+            <div class="talent-icon">✨</div>
+            <div class="talent-name">Inspiring<br>Hope</div>
+            <div class="talent-points" id="points-inspiring-hope">[0/3]</div>
+        </div>
+        
+        <div class="talent-node mercy tier-3" data-id="spiritual-healing" 
+             style="top: 80%; left: 50%; transform: translate(-50%, -50%);"
+             onclick="talentClick('spiritual-healing')">
+            <div class="talent-icon">✨</div>
+            <div class="talent-name">Spiritual<br>Healing</div>
+            <div class="talent-points" id="points-spiritual-healing">[0/3]</div>
+        </div>
+        
+        <!-- Tier 4: Advanced -->
+        <div class="talent-node mercy tier-4" data-id="heart-of-mercy" 
+             style="top: 7%; left: 50%; transform: translate(-50%, -50%);"
+             onclick="talentClick('heart-of-mercy')">
+            <div class="talent-icon">❤️</div>
+            <div class="talent-name">Heart<br>of Mercy</div>
+            <div class="talent-points" id="points-heart-of-mercy">[0/2]</div>
+        </div>
+    </div>
+    
+    <!-- Ultimate Talent - Fox Spirit Ascension -->
+    <div class="ultimate-talent">
+        <div class="talent-node ultimate tier-5" data-id="fox-spirit-ascension" 
+             onclick="talentClick('fox-spirit-ascension')">
+            <div class="talent-icon">🦊</div>
+            <div class="talent-name">Fox Spirit<br>Ascension</div>
+            <div class="talent-points" id="points-fox-spirit-ascension">[0/1]</div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDhhhZsh0WtM7IIEFoUApqeKDyKzcCmSZw",
+            authDomain: "ubtstree.firebaseapp.com",
+            databaseURL: "https://ubtstree-default-rtdb.firebaseio.com",
+            projectId: "ubtstree",
+            storageBucket: "ubtstree.firebasestorage.app",
+            messagingSenderId: "601038328524",
+            appId: "1:601038328524:web:885456f979249065f76869",
+            measurementId: "G-WPZKZPKWCW"
+        };
+
+        // Initialize Firebase
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                // Initialize Firebase
+                if (!firebase.apps.length) {
+                    firebase.initializeApp(firebaseConfig);
+                }
+                console.log("Firebase initialized successfully");
+            } catch (error) {
+                console.error('Error initializing Firebase:', error);
+            }
+        });
+    </script>
+    
+    <script type="module" src="yuki-script.js"></script>
+    <script type="module" src="yuki-animations.js"></script>
+</body>
+</html>
