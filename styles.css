@@ -418,7 +418,7 @@ body {
 .talent-info-panel {
     position: absolute;
     bottom: 40px;
-    left: 8%;
+    left: 11%;
     transform: translateX(-50%);
     width: 400px;
     background: linear-gradient(135deg, 
