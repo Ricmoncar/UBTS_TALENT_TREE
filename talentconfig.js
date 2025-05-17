@@ -4,8 +4,8 @@
 // Edit this file to change talents, descriptions, and requirements
 // This is your control panel for the entire talent tree!
 
-// Default starting talent points - Change this to set available points globally
-export const DEFAULT_TALENT_POINTS = 1;
+// Default starting talent points - Changed to 0 by default
+export const DEFAULT_TALENT_POINTS = 0;
 
 // ===================================================
 // TALENT DEFINITIONS
@@ -60,6 +60,7 @@ export const TALENT_DEFINITIONS = {
         ]
     },
     
+    // Rest of the talent definitions remain the same
     'parry-mastery': {
         name: 'Parry Mastery',
         emoji: '🛡️',

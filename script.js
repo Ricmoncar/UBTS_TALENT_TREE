@@ -24,65 +24,31 @@ let gameState = {
     talents: {}
 };
 
-// Global Points Management
-class GlobalPointsManager {
-    constructor() {
-        this.GLOBAL_POINTS_KEY = 'global-talent-points';
-        this.initializeGlobalPoints();
-    }
-
-    initializeGlobalPoints() {
-        const savedPoints = localStorage.getItem(this.GLOBAL_POINTS_KEY);
-        if (savedPoints === null) {
-            localStorage.setItem(this.GLOBAL_POINTS_KEY, DEFAULT_TALENT_POINTS.toString());
-        }
-    }
-
-    getGlobalPoints() {
-        return parseInt(localStorage.getItem(this.GLOBAL_POINTS_KEY)) || DEFAULT_TALENT_POINTS;
-    }
-
-    setGlobalPoints(points) {
-        localStorage.setItem(this.GLOBAL_POINTS_KEY, points.toString());
-        // Dispatch event to notify other tabs/windows
-        window.dispatchEvent(new CustomEvent('globalPointsChanged', { 
-            detail: { points: points } 
-        }));
-    }
-
-    spendPoint() {
-        const currentPoints = this.getGlobalPoints();
-        if (currentPoints > 0) {
-            this.setGlobalPoints(currentPoints - 1);
-            return true;
-        }
-        return false;
-    }
-
-    refundPoint() {
-        const currentPoints = this.getGlobalPoints();
-        this.setGlobalPoints(currentPoints + 1);
-    }
-}
-
-const globalPointsManager = new GlobalPointsManager();
+// Initialize Firebase Database reference
+const db = firebase.database();
+const blackjackRef = db.ref('characters/blackjack');
 
 // Initialize the game
 function initGame() {
     loadGameState();
     updateUI();
     setupEventListeners();
-    // Listen for global points changes from other tabs
-    window.addEventListener('globalPointsChanged', (event) => {
-        gameState.availablePoints = event.detail.points;
+    
+    // Set up real-time sync for blackjack character data
+    blackjackRef.on('value', (snapshot) => {
+        const data = snapshot.val() || { points: DEFAULT_TALENT_POINTS, talents: {}, spentPoints: 0 };
+        
+        // Update local game state
+        gameState.availablePoints = data.points || DEFAULT_TALENT_POINTS;
+        gameState.spentPoints = data.spentPoints || 0;
+        
+        // Update talent ranks
+        Object.keys(talents).forEach(talentId => {
+            talents[talentId].currentRank = data.talents && data.talents[talentId] ? 
+                data.talents[talentId] : 0;
+        });
+        
         updateUI();
-    });
-    // Listen for storage changes from other tabs
-    window.addEventListener('storage', (event) => {
-        if (event.key === 'global-talent-points') {
-            gameState.availablePoints = parseInt(event.newValue);
-            updateUI();
-        }
     });
 }
 
@@ -111,49 +77,45 @@ function updateNodeIcons() {
     });
 }
 
-// Load game state from localStorage
+// Load game state from Firebase
 function loadGameState() {
-    try {
-        // Get global points
-        gameState.availablePoints = globalPointsManager.getGlobalPoints();
+    blackjackRef.once('value').then((snapshot) => {
+        const data = snapshot.val() || { points: DEFAULT_TALENT_POINTS, talents: {}, spentPoints: 0 };
         
-        // Load individual talent states
-        const savedState = localStorage.getItem('blackjack-talent-tree');
-        if (savedState) {
-            const parsed = JSON.parse(savedState);
-            gameState.spentPoints = parsed.spentPoints || 0;
-            
-            // Apply loaded talents
-            Object.keys(parsed.talents || {}).forEach(talentId => {
-                if (talents[talentId]) {
-                    talents[talentId].currentRank = parsed.talents[talentId] || 0;
-                }
-            });
-        }
-    } catch (error) {
-        console.error('Error loading game state:', error);
-    }
-}
-
-// Save game state to localStorage
-function saveGameState() {
-    try {
-        const stateToSave = {
-            spentPoints: gameState.spentPoints,
-            talents: {}
-        };
+        // Update local game state
+        gameState.availablePoints = data.points || DEFAULT_TALENT_POINTS;
+        gameState.spentPoints = data.spentPoints || 0;
         
-        // Save current talent ranks
+        // Update talent ranks
         Object.keys(talents).forEach(talentId => {
-            if (talents[talentId].currentRank > 0) {
-                stateToSave.talents[talentId] = talents[talentId].currentRank;
-            }
+            talents[talentId].currentRank = data.talents && data.talents[talentId] ? 
+                data.talents[talentId] : 0;
         });
         
-        localStorage.setItem('blackjack-talent-tree', JSON.stringify(stateToSave));
-    } catch (error) {
+        updateUI();
+    }).catch((error) => {
+        console.error('Error loading game state:', error);
+    });
+}
+
+// Save game state to Firebase
+function saveGameState() {
+    const stateToSave = {
+        points: gameState.availablePoints,
+        spentPoints: gameState.spentPoints,
+        talents: {}
+    };
+    
+    // Save current talent ranks
+    Object.keys(talents).forEach(talentId => {
+        if (talents[talentId].currentRank > 0) {
+            stateToSave.talents[talentId] = talents[talentId].currentRank;
+        }
+    });
+    
+    blackjackRef.update(stateToSave).catch((error) => {
         console.error('Error saving game state:', error);
-    }
+    });
 }
 
 // Update UI elements
@@ -212,22 +174,19 @@ function canUnlockTalent(talentId) {
 function talentClick(talentId) {
     const talent = talents[talentId];
     
-    if (talent.currentRank > 0 && gameState.availablePoints < 10) {
+    if (talent.currentRank > 0) {
         // Remove a point
         talent.currentRank--;
         gameState.spentPoints--;
-        globalPointsManager.refundPoint();
-        gameState.availablePoints = globalPointsManager.getGlobalPoints();
+        gameState.availablePoints++;
     } else if (canUnlockTalent(talentId)) {
         // Add a point
-        if (globalPointsManager.spendPoint()) {
-            talent.currentRank++;
-            gameState.spentPoints++;
-            gameState.availablePoints = globalPointsManager.getGlobalPoints();
-        } else {
-            alert('Not enough talent points!');
-            return;
-        }
+        talent.currentRank++;
+        gameState.spentPoints++;
+        gameState.availablePoints--;
+    } else {
+        alert('Cannot unlock this talent!');
+        return;
     }
     
     showTalentInfo(talentId);
@@ -286,11 +245,16 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
+// Initialize Firebase after page loads
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize Firebase once the page is loaded
+    if (typeof firebase === 'undefined') {
+        console.error('Firebase is not loaded! Make sure Firebase scripts are included in the HTML.');
+        return;
+    }
+    
+    initGame();
+});
+
 // Make functions global for HTML onclick handlers
 window.talentClick = talentClick;
-
-// Initialize when page loads
-document.addEventListener('DOMContentLoaded', initGame);
-
-// Auto-save every 5 seconds
-setInterval(saveGameState, 5000);

@@ -6,6 +6,25 @@
     <title>Blackjack Talent Tree</title>
     <link rel="stylesheet" href="styles.css">
     
+    <!-- Firebase SDK -->
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
+    <script>
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyDhhhZsh0WtM7IIEFoUApqeKDyKzcCmSZw",
+        authDomain: "ubtstree.firebaseapp.com",
+        databaseURL: "https://ubtstree-default-rtdb.firebaseio.com",
+        projectId: "ubtstree",
+        storageBucket: "ubtstree.firebasestorage.app",
+        messagingSenderId: "601038328524",
+        appId: "1:601038328524:web:885456f979249065f76869",
+        measurementId: "G-WPZKZPKWCW"
+      };
+
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+    </script>
 </head>
 <body>
     <div class="background-animation">
@@ -28,7 +47,7 @@
         <div class="points-container">
             <div class="points-display">
                 <span class="points-label">Available</span>
-                <span class="points-value" id="available-points">1</span>
+                <span class="points-value" id="available-points">0</span>
             </div>
             <div class="points-display">
                 <span class="points-label">Spent</span>

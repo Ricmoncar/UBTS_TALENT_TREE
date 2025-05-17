@@ -4,6 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Skill Tree System</title>
+    
+    <!-- Firebase SDK -->
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
+    <script>
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyDhhhZsh0WtM7IIEFoUApqeKDyKzcCmSZw",
+        authDomain: "ubtstree.firebaseapp.com",
+        databaseURL: "https://ubtstree-default-rtdb.firebaseio.com",
+        projectId: "ubtstree",
+        storageBucket: "ubtstree.firebasestorage.app",
+        messagingSenderId: "601038328524",
+        appId: "1:601038328524:web:885456f979249065f76869",
+        measurementId: "G-WPZKZPKWCW"
+      };
+
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+    </script>
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=Cinzel:wght@400;600&display=swap');
 
@@ -62,7 +83,7 @@
             font-weight: bold;
         }
 
-        .form-group input {
+        .form-group input, .form-group select {
             width: 100%;
             padding: 12px;
             border: 2px solid #8B4513;
@@ -72,7 +93,7 @@
             font-size: 16px;
         }
 
-        .form-group input:focus {
+        .form-group input:focus, .form-group select:focus {
             outline: none;
             border-color: #FFD700;
             box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
@@ -181,6 +202,22 @@
             box-shadow: 0 0 15px rgba(135, 206, 235, 0.4);
             transform: translateY(-2px);
         }
+        
+        .character-selector {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .character-selector select {
+            padding: 12px;
+            border: 2px solid #8B4513;
+            border-radius: 8px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            font-size: 18px;
+            margin: 0 auto;
+            min-width: 200px;
+        }
     </style>
 </head>
 <body>
@@ -201,10 +238,20 @@
 
             <!-- Admin Content -->
             <div class="admin-content" id="admin-content">
-                <h2>Global Points Management</h2>
+                <h2>Character Points Management</h2>
+                
+                <div class="character-selector">
+                    <label for="character-select">Select Character:</label>
+                    <select id="character-select" onchange="changeCharacter()">
+                        <option value="blackjack">Blackjack</option>
+                        <option value="snaps" disabled>Snaps (Coming Soon)</option>
+                        <option value="yuki" disabled>Yuki (Coming Soon)</option>
+                        <option value="flowey" disabled>Flowey (Coming Soon)</option>
+                    </select>
+                </div>
                 
                 <div class="points-display">
-                    <p>Current Global Points:</p>
+                    <p>Current Points for <span id="selected-character-name">Blackjack</span>:</p>
                     <div class="current-points" id="current-points">0</div>
                 </div>
 
@@ -220,9 +267,9 @@
 
                 <hr style="margin: 2rem 0; border: 1px solid #8B4513;">
 
-                <h3>Global Talent State Management</h3>
+                <h3>Talent State Management</h3>
                 <div class="points-controls">
-                    <button class="button danger" onclick="resetAllTalents()">RESET ALL TALENTS</button>
+                    <button class="button danger" onclick="resetAllTalents()">RESET TALENTS</button>
                     <button class="button primary" onclick="exportState()">EXPORT STATE</button>
                     <button class="button primary" onclick="importState()">IMPORT STATE</button>
                 </div>
@@ -232,15 +279,32 @@
         </div>
     </div>
 
-    <script type="module">
+    <script>
         // Admin configuration
         const ADMIN_PASSWORD = 'admin123'; // Change this to your desired password
         
-        // Check if user is already logged in
-        if (sessionStorage.getItem('admin-logged-in') === 'true') {
-            showAdminContent();
-        }
-
+        // Firebase references
+        let db;
+        let currentCharacter = 'blackjack';
+        let charactersRef;
+        let currentCharacterRef;
+        
+        // Initialize Firebase when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof firebase !== 'undefined') {
+                db = firebase.database();
+                charactersRef = db.ref('characters');
+                currentCharacterRef = charactersRef.child(currentCharacter);
+                
+                // Check if user is already logged in
+                if (sessionStorage.getItem('admin-logged-in') === 'true') {
+                    showAdminContent();
+                }
+            } else {
+                console.error('Firebase is not loaded! Make sure Firebase scripts are included properly.');
+            }
+        });
+        
         function login() {
             const password = document.getElementById('admin-password').value;
             const errorDiv = document.getElementById('login-error');
@@ -261,10 +325,21 @@
             document.getElementById('admin-content').classList.add('visible');
             updatePointsDisplay();
         }
+        
+        function changeCharacter() {
+            currentCharacter = document.getElementById('character-select').value;
+            document.getElementById('selected-character-name').textContent = 
+                currentCharacter.charAt(0).toUpperCase() + currentCharacter.slice(1);
+            
+            currentCharacterRef = charactersRef.child(currentCharacter);
+            updatePointsDisplay();
+        }
 
         function updatePointsDisplay() {
-            const points = parseInt(localStorage.getItem('global-talent-points')) || 0;
-            document.getElementById('current-points').textContent = points;
+            currentCharacterRef.once('value').then((snapshot) => {
+                const data = snapshot.val() || { points: 0 };
+                document.getElementById('current-points').textContent = data.points || 0;
+            });
         }
 
         function addPoints() {
@@ -274,12 +349,21 @@
                 return;
             }
             
-            const currentPoints = parseInt(localStorage.getItem('global-talent-points')) || 0;
-            const newPoints = currentPoints + amount;
-            localStorage.setItem('global-talent-points', newPoints.toString());
-            updatePointsDisplay();
-            showSuccess(`Added ${amount} points! Total: ${newPoints}`);
-            document.getElementById('points-input').value = '';
+            currentCharacterRef.once('value').then((snapshot) => {
+                const data = snapshot.val() || { points: 0, talents: {}, spentPoints: 0 };
+                const currentPoints = data.points || 0;
+                const newPoints = currentPoints + amount;
+                
+                currentCharacterRef.update({ points: newPoints })
+                    .then(() => {
+                        updatePointsDisplay();
+                        showSuccess(`Added ${amount} points! Total: ${newPoints}`);
+                        document.getElementById('points-input').value = '';
+                    })
+                    .catch((error) => {
+                        showError(`Error adding points: ${error.message}`);
+                    });
+            });
         }
 
         function setPoints() {
@@ -289,43 +373,64 @@
                 return;
             }
             
-            localStorage.setItem('global-talent-points', amount.toString());
-            updatePointsDisplay();
-            showSuccess(`Set points to ${amount}`);
-            document.getElementById('points-input').value = '';
+            currentCharacterRef.update({ points: amount })
+                .then(() => {
+                    updatePointsDisplay();
+                    showSuccess(`Set points to ${amount}`);
+                    document.getElementById('points-input').value = '';
+                })
+                .catch((error) => {
+                    showError(`Error setting points: ${error.message}`);
+                });
         }
 
         function resetPoints() {
-            if (confirm('Are you sure you want to reset all points to 0?')) {
-                localStorage.setItem('global-talent-points', '0');
-                updatePointsDisplay();
-                showSuccess('Points reset to 0');
+            if (confirm(`Are you sure you want to reset ${currentCharacter}'s points to 0?`)) {
+                currentCharacterRef.update({ points: 0 })
+                    .then(() => {
+                        updatePointsDisplay();
+                        showSuccess('Points reset to 0');
+                    })
+                    .catch((error) => {
+                        showError(`Error resetting points: ${error.message}`);
+                    });
             }
         }
 
         function resetAllTalents() {
-            if (confirm('Are you sure you want to reset ALL talent trees? This will clear all progress!')) {
-                localStorage.clear();
-                showSuccess('All talent trees have been reset!');
-                updatePointsDisplay();
+            if (confirm(`Are you sure you want to reset ALL talent progress for ${currentCharacter}? This will clear all unlocked talents!`)) {
+                currentCharacterRef.once('value').then((snapshot) => {
+                    const data = snapshot.val() || { points: 0 };
+                    const points = data.points || 0;
+                    
+                    // Reset talents but keep points
+                    currentCharacterRef.set({
+                        points: points,
+                        talents: {},
+                        spentPoints: 0
+                    }).then(() => {
+                        showSuccess(`All talent progress for ${currentCharacter} has been reset!`);
+                    }).catch((error) => {
+                        showError(`Error resetting talents: ${error.message}`);
+                    });
+                });
             }
         }
 
         function exportState() {
-            const state = {
-                globalPoints: localStorage.getItem('global-talent-points') || '0',
-                blackjackTree: localStorage.getItem('blackjack-talent-tree') || null,
-                timestamp: new Date().toISOString()
-            };
-            
-            const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `skill-tree-backup-${new Date().toISOString().split('T')[0]}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-            showSuccess('State exported successfully!');
+            currentCharacterRef.once('value').then((snapshot) => {
+                const state = snapshot.val() || { points: 0, talents: {}, spentPoints: 0 };
+                state.timestamp = new Date().toISOString();
+                
+                const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${currentCharacter}-talent-tree-backup-${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showSuccess('State exported successfully!');
+            });
         }
 
         function importState() {
@@ -342,15 +447,18 @@
                     try {
                         const state = JSON.parse(e.target.result);
                         
-                        if (state.globalPoints !== undefined) {
-                            localStorage.setItem('global-talent-points', state.globalPoints);
+                        if (confirm(`Are you sure you want to import this state for ${currentCharacter}? This will overwrite current talent data.`)) {
+                            currentCharacterRef.update({
+                                points: state.points !== undefined ? state.points : 0,
+                                talents: state.talents || {},
+                                spentPoints: state.spentPoints || 0
+                            }).then(() => {
+                                updatePointsDisplay();
+                                showSuccess('State imported successfully!');
+                            }).catch((error) => {
+                                showError(`Error importing state: ${error.message}`);
+                            });
                         }
-                        if (state.blackjackTree) {
-                            localStorage.setItem('blackjack-talent-tree', state.blackjackTree);
-                        }
-                        
-                        updatePointsDisplay();
-                        showSuccess('State imported successfully!');
                     } catch (error) {
                         showError('Invalid file format!');
                     }
@@ -391,6 +499,7 @@
 
         // Make functions global
         window.login = login;
+        window.changeCharacter = changeCharacter;
         window.addPoints = addPoints;
         window.setPoints = setPoints;
         window.resetPoints = resetPoints;

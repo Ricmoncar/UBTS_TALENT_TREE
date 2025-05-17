@@ -1,48 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     
-
-
+    <!-- Firebase SDK -->
     <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-
     <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
-<script>
-
+    <script>
       // Your web app's Firebase configuration
-
-      // Replace these values with your actual project configuration
-
       const firebaseConfig = {
-
-        apiKey: "AIzaSyDhhhZsh0WtM7IIEFoUApqeKDyKzcCmSZw", // Your actual API Key
-
-        authDomain: "ubtstree.firebaseapp.com", // Your actual Auth Domain
-
-        databaseURL: "https://ubtstree-default-rtdb.firebaseio.com", // Your actual Database URL
-
-        projectId: "ubtstree", // Your actual Project ID
-
-        storageBucket: "ubtstree.firebasestorage.app", // Your actual Storage Bucket
-
-        messagingSenderId: "601038328524", // Your actual Sender ID
-
-        appId: "1:601038328524:web:885456f979249065f76869", // Your actual App ID
-
-        measurementId: "G-WPZKZPKWCW" // Your actual Measurement ID (if using Analytics)
-
+        apiKey: "AIzaSyDhhhZsh0WtM7IIEFoUApqeKDyKzcCmSZw",
+        authDomain: "ubtstree.firebaseapp.com",
+        databaseURL: "https://ubtstree-default-rtdb.firebaseio.com",
+        projectId: "ubtstree",
+        storageBucket: "ubtstree.firebasestorage.app",
+        messagingSenderId: "601038328524",
+        appId: "1:601038328524:web:885456f979249065f76869",
+        measurementId: "G-WPZKZPKWCW"
       };
 
-
       // Initialize Firebase
-
       firebase.initializeApp(firebaseConfig);
-
     </script>
 
     <title>Skill Tree Collection</title>
@@ -262,8 +241,8 @@
             }
         }
 
-        /* Global points display */
-        .global-points {
+        /* Points display for characters */
+        .character-points {
             position: fixed;
             top: 20px;
             right: 20px;
@@ -277,14 +256,31 @@
             backdrop-filter: blur(10px);
         }
 
-        .global-points h3 {
+        .character-points h3 {
             color: #87ceeb;
             font-size: 1rem;
             margin-bottom: 0.5rem;
         }
 
+        .points-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .character-point {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .character-name {
+            color: #ddd;
+            margin-right: 15px;
+        }
+
         .points-value {
-            font-size: 2rem;
+            font-size: 1.5rem;
             font-weight: bold;
             color: #FFD700;
             text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
@@ -294,9 +290,15 @@
 <body>
     <div class="starfield" id="starfield"></div>
     
-    <div class="global-points">
-        <h3>Global Points</h3>
-        <div class="points-value" id="global-points">0</div>
+    <div class="character-points">
+        <h3>Character Points</h3>
+        <div class="points-container" id="character-points-container">
+            <!-- Points will be populated here -->
+            <div class="character-point">
+                <span class="character-name">Blackjack:</span>
+                <span class="points-value" id="blackjack-points">0</span>
+            </div>
+        </div>
     </div>
 
     <div class="container">
@@ -362,19 +364,50 @@
             }
         }
 
-        // Initialize global points
-        function initGlobalPoints() {
-            // For now, just read from localStorage
-            // In the future, this would connect to a shared backend
-            const savedPoints = localStorage.getItem('global-talent-points');
-            const points = savedPoints ? parseInt(savedPoints) : 0;
-            document.getElementById('global-points').textContent = points;
+        // Initialize character points from Firebase
+        function initCharacterPoints() {
+            const db = firebase.database();
+            const charactersRef = db.ref('characters');
+            
+            // Real-time listener for character points
+            charactersRef.on('value', (snapshot) => {
+                const characters = snapshot.val() || {};
+                
+                // Update Blackjack points
+                const blackjackPoints = characters.blackjack ? characters.blackjack.points || 0 : 0;
+                document.getElementById('blackjack-points').textContent = blackjackPoints;
+                
+                // Add this code if you want to show points for other characters as well
+                /*
+                // Clear existing points display
+                const container = document.getElementById('character-points-container');
+                container.innerHTML = '';
+                
+                // Add each character's points
+                Object.keys(characters).forEach(characterName => {
+                    const points = characters[characterName].points || 0;
+                    const pointElement = document.createElement('div');
+                    pointElement.className = 'character-point';
+                    pointElement.innerHTML = `
+                        <span class="character-name">${characterName.charAt(0).toUpperCase() + characterName.slice(1)}:</span>
+                        <span class="points-value" id="${characterName}-points">${points}</span>
+                    `;
+                    container.appendChild(pointElement);
+                });
+                */
+            });
         }
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', () => {
             createStarfield();
-            initGlobalPoints();
+            
+            // Initialize Firebase references and listeners
+            if (typeof firebase !== 'undefined') {
+                initCharacterPoints();
+            } else {
+                console.error('Firebase is not loaded! Make sure Firebase scripts are included properly.');
+            }
         });
     </script>
 </body>
