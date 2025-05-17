@@ -628,7 +628,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Failed to load Hammer.js. Touch gestures may not work properly.', error);
     }
     
-    // Wait a moment for the game to initialize
+    // Wait a moment for the game to initializge
     setTimeout(() => {
         initPanZoom();
         addPointSpendingAnimation();
