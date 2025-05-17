@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flowey Talent Tree</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="flowey-style.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+    <!-- Hammer.js for touch gestures -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+</head>
+<body>
+    <div class="background-animation">
+        <div class="floating-petal petal-1">🌸</div>
+        <div class="floating-petal petal-2">🌼</div>
+        <div class="floating-petal petal-3">🌺</div>
+        <div class="floating-leaf leaf-1">🍃</div>
+        <div class="floating-leaf leaf-2">🍂</div>
+        <div class="floating-leaf leaf-3">🍃</div>
+    </div>
+
+    <!-- Static UI elements -->
+    <h1 class="title">FLOWEY TALENT TREE</h1>
+    
+    <div class="ui-panel talent-points-panel">
+        <div class="panel-header">
+            <div class="panel-icon">🌻</div>
+            <h3>TALENT POINTS</h3>
+        </div>
+        <div class="points-container">
+            <div class="points-display">
+                <span class="points-label">Available</span>
+                <span class="points-value" id="available-points">0</span>
+            </div>
+            <div class="points-display">
+                <span class="points-label">Spent</span>
+                <span class="points-value spent" id="spent-points">0</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Back to main menu button -->
+    <a href="index.html" class="back-button">
+        <div class="button-icon">🏠</div>
+        BACK TO MENU
+    </a>
+    
+    <!-- Talent Information Panel -->
+    <div class="talent-info-panel" id="talent-info">
+        <div class="panel-header">
+            <div class="panel-icon">📜</div>
+            <h3>FLORA TALENTS</h3>
+        </div>
+        <div class="info-content">
+            <p>Click on talents to unlock them with your available points.</p>
+            <p>Left-click to add points, right-click to remove points.</p>
+            <div class="info-divider"></div>
+            <p>Hover over talents to view their detailed effects.</p>
+            <p>Drag to move around the tree or use the mouse wheel to zoom.</p>
+            <p>Double click or tap to reset the view.</p>
+        </div>
+    </div>
+
+    <!-- Talent Tree Content -->
+    <div class="talent-tree-container">
+        <!-- Connection Lines SVG -->
+        <svg class="connection-lines" width="100%" height="100%" preserveAspectRatio="none">
+            <!-- HEALING Path (Left) -->
+            <path class="connection-line healing" d="M 50% 50% L 33% 50%" fill="none" />
+            <path class="connection-line healing" d="M 33% 50% L 33% 30%" fill="none" />
+            <path class="connection-line healing" d="M 33% 50% L 33% 70%" fill="none" />
+            <path class="connection-line healing" d="M 33% 30% L 33% 15%" fill="none" />
+            <path class="connection-line healing" d="M 33% 70% L 33% 85%" fill="none" />
+            
+            <!-- Secondary healing connections -->
+            <path class="connection-line healing" d="M 33% 15% L 18% 15%" fill="none" />
+            <path class="connection-line healing" d="M 33% 30% L 18% 30%" fill="none" />
+            <path class="connection-line healing" d="M 33% 85% L 18% 85%" fill="none" />
+            <path class="connection-line healing" d="M 33% 70% L 18% 70%" fill="none" />
+            
+            <!-- Final tier healing connections -->
+            <path class="connection-line healing" d="M 18% 15% L 18% 30%" fill="none" />
+            <path class="connection-line healing" d="M 18% 30% L 7% 30%" fill="none" />
+            <path class="connection-line healing" d="M 18% 70% L 18% 85%" fill="none" />
+            <path class="connection-line healing" d="M 18% 85% L 7% 85%" fill="none" />
+            
+            <!-- BUFF Path (Right) -->
+            <path class="connection-line buff" d="M 50% 50% L 67% 50%" fill="none" />
+            <path class="connection-line buff" d="M 67% 50% L 67% 30%" fill="none" />
+            <path class="connection-line buff" d="M 67% 50% L 67% 70%" fill="none" />
+            <path class="connection-line buff" d="M 67% 30% L 67% 15%" fill="none" />
+            <path class="connection-line buff" d="M 67% 70% L 67% 85%" fill="none" />
+            
+            <!-- Secondary buff connections -->
+            <path class="connection-line buff" d="M 67% 15% L 82% 15%" fill="none" />
+            <path class="connection-line buff" d="M 67% 30% L 82% 30%" fill="none" />
+            <path class="connection-line buff" d="M 67% 85% L 82% 85%" fill="none" />
+            <path class="connection-line buff" d="M 67% 70% L 82% 70%" fill="none" />
+            
+            <!-- Final tier buff connections -->
+            <path class="connection-line buff" d="M 82% 15% L 82% 30%" fill="none" />
+            <path class="connection-line buff" d="M 82% 30% L 93% 30%" fill="none" />
+            <path class="connection-line buff" d="M 82% 70% L 82% 85%" fill="none" />
+            <path class="connection-line buff" d="M 82% 85% L 93% 85%" fill="none" />
+            
+            <!-- GROWTH Path (Center) -->
+            <path class="connection-line growth" d="M 50% 50% L 50% 35%" fill="none" />
+            <path class="connection-line growth" d="M 50% 50% L 50% 65%" fill="none" />
+            <path class="connection-line growth" d="M 50% 35% L 50% 20%" fill="none" />
+            <path class="connection-line growth" d="M 50% 65% L 50% 80%" fill="none" />
+            <path class="connection-line growth" d="M 50% 20% L 50% 7%" fill="none" />
+            
+            <!-- Special requirement connections -->
+            <path class="connection-line growth-req" d="M 40% 20% L 33% 15%" fill="none" /> 
+            <path class="connection-line growth-req" d="M 60% 20% L 67% 15%" fill="none" /> 
+            <path class="connection-line growth-req" d="M 40% 80% L 33% 85%" fill="none" />
+            <path class="connection-line growth-req" d="M 60% 80% L 67% 85%" fill="none" />
+            
+            <!-- Ultimate connections -->
+            <path class="connection-line growth-req" d="M 93% 30% L 50% 7%" fill="none" />
+            <path class="connection-line growth-req" d="M 7% 30% L 50% 7%" fill="none" />
+            <path class="connection-line growth-req" d="M 7% 85% L 50% 7%" fill="none" />
+            <path class="connection-line growth-req" d="M 93% 85% L 50% 7%" fill="none" />
+        </svg>
+        
+        <!-- Central Flower Core -->
+        <div class="soul-container">
+            <div class="soul-glow"></div>
+            <div class="soul">
+                <svg viewBox="0 0 100 100">
+                    <defs>
+                        <linearGradient id="flowerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ffeb3b;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#ffc107;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="50" cy="50" r="25" fill="url(#flowerGrad)" />
+                    <path d="M50,20 C55,30 70,35 50,50 C30,35 45,30 50,20" fill="#4CAF50" />
+                    <path d="M50,20 C45,30 30,35 50,50 C70,35 55,30 50,20" fill="#4CAF50" />
+                    <path d="M80,50 C70,55 65,70 50,50 C65,30 70,45 80,50" fill="#4CAF50" />
+                    <path d="M80,50 C70,45 65,30 50,50 C65,70 70,55 80,50" fill="#4CAF50" />
+                    <path d="M50,80 C45,70 30,65 50,50 C70,65 55,70 50,80" fill="#4CAF50" />
+                    <path d="M50,80 C55,70 70,65 50,50 C30,65 45,70 50,80" fill="#4CAF50" />
+                    <path d="M20,50 C30,45 35,30 50,50 C35,70 30,55 20,50" fill="#4CAF50" />
+                    <path d="M20,50 C30,55 35,70 50,50 C35,30 30,45 20,50" fill="#4CAF50" />
+                </svg>
+            </div>
+        </div>
+        
+        <!-- ============================= -->
+        <!-- HEALING BRANCH (LEFT SIDE)    -->
+        <!-- ============================= -->
+        
+        <!-- Tier 1: Core -->
+        <div class="talent-node healing tier-1" data-id="healing-touch" 
+             style="top: 50%; left: 33%; transform: translate(-50%, -50%);"
+             onclick="talentClick('healing-touch')">
+            <div class="talent-icon">💚</div>
+            <div class="talent-name">Healing Touch</div>
+            <div class="talent-points" id="points-healing-touch">[0/5]</div>
+        </div>
+        
+        <!-- Tier 2: Specializations -->
+        <div class="talent-node healing tier-2" data-id="regenerative-aura" 
+             style="top: 30%; left: 33%; transform: translate(-50%, -50%);"
+             onclick="talentClick('regenerative-aura')">
+            <div class="talent-icon">✨</div>
+            <div class="talent-name">Regenerative<br>Aura</div>
+            <div class="talent-points" id="points-regenerative-aura">[0/3]</div>
+        </div>
+        
+        <div class="talent-node healing tier-2" data-id="cleansing-bloom" 
+             style="top: 70%; left: 33%; transform: translate(-50%, -50%);"
+             onclick="talentClick('cleansing-bloom')">
+            <div class="talent-icon">🌺</div>
+            <div class="talent-name">Cleansing<br>Bloom</div>
+            <div class="talent-points" id="points-cleansing-bloom">[0/3]</div>
+        </div>
+        
+        <!-- Tier 3: Advanced -->
+        <div class="talent-node healing tier-3" data-id="lifelink" 
+             style="top: 15%; left: 33%; transform: translate(-50%, -50%);"
+             onclick="talentClick('lifelink')">
+            <div class="talent-icon">🔄</div>
+            <div class="talent-name">Life<br>Link</div>
+            <div class="talent-points" id="points-lifelink">[0/3]</div>
+        </div>
+        
+        <div class="talent-node healing tier-3" data-id="rapid-growth" 
+             style="top: 30%; left: 18%; transform: translate(-50%, -50%);"
+             onclick="talentClick('rapid-growth')">
+            <div class="talent-icon">🌱</div>
+            <div class="talent-name">Rapid<br>Growth</div>
+            <div class="talent-points" id="points-rapid-growth">[0/3]</div>
+        </div>
+        
+        <div class="talent-node healing tier-3" data-id="vitality-transfer" 
+             style="top: 70%; left: 18%; transform: translate(-50%, -50%);"
+             onclick="talentClick('vitality-transfer')">
+            <div class="talent-icon">💫</div>
+            <div class="talent-name">Vitality<br>Transfer</div>
+            <div class="talent-points" id="points-vitality-transfer">[0/3]</div>
+        </div>
+        
+        <!-- Tier 4: Mastery -->
+        <div class="talent-node healing tier-4" data-id="rejuvenation" 
+             style="top: 30%; left: 7%; transform: translate(-50%, -50%);"
+             onclick="talentClick('rejuvenation')">
+            <div class="talent-icon">💖</div>
+            <div class="talent-name">Rejuvenation</div>
+            <div class="talent-points" id="points-rejuvenation">[0/2]</div>
+        </div>
+        
+        <div class="talent-node healing tier-4" data-id="resurrection" 
+             style="top: 85%; left: 7%; transform: translate(-50%, -50%);"
+             onclick="talentClick('resurrection')">
+            <div class="talent-icon">🕊️</div>
+            <div class="talent-name">Resurrection</div>
+            <div class="talent-points" id="points-resurrection">[0/1]</div>
+        </div>
+        
+        <!-- ============================= -->
+        <!-- BUFF BRANCH (RIGHT SIDE)     -->
+        <!-- ============================= -->
+        
+        <!-- Tier 1: Core -->
+        <div class="talent-node buff tier-1" data-id="empowering-nectar" 
+             style="top: 50%; left: 67%; transform: translate(-50%, -50%);"
+             onclick="talentClick('empowering-nectar')">
+            <div class="talent-icon">🧪</div>
+            <div class="talent-name">Empowering Nectar</div>
+            <div class="talent-points" id="points-empowering-nectar">[0/5]</div>
+        </div>
+        
+        <!-- Tier 2: Specializations -->
+        <div class="talent-node buff tier-2" data-id="protective-petals" 
+             style="top: 30%; left: 67%; transform: translate(-50%, -50%);"
+             onclick="talentClick('protective-petals')">
+            <div class="talent-icon">🛡️</div>
+            <div class="talent-name">Protective<br>Petals</div>
+            <div class="talent-points" id="points-protective-petals">[0/3]</div>
+        </div>
+        
+        <div class="talent-node buff tier-2" data-id="thorny-embrace" 
+             style="top: 70%; left: 67%; transform: translate(-50%, -50%);"
+             onclick="talentClick('thorny-embrace')">
+            <div class="talent-icon">🌵</div>
+            <div class="talent-name">Thorny<br>Embrace</div>
+            <div class="talent-points" id="points-thorny-embrace">[0/3]</div>
+        </div>
+        
+        <!-- Tier 3: Advanced -->
+        <div class="talent-node buff tier-3" data-id="strength-sap" 
+             style="top: 15%; left: 67%; transform: translate(-50%, -50%);"
+             onclick="talentClick('strength-sap')">
+            <div class="talent-icon">💪</div>
+            <div class="talent-name">Strength<br>Sap</div>
+            <div class="talent-points" id="points-strength-sap">[0/3]</div>
+        </div>
+        
+        <div class="talent-node buff tier-3" data-id="fortifying-pollen" 
+             style="top: 30%; left: 82%; transform: translate(-50%, -50%);"
+             onclick="talentClick('fortifying-pollen')">
+            <div class="talent-icon">🌬️</div>
+            <div class="talent-name">Fortifying<br>Pollen</div>
+            <div class="talent-points" id="points-fortifying-pollen">[0/3]</div>
+        </div>
+        
+        <div class="talent-node buff tier-3" data-id="reactive-thorns" 
+             style="top: 70%; left: 82%; transform: translate(-50%, -50%);"
+             onclick="talentClick('reactive-thorns')">
+            <div class="talent-icon">🌹</div>
+            <div class="talent-name">Reactive<br>Thorns</div>
+            <div class="talent-points" id="points-reactive-thorns">[0/3]</div>
+        </div>
+        
+        <!-- Tier 4: Mastery -->
+        <div class="talent-node buff tier-4" data-id="symbiosis" 
+             style="top: 30%; left: 93%; transform: translate(-50%, -50%);"
+             onclick="talentClick('symbiosis')">
+            <div class="talent-icon">🤝</div>
+            <div class="talent-name">Symbiosis</div>
+            <div class="talent-points" id="points-symbiosis">[0/2]</div>
+        </div>
+        
+        <div class="talent-node buff tier-4" data-id="overgrowth" 
+             style="top: 85%; left: 93%; transform: translate(-50%, -50%);"
+             onclick="talentClick('overgrowth')">
+            <div class="talent-icon">🌲</div>
+            <div class="talent-name">Overgrowth</div>
+            <div class="talent-points" id="points-overgrowth">[0/1]</div>
+        </div>
+        
+        <!-- ============================= -->
+        <!-- GROWTH BRANCH (CENTER COLUMN) -->
+        <!-- ============================= -->
+        
+        <!-- Tier 1: Foundation -->
+        <div class="talent-node growth tier-1" data-id="natural-growth" 
+             style="top: 35%; left: 50%; transform: translate(-50%, -50%);"
+             onclick="talentClick('natural-growth')">
+            <div class="talent-icon">🌱</div>
+            <div class="talent-name">Natural<br>Growth</div>
+            <div class="talent-points" id="points-natural-growth">[0/3]</div>
+        </div>
+        
+        <!-- Tier 2: Development -->
+        <div class="talent-node growth tier-2" data-id="resource-sharing" 
+             style="top: 20%; left: 50%; transform: translate(-50%, -50%);"
+             onclick="talentClick('resource-sharing')">
+            <div class="talent-icon">♻️</div>
+            <div class="talent-name">Resource<br>Sharing</div>
+            <div class="talent-points" id="points-resource-sharing">[0/3]</div>
+        </div>
+        
+        <div class="talent-node growth tier-2" data-id="deep-roots" 
+             style="top: 65%; left: 50%; transform: translate(-50%, -50%);"
+             onclick="talentClick('deep-roots')">
+            <div class="talent-icon">🌿</div>
+            <div class="talent-name">Deep<br>Roots</div>
+            <div class="talent-points" id="points-deep-roots">[0/3]</div>
+        </div>
+        
+        <!-- Tier 3: Mastery -->
+        <div class="talent-node growth tier-3" data-id="blossoming-potential" 
+             style="top: 15%; left: 40%; transform: translate(-50%, -50%);"
+             onclick="talentClick('blossoming-potential')">
+            <div class="talent-icon">🌷</div>
+            <div class="talent-name">Blossoming<br>Potential</div>
+            <div class="talent-points" id="points-blossoming-potential">[0/3]</div>
+        </div>
+        
+        <div class="talent-node growth tier-3" data-id="seasonal-cycle" 
+             style="top: 15%; left: 60%; transform: translate(-50%, -50%);"
+             onclick="talentClick('seasonal-cycle')">
+            <div class="talent-icon">🍂</div>
+            <div class="talent-name">Seasonal<br>Cycle</div>
+            <div class="talent-points" id="points-seasonal-cycle">[0/3]</div>
+        </div>
+        
+        <div class="talent-node growth tier-3" data-id="natural-harmony" 
+             style="top: 80%; left: 50%; transform: translate(-50%, -50%);"
+             onclick="talentClick('natural-harmony')">
+            <div class="talent-icon">☯️</div>
+            <div class="talent-name">Natural<br>Harmony</div>
+            <div class="talent-points" id="points-natural-harmony">[0/3]</div>
+        </div>
+        
+        <!-- Tier 4: Advanced -->
+        <div class="talent-node growth tier-4" data-id="forest-guardian" 
+             style="top: 7%; left: 50%; transform: translate(-50%, -50%);"
+             onclick="talentClick('forest-guardian')">
+            <div class="talent-icon">🌳</div>
+            <div class="talent-name">Forest<br>Guardian</div>
+            <div class="talent-points" id="points-forest-guardian">[0/2]</div>
+        </div>
+    </div>
+    
+    <!-- Ultimate Talent - Garden of Eden -->
+    <div class="ultimate-talent">
+        <div class="talent-node ultimate tier-5" data-id="garden-of-eden" 
+             onclick="talentClick('garden-of-eden')">
+            <div class="talent-icon">🌈</div>
+            <div class="talent-name">Garden<br>of Eden</div>
+            <div class="talent-points" id="points-garden-of-eden">[0/1]</div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDhhhZsh0WtM7IIEFoUApqeKDyKzcCmSZw",
+            authDomain: "ubtstree.firebaseapp.com",
+            databaseURL: "https://ubtstree-default-rtdb.firebaseio.com",
+            projectId: "ubtstree",
+            storageBucket: "ubtstree.firebasestorage.app",
+            messagingSenderId: "601038328524",
+            appId: "1:601038328524:web:885456f979249065f76869",
+            measurementId: "G-WPZKZPKWCW"
+        };
+
+        // Initialize Firebase
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                // Initialize Firebase
+                if (!firebase.apps.length) {
+                    firebase.initializeApp(firebaseConfig);
+                }
+                console.log("Firebase initialized successfully");
+            } catch (error) {
+                console.error('Error initializing Firebase:', error);
+            }
+        });
+    </script>
+    
+    <script type="module" src="flowey-script.js"></script>
+    <script type="module" src="flowey-animations.js"></script>
+</body>
+</html>
