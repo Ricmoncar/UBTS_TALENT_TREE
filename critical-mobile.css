@@ -1,0 +1,61 @@
+/* critical-mobile.css - This MUST be in the HEAD of your HTML */
+
+@media screen and (max-width: 768px) {
+    /* Immediately hide desktop elements as page loads */
+    .talent-tree-container,
+    .ultimate-talent,
+    .soul-container,
+    .connection-lines,
+    .talent-info-panel,
+    .talent-points-panel,
+    .back-button,
+    .background-animation,
+    .title,
+    .ui-panel {
+        display: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+        position: absolute !important;
+        z-index: -1000 !important;
+        overflow: hidden !important;
+        height: 0 !important;
+        width: 0 !important;
+    }
+    
+    body {
+        overflow-x: hidden !important;
+        background: #0a0a14 !important;
+        max-width: 100vw !important;
+    }
+    
+    /* Show loading indicator until mobile view is ready */
+    body::before {
+        content: "Loading mobile view...";
+        color: white;
+        font-family: 'Cinzel', serif;
+        font-size: 16px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        width: 100vw;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background: linear-gradient(135deg, #0a0a14, #1a1a2e);
+        z-index: 9999;
+    }
+    
+    /* Remove loading message when mobile view is loaded */
+    body.mobile-loaded::before {
+        display: none;
+    }
+    
+    /* Make sure mobile view appears immediately */
+    .mobile-view {
+        display: block !important;
+        visibility: visible !important;
+        z-index: 1000 !important;
+    }
+}
