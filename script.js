@@ -72,6 +72,13 @@ function setupEventListeners() {
             const talentId = node.getAttribute('data-id');
             showTalentInfo(talentId);
         });
+        
+        // Right-click to remove a point
+        node.addEventListener('contextmenu', (event) => {
+            event.preventDefault();
+            const talentId = node.getAttribute('data-id');
+            removeTalentPoint(talentId);
+        });
     });
 
     // Update node icons from config
@@ -157,8 +164,15 @@ function updateUI() {
             if (talent.currentRank > 0) {
                 node.classList.add('unlocked');
                 node.classList.remove('locked');
+                
+                // Add a class for max-rank
+                if (talent.currentRank >= talent.maxRank) {
+                    node.classList.add('max-rank');
+                } else {
+                    node.classList.remove('max-rank');
+                }
             } else {
-                node.classList.remove('unlocked');
+                node.classList.remove('unlocked', 'max-rank');
                 if (!canUnlockTalent(talentId)) {
                     node.classList.add('locked');
                 } else {
@@ -169,7 +183,7 @@ function updateUI() {
     });
 }
 
-// Check if a talent can be unlocked
+// Check if a talent can be unlocked or upgraded
 function canUnlockTalent(talentId) {
     const talent = talents[talentId];
     
@@ -179,7 +193,10 @@ function canUnlockTalent(talentId) {
     // Check if we have enough points
     if (gameState.availablePoints < 1) return false;
     
-    // Check requirements
+    // If this is an upgrade (already have at least rank 1), no need to check requirements
+    if (talent.currentRank > 0) return true;
+    
+    // Check requirements (only for initial unlock)
     for (const req of talent.requirements) {
         const reqTalent = talents[req.talent];
         if (!reqTalent || reqTalent.currentRank < req.minRank) {
@@ -190,28 +207,93 @@ function canUnlockTalent(talentId) {
     return true;
 }
 
-// Handle talent clicks
+// Handle talent clicks - modified to add ranks instead of toggling
 function talentClick(talentId) {
     const talent = talents[talentId];
     
-    if (talent.currentRank > 0) {
-        // Remove a point
-        talent.currentRank--;
-        gameState.spentPoints--;
-        gameState.availablePoints++;
-    } else if (canUnlockTalent(talentId)) {
-        // Add a point
+    // If already unlocked and not at max rank, add another point
+    if (talent.currentRank > 0 && talent.currentRank < talent.maxRank && gameState.availablePoints > 0) {
+        // Add another rank
         talent.currentRank++;
         gameState.spentPoints++;
         gameState.availablePoints--;
-    } else {
-        alert('Cannot unlock this talent!');
+    } 
+    // If not unlocked yet but can be unlocked
+    else if (talent.currentRank === 0 && canUnlockTalent(talentId)) {
+        // Add first rank
+        talent.currentRank = 1;
+        gameState.spentPoints++;
+        gameState.availablePoints--;
+    } 
+    // If at max rank, user clicked to remove a point
+    else if (talent.currentRank >= talent.maxRank) {
+        removeTalentPoint(talentId);
+        return;
+    }
+    else {
+        if (talent.currentRank >= talent.maxRank) {
+            alert('Talent already at maximum rank!');
+        } else if (gameState.availablePoints < 1) {
+            alert('Not enough talent points!');
+        } else {
+            alert('Cannot unlock this talent! Check requirements.');
+        }
         return;
     }
     
     showTalentInfo(talentId);
     updateUI();
     saveGameState();
+}
+
+// Function to remove a talent point (on right click or when clicking max rank)
+function removeTalentPoint(talentId) {
+    const talent = talents[talentId];
+    
+    // Check if we can remove a point
+    if (talent.currentRank <= 0) {
+        return; // Nothing to remove
+    }
+    
+    // Check if removing this point would break requirements for other talents
+    if (!canRemoveTalentPoint(talentId)) {
+        alert('Cannot remove this talent point as other talents depend on it!');
+        return;
+    }
+    
+    // Remove a point
+    talent.currentRank--;
+    gameState.spentPoints--;
+    gameState.availablePoints++;
+    
+    showTalentInfo(talentId);
+    updateUI();
+    saveGameState();
+}
+
+// Check if removing a talent point would break dependencies
+function canRemoveTalentPoint(talentId) {
+    const talent = talents[talentId];
+    
+    // Simulate removing a point
+    const newRank = talent.currentRank - 1;
+    
+    // Check if any other talents would have their requirements broken
+    for (const id in talents) {
+        const otherTalent = talents[id];
+        
+        // Skip talents that aren't unlocked
+        if (otherTalent.currentRank === 0) continue;
+        
+        // Check if this talent is a requirement for the other talent
+        for (const req of otherTalent.requirements) {
+            if (req.talent === talentId && newRank < req.minRank) {
+                return false; // This would break a requirement
+            }
+        }
+    }
+    
+    return true;
 }
 
 // Show talent information
@@ -253,6 +335,8 @@ function showTalentInfo(talentId) {
             <p><strong>Rank:</strong> ${talent.currentRank}/${talent.maxRank}</p>
             ${effectText}
             ${requirementText}
+            <div class="info-divider"></div>
+            <p class="usage-tip"><strong>Tip:</strong> Left-click to add points, right-click to remove.</p>
         </div>
     `;
 }
@@ -275,3 +359,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Make functions global for HTML onclick handlers
 window.talentClick = talentClick;
+window.removeTalentPoint = removeTalentPoint;

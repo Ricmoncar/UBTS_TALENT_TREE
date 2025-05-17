@@ -526,3 +526,44 @@ body {
 .button-icon {
     font-size: 16px;
 }
+
+
+/* Hover effects for talent ranks */
+.talent-node:not(.locked):hover {
+    cursor: pointer;
+    transform: scale(1.15) translate(-50%, -50%);
+}
+
+.talent-node.unlocked:not(.max-rank):hover::after {
+    content: '+';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 255, 0, 0.7);
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.talent-node.max-rank:hover::after {
+    content: '-';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 0, 0, 0.7);
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+}

@@ -54,7 +54,7 @@
         </div>
         <div class="info-content">
             <p>Click on talents to unlock them with your available points.</p>
-            <p>Some talents have multiple ranks and require prerequisites.</p>
+            <p>Left-click to add points, right-click to remove points.</p>
             <div class="info-divider"></div>
             <p>Hover over talents to view their detailed effects.</p>
         </div>
@@ -91,7 +91,7 @@
                  onclick="talentClick('iron-fist')">
                 <div class="talent-icon">⚔️</div>
                 <div class="talent-name">Iron Fist</div>
-                <div class="talent-points" id="points-iron-fist">[0/3]</div>
+                <div class="talent-points" id="points-iron-fist">[0/6]</div>
             </div>
             
             <!-- Tier 2 -->
@@ -116,7 +116,7 @@
                  onclick="talentClick('bloodlust')">
                 <div class="talent-icon">🩸</div>
                 <div class="talent-name">Bloodlust</div>
-                <div class="talent-points" id="points-bloodlust">[0/3]</div>
+                <div class="talent-points" id="points-bloodlust">[0/4]</div>
             </div>
             
             <!-- Tier 3 -->
@@ -125,7 +125,7 @@
                  onclick="talentClick('soul-rend')">
                 <div class="talent-icon">💀</div>
                 <div class="talent-name">Soul<br>Rend</div>
-                <div class="talent-points" id="points-soul-rend">[0/1]</div>
+                <div class="talent-points" id="points-soul-rend">[0/3]</div>
             </div>
             
             <div class="talent-node bravery tier-3" data-id="executioner" data-tier="3" 
@@ -134,6 +134,24 @@
                 <div class="talent-icon">⚰️</div>
                 <div class="talent-name">Executioner</div>
                 <div class="talent-points" id="points-executioner">[0/1]</div>
+            </div>
+            
+            <!-- NEW: Additional Tier 3 Bravery Talent -->
+            <div class="talent-node bravery tier-3" data-id="fire-wave" data-tier="3" 
+                 style="top: 15%; left: 85%; transform: translate(-50%, -50%);"
+                 onclick="talentClick('fire-wave')">
+                <div class="talent-icon">🌊</div>
+                <div class="talent-name">Fire<br>Wave</div>
+                <div class="talent-points" id="points-fire-wave">[0/4]</div>
+            </div>
+            
+            <!-- NEW: Additional Tier 2 Bravery Talent -->
+            <div class="talent-node bravery tier-2" data-id="critical-fighter" data-tier="2" 
+                 style="top: 15%; left: 65%; transform: translate(-50%, -50%);"
+                 onclick="talentClick('critical-fighter')">
+                <div class="talent-icon">⚔️</div>
+                <div class="talent-name">Critical<br>Fighter</div>
+                <div class="talent-points" id="points-critical-fighter">[0/3]</div>
             </div>
         </div>
         
@@ -162,7 +180,7 @@
                  onclick="talentClick('act-synergy')">
                 <div class="talent-icon">🎭</div>
                 <div class="talent-name">ACT<br>Synergy</div>
-                <div class="talent-points" id="points-act-synergy">[0/3]</div>
+                <div class="talent-points" id="points-act-synergy">[0/6]</div>
             </div>
             
             <div class="talent-node humility tier-2" data-id="evasive-maneuvers" data-tier="2" 
@@ -183,11 +201,29 @@
             </div>
             
             <div class="talent-node humility tier-3" data-id="fortune-seeker" data-tier="3" 
-                 style="top: 60%; left: 12.5%; transform: translate(-50%, -50%);"
+                 style="top: 85%; left: 15%; transform: translate(-50%, -50%);"
                  onclick="talentClick('fortune-seeker')">
                 <div class="talent-icon">💰</div>
                 <div class="talent-name">Fortune<br>Seeker</div>
                 <div class="talent-points" id="points-fortune-seeker">[0/3]</div>
+            </div>
+            
+            <!-- NEW: Additional Tier 3 Humility Talent -->
+            <div class="talent-node humility tier-3" data-id="soul-caller" data-tier="3" 
+                 style="top: 15%; left: 15%; transform: translate(-50%, -50%);"
+                 onclick="talentClick('soul-caller')">
+                <div class="talent-icon">👥</div>
+                <div class="talent-name">Soul<br>Caller</div>
+                <div class="talent-points" id="points-soul-caller">[0/2]</div>
+            </div>
+            
+            <!-- NEW: Additional Tier 2 Humility Talent -->
+            <div class="talent-node humility tier-2" data-id="mind-reading" data-tier="2" 
+                 style="top: 15%; left: 35%; transform: translate(-50%, -50%);"
+                 onclick="talentClick('mind-reading')">
+                <div class="talent-icon">🧠</div>
+                <div class="talent-name">Mind<br>Reading</div>
+                <div class="talent-points" id="points-mind-reading">[0/3]</div>
             </div>
         </div>
         
@@ -213,8 +249,35 @@
                  style="top: 12.5%; left: 50%; transform: translate(-50%, -50%);"
                  onclick="talentClick('soul-ascension')">
                 <div class="talent-icon">✨</div>
-                <div class="talent-name">Soul<br>Ascension</div>
+                <div class="talent-name">Soul<br>Fusion</div>
                 <div class="talent-points" id="points-soul-ascension">[0/1]</div>
+            </div>
+            
+            <!-- NEW: Additional Tier 1 Mixed Talent -->
+            <div class="talent-node mixed tier-1" data-id="elemental-affinity" data-tier="1" 
+                 style="top: 50%; left: 50%; transform: translate(-50%, -50%);"
+                 onclick="talentClick('elemental-affinity')">
+                <div class="talent-icon">🔮</div>
+                <div class="talent-name">Elemental<br>Affinity</div>
+                <div class="talent-points" id="points-elemental-affinity">[0/5]</div>
+            </div>
+            
+            <!-- NEW: Additional Tier 3 Mixed Talent -->
+            <div class="talent-node mixed tier-3" data-id="dual-soul-synergy" data-tier="3" 
+                 style="top: 85%; left: 65%; transform: translate(-50%, -50%);"
+                 onclick="talentClick('dual-soul-synergy')">
+                <div class="talent-icon">☯️</div>
+                <div class="talent-name">Dual Soul<br>Synergy</div>
+                <div class="talent-points" id="points-dual-soul-synergy">[0/3]</div>
+            </div>
+            
+            <!-- NEW: Additional Tier 3 Mixed Talent -->
+            <div class="talent-node mixed tier-3" data-id="soul-purity" data-tier="3" 
+                 style="top: 85%; left: 35%; transform: translate(-50%, -50%);"
+                 onclick="talentClick('soul-purity')">
+                <div class="talent-icon">💎</div>
+                <div class="talent-name">Soul<br>Purity</div>
+                <div class="talent-points" id="points-soul-purity">[0/3]</div>
             </div>
         </div>
     </div>

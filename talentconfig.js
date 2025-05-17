@@ -60,7 +60,6 @@ export const TALENT_DEFINITIONS = {
         ]
     },
     
-    // Rest of the talent definitions remain the same
     'parry-mastery': {
         name: 'Parry Mastery',
         emoji: '🛡️',
@@ -96,14 +95,14 @@ export const TALENT_DEFINITIONS = {
         name: 'Soul Rend',
         emoji: '💀',
         description: 'Your attacks now tear at the their soul.\nWeakens enemies beyond physical damage.',
-        maxRank: 2,
+        maxRank: 3,
         type: 'bravery',
         tier: 3,
         requirements: [{ talent: 'berserker-rage', minRank: 3 }],
         effects: [
             'Attacks reduce enemy stats by 20% (non-stacking)',
             'Attacks reduce enemy stats by 30% (non-stacking)',
-            'Attacks reduce enemy stats by 30% (non-stacking), harvest their soul.'
+            'Attacks reduce enemy stats by 50% (non-stacking), harvest their soul for 300 HP'
         ]
     },
     
@@ -117,6 +116,37 @@ export const TALENT_DEFINITIONS = {
         requirements: [{ talent: 'bloodlust', minRank: 3 }],
         effects: [
             'Instantly execute enemies below 25% HP'
+        ]
+    },
+    
+    'critical-fighter': {
+        name: 'Critical Fighter',
+        emoji: '⚔️',
+        description: 'Master the art of critical strikes.\nEach blow has a chance to deal devastating damage.',
+        maxRank: 3,
+        type: 'bravery',
+        tier: 2,
+        requirements: [{ talent: 'iron-fist', minRank: 3 }],
+        effects: [
+            '+15% critical strike chance',
+            '+25% critical strike chance, +10% critical damage',
+            '+40% critical strike chance, +20% critical damage'
+        ]
+    },
+    
+    'fire-wave': {
+        name: 'Fire Wave',
+        emoji: '🔥',
+        description: 'Channel the burning soul of Bravery.\nRelease waves of destructive flames.',
+        maxRank: 4,
+        type: 'bravery',
+        tier: 3,
+        requirements: [{ talent: 'critical-fighter', minRank: 2 }],
+        effects: [
+            'AOE fire attack dealing 500 damage. 1 time per fight',
+            'AOE fire attack dealing 1000 damage + burning effect. 1 time per fight',
+            'AOE fire attack dealing 2000 damage + burning effect. 1 time per fight',
+            'AOE fire attack dealing 3500 damage + burning effect + any damage applies burning. 1 time per fight'
         ]
     },
 
@@ -216,6 +246,36 @@ export const TALENT_DEFINITIONS = {
             '+150% LOVE gained, +100% Gold'
         ]
     },
+    
+
+    'mind-reading': {
+        name: 'Mind Reading',
+        emoji: '🧠',
+        description: 'Peer into the thoughts of others.\nGain insights and anticipate intentions.',
+        maxRank: 3,
+        type: 'humility',
+        tier: 2,
+        requirements: [{ talent: 'swift-movement', minRank: 3 }],
+        effects: [
+            'Reveal basic thoughts of NPCs',
+            'Reveal detailed intentions of NPCs, 25% chance to see next enemy action',
+            'Reveal all thoughts and memories of NPCs, 50% chance to see next enemy action'
+        ]
+    },
+    
+    'soul-caller': {
+        name: 'Soul Caller',
+        emoji: '👥',
+        description: 'Summon HUMILITY.',
+        maxRank: 2,
+        type: 'humility',
+        tier: 3,
+        requirements: [{ talent: 'mind-reading', minRank: 2 }],
+        effects: [
+            'Summon your spectral ally with 1000 HP and 500 ATK',
+            'Summon your spectral ally with 2000 HP and 2000 ATK'
+        ]
+    },
 
     // ===================================================
     // MIXED/SOUL CORE (White - Balance/Ultimate)
@@ -231,7 +291,7 @@ export const TALENT_DEFINITIONS = {
         effects: [
             '+500 HP, +15% DEF',
             '+1500 HP, +25% DEF',
-            '+3500 HP, +35% DEF + HUMILITY and BRAVERY can ACT and FIGHT together.'
+            '+3500 HP, +35% DEF + HUMILITY and BRAVERY can ACT and FIGHT together (rare).'
         ]
     },
     
@@ -259,11 +319,62 @@ export const TALENT_DEFINITIONS = {
         tier: 4,
         requirements: [
             { talent: 'soul-bond', minRank: 3 },
-            { talent: 'soul-rend', minRank: 1 },
-            { talent: 'time-dilation', minRank: 1 }
+            { talent: 'soul-rend', minRank: 2 },
+            { talent: 'time-dilation', minRank: 1 },
+            { talent: 'dual-soul-synergy', minRank: 2 }
         ],
         effects: [
-            '...?'
+            '???'
+        ]
+    },
+    
+    // NEW TALENTS - MIXED
+    'elemental-affinity': {
+        name: 'Elemental Affinity',
+        emoji: '🔮',
+        description: 'Attune your soul..',
+        maxRank: 1,
+        type: 'mixed',
+        tier: 1,
+        requirements: [],
+        effects: [
+            'Killing grants LOVE. Sparing grants LV.',
+        ]
+    },
+    
+    'dual-soul-synergy': {
+        name: 'Dual Soul Synergy',
+        emoji: '☯️',
+        description: 'Harmonize the voices!',
+        maxRank: 3,
+        type: 'mixed',
+        tier: 3,
+        requirements: [
+            { talent: 'soul-bond', minRank: 2 },
+            { talent: 'elemental-affinity', minRank: 3 }
+        ],
+        effects: [
+            'Bravery abilities gain +20% effectiveness when used by Humility, and vice versa',
+            'Bravery abilities gain +40% effectiveness when used by Humility, and vice versa',
+            'Bravery abilities gain +60% effectiveness when used by Humility, and vice versa'
+        ]
+    },
+    
+    'soul-purity': {
+        name: 'Soul Purity',
+        emoji: '💎',
+        description: 'Cleanse your soul of corruption.\nA pure soul enhances all abilities.',
+        maxRank: 3,
+        type: 'mixed',
+        tier: 3,
+        requirements: [
+            { talent: 'balance-keeper', minRank: 2 },
+            { talent: 'elemental-affinity', minRank: 3 }
+        ],
+        effects: [
+            '+10% to all stats',
+            '+50% to all stats',
+            '+100% to all stats. HP Regen.'
         ]
     }
 };
