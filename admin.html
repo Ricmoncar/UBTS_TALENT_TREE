@@ -203,6 +203,31 @@
             margin: 0 auto;
             min-width: 200px;
         }
+
+        /* Style for character options */
+        .character-selector option {
+            padding: 8px;
+            background-color: #222;
+        }
+
+        .character-selector option:hover {
+            background-color: #333;
+        }
+
+        /* Add a new style for character icons */
+        .character-icon {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+
+        /* Character-specific themes */
+        .blackjack-theme {
+            border-color: #ff8c00;
+        }
+
+        .snaps-theme {
+            border-color: #4dab3c;
+        }
     </style>
 </head>
 <body>
@@ -228,10 +253,10 @@
                 <div class="character-selector">
                     <label for="character-select">Select Character:</label>
                     <select id="character-select" onchange="changeCharacter()">
-                        <option value="blackjack">Blackjack</option>
-                        <option value="snaps" disabled>Snaps (Coming Soon)</option>
-                        <option value="yuki" disabled>Yuki (Coming Soon)</option>
-                        <option value="flowey" disabled>Flowey (Coming Soon)</option>
+                        <option value="blackjack">🃏 Blackjack</option>
+                        <option value="snaps">🪓 Snaps</option>
+                        <option value="yuki" disabled>❄️ Yuki (Coming Soon)</option>
+                        <option value="flowey" disabled>🌻 Flowey (Coming Soon)</option>
                     </select>
                 </div>
                 
@@ -337,6 +362,17 @@
             
             currentCharacterRef = charactersRef.child(currentCharacter);
             updatePointsDisplay();
+            
+            // Update panel styling based on character
+            const adminPanel = document.querySelector('.admin-panel');
+            adminPanel.className = 'admin-panel'; // Reset classes
+            
+            // Add character-specific theme
+            if (currentCharacter === 'blackjack') {
+                adminPanel.classList.add('blackjack-theme');
+            } else if (currentCharacter === 'snaps') {
+                adminPanel.classList.add('snaps-theme');
+            }
         }
 
         function updatePointsDisplay() {
