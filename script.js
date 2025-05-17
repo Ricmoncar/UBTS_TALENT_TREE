@@ -1,5 +1,5 @@
-// Import the talent configuration
-import { TALENT_DEFINITIONS, DEFAULT_TALENT_POINTS } from './snaps-talentconfig.js';
+// Import configuration
+import { TALENT_DEFINITIONS, DEFAULT_TALENT_POINTS } from './talentconfig.js';
 
 // Convert config to runtime format
 const talents = {};
@@ -13,8 +13,7 @@ Object.keys(TALENT_DEFINITIONS).forEach(id => {
         tier: config.tier,
         type: config.type,
         requirements: config.requirements,
-        effects: config.effects,
-        emoji: config.emoji || '🔮' // Add default emoji if not defined
+        effects: config.effects
     };
 });
 
@@ -27,7 +26,7 @@ let gameState = {
 
 // Firebase references
 let db;
-let snapsRef;
+let blackjackRef;
 
 // Initialize the game
 function initGame() {
@@ -38,15 +37,14 @@ function initGame() {
     
     try {
         db = firebase.database();
-        snapsRef = db.ref('characters/snaps');
+        blackjackRef = db.ref('characters/blackjack');
         
         loadGameState();
         updateUI();
         setupEventListeners();
-        initParticleEffect();
         
-        // Set up real-time sync for snaps character data
-        snapsRef.on('value', (snapshot) => {
+        // Set up real-time sync for blackjack character data
+        blackjackRef.on('value', (snapshot) => {
             const data = snapshot.val() || { points: DEFAULT_TALENT_POINTS, talents: {}, spentPoints: 0 };
             
             // Update local game state
@@ -92,7 +90,7 @@ function updateNodeIcons() {
     Object.keys(TALENT_DEFINITIONS).forEach(talentId => {
         const config = TALENT_DEFINITIONS[talentId];
         const node = document.querySelector(`[data-id="${talentId}"] .talent-icon`);
-        if (node && config.emoji) {
+        if (node) {
             node.textContent = config.emoji;
         }
     });
@@ -101,7 +99,7 @@ function updateNodeIcons() {
 // Load game state from Firebase
 function loadGameState() {
     try {
-        snapsRef.once('value').then((snapshot) => {
+        blackjackRef.once('value').then((snapshot) => {
             const data = snapshot.val() || { points: DEFAULT_TALENT_POINTS, talents: {}, spentPoints: 0 };
             
             // Update local game state
@@ -139,7 +137,7 @@ function saveGameState() {
             }
         });
         
-        snapsRef.update(stateToSave).catch((error) => {
+        blackjackRef.update(stateToSave).catch((error) => {
             console.error('Error saving game state:', error);
         });
     } catch (error) {
@@ -213,24 +211,12 @@ function canUnlockTalent(talentId) {
 function talentClick(talentId) {
     const talent = talents[talentId];
     
-    if (!talent) {
-        console.error(`Talent ${talentId} not found in configuration`);
-        return false;
-    }
-    
     // If already unlocked and not at max rank, add another point
     if (talent.currentRank > 0 && talent.currentRank < talent.maxRank && gameState.availablePoints > 0) {
         // Add another rank
         talent.currentRank++;
         gameState.spentPoints++;
         gameState.availablePoints--;
-        
-        // Add effect for unlocking talent
-        addActivationEffect(talentId);
-        showTalentInfo(talentId);
-        updateUI();
-        saveGameState();
-        return true;
     } 
     // If not unlocked yet but can be unlocked
     else if (talent.currentRank === 0 && canUnlockTalent(talentId)) {
@@ -238,18 +224,11 @@ function talentClick(talentId) {
         talent.currentRank = 1;
         gameState.spentPoints++;
         gameState.availablePoints--;
-        
-        // Add effect for unlocking talent
-        addActivationEffect(talentId);
-        showTalentInfo(talentId);
-        updateUI();
-        saveGameState();
-        return true;
     } 
     // If at max rank, user clicked to remove a point
     else if (talent.currentRank >= talent.maxRank) {
         removeTalentPoint(talentId);
-        return false;
+        return;
     }
     else {
         if (talent.currentRank >= talent.maxRank) {
@@ -259,28 +238,27 @@ function talentClick(talentId) {
         } else {
             alert('Cannot unlock this talent! Check requirements.');
         }
-        return false;
+        return;
     }
+    
+    showTalentInfo(talentId);
+    updateUI();
+    saveGameState();
 }
 
 // Function to remove a talent point (on right click or when clicking max rank)
 function removeTalentPoint(talentId) {
     const talent = talents[talentId];
     
-    if (!talent) {
-        console.error(`Talent ${talentId} not found in configuration`);
-        return false;
-    }
-    
     // Check if we can remove a point
     if (talent.currentRank <= 0) {
-        return false; // Nothing to remove
+        return; // Nothing to remove
     }
     
     // Check if removing this point would break requirements for other talents
     if (!canRemoveTalentPoint(talentId)) {
         alert('Cannot remove this talent point as other talents depend on it!');
-        return false;
+        return;
     }
     
     // Remove a point
@@ -291,7 +269,6 @@ function removeTalentPoint(talentId) {
     showTalentInfo(talentId);
     updateUI();
     saveGameState();
-    return true;
 }
 
 // Check if removing a talent point would break dependencies
@@ -322,48 +299,38 @@ function canRemoveTalentPoint(talentId) {
 // Show talent information
 function showTalentInfo(talentId) {
     const talent = talents[talentId];
-    if (!talent) {
-        console.error(`Talent ${talentId} not found while showing talent info`);
-        return;
-    }
-    
     const infoPanel = document.getElementById('talent-info');
-    const emoji = talent.emoji || '🔮'; // Use a default emoji if not defined
     
     let requirementText = '';
-    if (talent.requirements && talent.requirements.length > 0) {
+    if (talent.requirements.length > 0) {
         requirementText = '<div class="info-divider"></div><p><strong>Requirements:</strong></p>';
         talent.requirements.forEach(req => {
             const reqTalent = talents[req.talent];
-            if (!reqTalent) {
-                console.warn(`Required talent ${req.talent} not found for ${talentId}`);
-                return;
-            }
             const isMet = reqTalent.currentRank >= req.minRank;
-            const style = isMet ? 'color: #90ee7e;' : 'color: #FF6B6B;';
+            const style = isMet ? 'color: #4CAF50;' : 'color: #FF6B6B;';
             const checkMark = isMet ? '✓' : '✗';
             requirementText += `<p style="${style}">• ${checkMark} ${reqTalent.name} Rank ${req.minRank}</p>`;
         });
     }
     
     let effectText = '';
-    if (talent.currentRank > 0 && talent.effects && talent.effects.length > 0) {
+    if (talent.currentRank > 0) {
         effectText += `<p><strong>Current Effect:</strong></p>`;
         effectText += `<p class="current-effect">• ${talent.effects[talent.currentRank - 1]}</p>`;
     }
     
-    if (talent.currentRank < talent.maxRank && talent.effects && talent.effects.length > talent.currentRank) {
+    if (talent.currentRank < talent.maxRank) {
         effectText += `<p><strong>Next Rank Effect:</strong></p>`;
         effectText += `<p class="next-effect">• ${talent.effects[talent.currentRank]}</p>`;
     }
     
     infoPanel.innerHTML = `
         <div class="panel-header">
-            <div class="panel-icon">${emoji}</div>
+            <div class="panel-icon">${talent.emoji || '📜'}</div>
             <h3>${talent.name}</h3>
         </div>
         <div class="info-content">
-            <p class="talent-description">${talent.description ? talent.description.replace(/\n/g, '<br>') : 'No description available.'}</p>
+            <p class="talent-description">${talent.description.replace(/\n/g, '<br>')}</p>
             <div class="info-divider"></div>
             <p><strong>Rank:</strong> ${talent.currentRank}/${talent.maxRank}</p>
             ${effectText}
@@ -372,121 +339,6 @@ function showTalentInfo(talentId) {
             <p class="usage-tip"><strong>Tip:</strong> Left-click to add points, right-click to remove.</p>
         </div>
     `;
-}
-
-// Add visual effect when activating a talent
-function addActivationEffect(talentId) {
-    const node = document.querySelector(`[data-id="${talentId}"]`);
-    if (!node) return;
-    
-    // Add activation class for animation
-    node.classList.add('talent-activated');
-    
-    // Create particles
-    const type = node.classList.contains('magic') ? 'magic' : 
-                node.classList.contains('physical') ? 'physical' : 'weapon';
-    
-    for (let i = 0; i < 10; i++) {
-        createActivationParticle(node, type);
-    }
-    
-    // Remove class after animation completes
-    setTimeout(() => {
-        node.classList.remove('talent-activated');
-    }, 1000);
-}
-
-// Create particles for talent activation
-function createActivationParticle(node, type) {
-    const particle = document.createElement('div');
-    particle.className = `activation-particle ${type}`;
-    
-    // Position particle at the center of the node
-    const rect = node.getBoundingClientRect();
-    const x = rect.left + rect.width / 2;
-    const y = rect.top + rect.height / 2;
-    
-    // Set particle properties
-    particle.style.left = `${x}px`;
-    particle.style.top = `${y}px`;
-    
-    // Random size
-    const size = 5 + Math.random() * 10;
-    particle.style.width = `${size}px`;
-    particle.style.height = `${size}px`;
-    
-    // Random direction
-    const angle = Math.random() * Math.PI * 2;
-    const distance = 50 + Math.random() * 100;
-    const duration = 500 + Math.random() * 1000;
-    
-    // Set animation
-    particle.style.transition = `all ${duration}ms ease-out`;
-    
-    // Add to document
-    document.body.appendChild(particle);
-    
-    // Trigger animation in next frame
-    requestAnimationFrame(() => {
-        particle.style.left = `${x + Math.cos(angle) * distance}px`;
-        particle.style.top = `${y + Math.sin(angle) * distance}px`;
-        particle.style.opacity = '0';
-        particle.style.transform = 'scale(0.1)';
-    });
-    
-    // Remove particle after animation
-    setTimeout(() => {
-        particle.remove();
-    }, duration);
-}
-
-// Initialize axe particle effects
-function initParticleEffect() {
-    const container = document.querySelector('.soul-container');
-    if (!container) return;
-    
-    // Create particles around the axe
-    setInterval(() => {
-        createAxeParticle(container);
-    }, 300);
-}
-
-// Create floating axe particles
-function createAxeParticle(container) {
-    const particle = document.createElement('div');
-    particle.className = 'axe-particle';
-    
-    // Random position around the axe
-    const rect = container.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    
-    // Random position within the axe
-    const angle = Math.random() * Math.PI * 2;
-    const distance = Math.random() * 40;
-    const x = centerX + Math.cos(angle) * distance;
-    const y = centerY + Math.sin(angle) * distance;
-    
-    // Set particle properties
-    particle.style.left = `${x}px`;
-    particle.style.top = `${y}px`;
-    
-    // Random size
-    const size = 3 + Math.random() * 5;
-    particle.style.width = `${size}px`;
-    particle.style.height = `${size}px`;
-    
-    // Random animation duration
-    const duration = 3000 + Math.random() * 2000;
-    particle.style.animationDuration = `${duration}ms`;
-    
-    // Add to document
-    document.body.appendChild(particle);
-    
-    // Remove particle after animation
-    setTimeout(() => {
-        particle.remove();
-    }, duration);
 }
 
 // Handle keyboard shortcuts
@@ -502,17 +354,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Wait a short time to make sure Firebase is fully initialized
     setTimeout(() => {
         initGame();
-        initPanZoom();
     }, 500);
 });
 
 // Make functions global for HTML onclick handlers
 window.talentClick = talentClick;
 window.removeTalentPoint = removeTalentPoint;
-window.canUnlockTalent = canUnlockTalent;
-window.canRemoveTalentPoint = canRemoveTalentPoint;
-window.talents = talents;
-window.gameState = gameState;
+
+// Add this to the bottom of your script.js file
 
 // ===================================================
 // PANZOOM IMPLEMENTATION FOR TALENT TREE NAVIGATION
@@ -690,15 +539,19 @@ function handleZoom(mouseX, mouseY, newScale) {
 
 function applyTransform() {
     const container = document.querySelector('.talent-tree-panzoom');
-    container.style.transform = `translate(${currentTranslate.x}px, ${currentTranslate.y}px) scale(${scale})`;
-    
-    // Update SVG connections to match the transform
-    updateConnections();
+    if (container) {
+        container.style.transform = `translate(${currentTranslate.x}px, ${currentTranslate.y}px) scale(${scale})`;
+        
+        // Update SVG connections to match the transform
+        updateConnections();
+    }
 }
 
 function updateConnections() {
     const svg = document.querySelector('.connection-lines');
-    svg.style.transform = `translate(${currentTranslate.x}px, ${currentTranslate.y}px) scale(${scale})`;
+    if (svg) {
+        svg.style.transform = `translate(${currentTranslate.x}px, ${currentTranslate.y}px) scale(${scale})`;
+    }
 }
 
 function resetView() {
@@ -714,23 +567,23 @@ function fixConnectionLines() {
         line.setAttribute('fill', 'none');
         
         // Add explicit inline styling as a backup
-        const type = line.classList.contains('magic') ? 'magic' : 
-                    line.classList.contains('physical') ? 'physical' : 
-                    line.classList.contains('weapon-req') ? 'weapon-req' : 'weapon';
+        const type = line.classList.contains('bravery') ? 'bravery' : 
+                    line.classList.contains('humility') ? 'humility' : 
+                    line.classList.contains('mixed-req') ? 'mixed-req' : 'mixed';
         
         let strokeColor;
         switch(type) {
-            case 'magic': strokeColor = '#a374db'; break;
-            case 'physical': strokeColor = '#ff8c24'; break;
-            case 'weapon': strokeColor = '#62d84b'; break;
-            case 'weapon-req': strokeColor = '#ffd700'; break;
+            case 'bravery': strokeColor = '#ff8c00'; break;
+            case 'humility': strokeColor = '#1e90ff'; break;
+            case 'mixed': strokeColor = '#ffffff'; break;
+            case 'mixed-req': strokeColor = '#a64aff'; break;
         }
         
         line.style.stroke = strokeColor;
         line.style.strokeWidth = '4px';
         line.style.fill = 'none';
         
-        if (type === 'weapon-req') {
+        if (type === 'mixed-req') {
             line.style.strokeDasharray = '5, 5';
         }
     });
@@ -740,47 +593,46 @@ function fixConnectionLines() {
     document.addEventListener('wheel', updateConnections);
 }
 
-// Add CSS for activation effect
-function addActivationCSS() {
-    const style = document.createElement('style');
-    style.textContent = `
-        .talent-activated {
-            animation: pulseActivation 1s ease-out;
+// Add animation when spending points
+function addPointSpendingAnimation() {
+    // Save original talentClick function
+    const originalTalentClick = window.talentClick;
+    
+    // Override with our version that adds animation
+    window.talentClick = function(talentId) {
+        const node = document.querySelector(`[data-id="${talentId}"]`);
+        
+        // Call original function
+        const result = originalTalentClick(talentId);
+        
+        // Add animation effect
+        if (node) {
+            node.classList.add('point-spent-effect');
+            setTimeout(() => {
+                node.classList.remove('point-spent-effect');
+            }, 500);
         }
         
-        @keyframes pulseActivation {
-            0% { transform: translate(-50%, -50%) scale(1); }
-            50% { transform: translate(-50%, -50%) scale(1.3); }
-            100% { transform: translate(-50%, -50%) scale(1); }
-        }
-        
-        .activation-particle {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 100;
-            transform: translate(-50%, -50%);
-        }
-        
-        .activation-particle.magic {
-            background: radial-gradient(circle, rgba(163, 116, 219, 0.9), rgba(163, 116, 219, 0.3));
-            box-shadow: 0 0 10px rgba(163, 116, 219, 0.7);
-        }
-        
-        .activation-particle.physical {
-            background: radial-gradient(circle, rgba(255, 140, 36, 0.9), rgba(255, 140, 36, 0.3));
-            box-shadow: 0 0 10px rgba(255, 140, 36, 0.7);
-        }
-        
-        .activation-particle.weapon {
-            background: radial-gradient(circle, rgba(98, 216, 75, 0.9), rgba(98, 216, 75, 0.3));
-            box-shadow: 0 0 10px rgba(98, 216, 75, 0.7);
-        }
-    `;
-    document.head.appendChild(style);
+        return result;
+    };
 }
 
-// Call the CSS addition on load
-document.addEventListener('DOMContentLoaded', addActivationCSS);
+// Initialize panzoom after page loads
+document.addEventListener('DOMContentLoaded', async () => {
+    // Wait for Hammer.js to load
+    try {
+        if (window.Hammer) {
+            console.log("Hammer.js is loaded");
+        }
+    } catch (error) {
+        console.error('Failed to load Hammer.js. Touch gestures may not work properly.', error);
+    }
+    
+    // Wait a moment for the game to initialize
+    setTimeout(() => {
+        initPanZoom();
+        addPointSpendingAnimation();
+        // Call the fix connection lines function after pan-zoom is initialized
+        setTimeout(fixConnectionLines, 500);
+    }, 1000);
+});

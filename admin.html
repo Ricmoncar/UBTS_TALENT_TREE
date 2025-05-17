@@ -52,6 +52,19 @@
             box-shadow: 0 0 30px rgba(139, 69, 19, 0.5);
         }
 
+        .admin-panel.blackjack-theme {
+            border-color: #ff8c00;
+            box-shadow: 0 0 30px rgba(255, 140, 0, 0.5);
+        }
+
+        .admin-panel.snaps-theme {
+            background: linear-gradient(135deg, 
+                rgba(77, 120, 60, 0.9), 
+                rgba(59, 107, 33, 0.7));
+            border-color: #4dab3c;
+            box-shadow: 0 0 30px rgba(77, 171, 60, 0.5);
+        }
+
         .login-section {
             text-align: center;
             margin-bottom: 2rem;
@@ -138,6 +151,11 @@
             text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
 
+        .snaps-theme .current-points {
+            color: #90ee7e;
+            text-shadow: 0 0 10px rgba(144, 238, 126, 0.5);
+        }
+
         .points-controls {
             display: flex;
             justify-content: center;
@@ -218,15 +236,6 @@
         .character-icon {
             margin-right: 8px;
             font-size: 18px;
-        }
-
-        /* Character-specific themes */
-        .blackjack-theme {
-            border-color: #ff8c00;
-        }
-
-        .snaps-theme {
-            border-color: #4dab3c;
         }
     </style>
 </head>
@@ -352,6 +361,11 @@
         function showAdminContent() {
             document.getElementById('login-section').style.display = 'none';
             document.getElementById('admin-content').classList.add('visible');
+            
+            // Set initial character theme
+            const adminPanel = document.querySelector('.admin-panel');
+            adminPanel.classList.add('blackjack-theme');
+            
             updatePointsDisplay();
         }
         
@@ -361,18 +375,18 @@
                 currentCharacter.charAt(0).toUpperCase() + currentCharacter.slice(1);
             
             currentCharacterRef = charactersRef.child(currentCharacter);
-            updatePointsDisplay();
             
-            // Update panel styling based on character
+            // Update theme based on character
             const adminPanel = document.querySelector('.admin-panel');
             adminPanel.className = 'admin-panel'; // Reset classes
             
-            // Add character-specific theme
             if (currentCharacter === 'blackjack') {
                 adminPanel.classList.add('blackjack-theme');
             } else if (currentCharacter === 'snaps') {
                 adminPanel.classList.add('snaps-theme');
             }
+            
+            updatePointsDisplay();
         }
 
         function updatePointsDisplay() {

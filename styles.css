@@ -1272,3 +1272,29 @@ body {
     z-index: 1 !important;
     pointer-events: none !important;
 }
+
+
+@keyframes pointSpentEffect {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        filter: brightness(1);
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.3);
+        filter: brightness(1.8);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        filter: brightness(1);
+    }
+}
+
+.point-spent-effect {
+    animation: pointSpentEffect 0.5s ease-out !important;
+}
+
+/* Ensure the emoji is always visible in the talent info panel */
+.panel-icon {
+    font-size: 24px;
+    margin-right: 10px;
+}
