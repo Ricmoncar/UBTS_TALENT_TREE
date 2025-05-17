@@ -13,8 +13,7 @@ Object.keys(TALENT_DEFINITIONS).forEach(id => {
         tier: config.tier,
         type: config.type,
         requirements: config.requirements,
-        effects: config.effects,
-        emoji: config.emoji || '🔮' // Add default emoji if not defined
+        effects: config.effects
     };
 });
 
@@ -92,7 +91,7 @@ function updateNodeIcons() {
     Object.keys(TALENT_DEFINITIONS).forEach(talentId => {
         const config = TALENT_DEFINITIONS[talentId];
         const node = document.querySelector(`[data-id="${talentId}"] .talent-icon`);
-        if (node && config.emoji) {
+        if (node) {
             node.textContent = config.emoji;
         }
     });
@@ -213,11 +212,6 @@ function canUnlockTalent(talentId) {
 function talentClick(talentId) {
     const talent = talents[talentId];
     
-    if (!talent) {
-        console.error(`Talent ${talentId} not found in configuration`);
-        return false;
-    }
-    
     // If already unlocked and not at max rank, add another point
     if (talent.currentRank > 0 && talent.currentRank < talent.maxRank && gameState.availablePoints > 0) {
         // Add another rank
@@ -227,10 +221,6 @@ function talentClick(talentId) {
         
         // Add effect for unlocking talent
         addActivationEffect(talentId);
-        showTalentInfo(talentId);
-        updateUI();
-        saveGameState();
-        return true;
     } 
     // If not unlocked yet but can be unlocked
     else if (talent.currentRank === 0 && canUnlockTalent(talentId)) {
@@ -241,15 +231,11 @@ function talentClick(talentId) {
         
         // Add effect for unlocking talent
         addActivationEffect(talentId);
-        showTalentInfo(talentId);
-        updateUI();
-        saveGameState();
-        return true;
     } 
     // If at max rank, user clicked to remove a point
     else if (talent.currentRank >= talent.maxRank) {
         removeTalentPoint(talentId);
-        return false;
+        return;
     }
     else {
         if (talent.currentRank >= talent.maxRank) {
@@ -259,28 +245,27 @@ function talentClick(talentId) {
         } else {
             alert('Cannot unlock this talent! Check requirements.');
         }
-        return false;
+        return;
     }
+    
+    showTalentInfo(talentId);
+    updateUI();
+    saveGameState();
 }
 
 // Function to remove a talent point (on right click or when clicking max rank)
 function removeTalentPoint(talentId) {
     const talent = talents[talentId];
     
-    if (!talent) {
-        console.error(`Talent ${talentId} not found in configuration`);
-        return false;
-    }
-    
     // Check if we can remove a point
     if (talent.currentRank <= 0) {
-        return false; // Nothing to remove
+        return; // Nothing to remove
     }
     
     // Check if removing this point would break requirements for other talents
     if (!canRemoveTalentPoint(talentId)) {
         alert('Cannot remove this talent point as other talents depend on it!');
-        return false;
+        return;
     }
     
     // Remove a point
@@ -291,7 +276,6 @@ function removeTalentPoint(talentId) {
     showTalentInfo(talentId);
     updateUI();
     saveGameState();
-    return true;
 }
 
 // Check if removing a talent point would break dependencies
@@ -322,23 +306,13 @@ function canRemoveTalentPoint(talentId) {
 // Show talent information
 function showTalentInfo(talentId) {
     const talent = talents[talentId];
-    if (!talent) {
-        console.error(`Talent ${talentId} not found while showing talent info`);
-        return;
-    }
-    
     const infoPanel = document.getElementById('talent-info');
-    const emoji = talent.emoji || '🔮'; // Use a default emoji if not defined
     
     let requirementText = '';
-    if (talent.requirements && talent.requirements.length > 0) {
+    if (talent.requirements.length > 0) {
         requirementText = '<div class="info-divider"></div><p><strong>Requirements:</strong></p>';
         talent.requirements.forEach(req => {
             const reqTalent = talents[req.talent];
-            if (!reqTalent) {
-                console.warn(`Required talent ${req.talent} not found for ${talentId}`);
-                return;
-            }
             const isMet = reqTalent.currentRank >= req.minRank;
             const style = isMet ? 'color: #90ee7e;' : 'color: #FF6B6B;';
             const checkMark = isMet ? '✓' : '✗';
@@ -347,23 +321,23 @@ function showTalentInfo(talentId) {
     }
     
     let effectText = '';
-    if (talent.currentRank > 0 && talent.effects && talent.effects.length > 0) {
+    if (talent.currentRank > 0) {
         effectText += `<p><strong>Current Effect:</strong></p>`;
         effectText += `<p class="current-effect">• ${talent.effects[talent.currentRank - 1]}</p>`;
     }
     
-    if (talent.currentRank < talent.maxRank && talent.effects && talent.effects.length > talent.currentRank) {
+    if (talent.currentRank < talent.maxRank) {
         effectText += `<p><strong>Next Rank Effect:</strong></p>`;
         effectText += `<p class="next-effect">• ${talent.effects[talent.currentRank]}</p>`;
     }
     
     infoPanel.innerHTML = `
         <div class="panel-header">
-            <div class="panel-icon">${emoji}</div>
+            <div class="panel-icon">${talent.emoji}</div>
             <h3>${talent.name}</h3>
         </div>
         <div class="info-content">
-            <p class="talent-description">${talent.description ? talent.description.replace(/\n/g, '<br>') : 'No description available.'}</p>
+            <p class="talent-description">${talent.description.replace(/\n/g, '<br>')}</p>
             <div class="info-divider"></div>
             <p><strong>Rank:</strong> ${talent.currentRank}/${talent.maxRank}</p>
             ${effectText}
@@ -509,10 +483,6 @@ document.addEventListener('DOMContentLoaded', () => {
 // Make functions global for HTML onclick handlers
 window.talentClick = talentClick;
 window.removeTalentPoint = removeTalentPoint;
-window.canUnlockTalent = canUnlockTalent;
-window.canRemoveTalentPoint = canRemoveTalentPoint;
-window.talents = talents;
-window.gameState = gameState;
 
 // ===================================================
 // PANZOOM IMPLEMENTATION FOR TALENT TREE NAVIGATION
@@ -784,3 +754,7 @@ function addActivationCSS() {
 
 // Call the CSS addition on load
 document.addEventListener('DOMContentLoaded', addActivationCSS);
+
+// Export for use in HTML
+window.talents = talents;
+window.gameState = gameState;

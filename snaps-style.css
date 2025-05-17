@@ -1,0 +1,883 @@
+/* styles for Snaps Talent Tree - Fixed Layout */
+@import url('https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=Cinzel:wght@400;600&display=swap');
+
+/* Override some base styles for Snaps theme */
+.title {
+    color: #4dab3c;
+    text-shadow: 
+        0 0 10px rgba(77, 171, 60, 0.5),
+        0 0 20px rgba(30, 144, 255, 0.3),
+        0 0 30px rgba(255, 140, 0, 0.3);
+    animation: snapsGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes snapsGlow {
+    0% {
+        text-shadow: 
+            0 0 10px rgba(77, 171, 60, 0.5),
+            0 0 20px rgba(77, 171, 60, 0.3),
+            0 0 30px rgba(255, 200, 0, 0.3);
+    }
+    100% {
+        text-shadow: 
+            0 0 15px rgba(77, 171, 60, 0.8),
+            0 0 30px rgba(77, 171, 60, 0.5),
+            0 0 45px rgba(255, 200, 0, 0.5);
+    }
+}
+
+/* Background theme */
+body {
+    background-color: #0a0a14;
+    background-image: 
+        radial-gradient(circle at 30% 50%, rgba(77, 171, 60, 0.05) 0%, transparent 70%),
+        radial-gradient(circle at 70% 50%, rgba(255, 200, 0, 0.05) 0%, transparent 70%),
+        radial-gradient(circle at center, rgba(30, 144, 255, 0.02) 0%, transparent 70%);
+}
+
+/* Color theme for the soul/star container - Make the star more glowy */
+.soul-container {
+    filter: drop-shadow(0 0 15px rgba(77, 171, 60, 0.7));
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 180px;  /* Increased size */
+    height: 180px; /* Increased size */
+    z-index: 3;    /* Ensure it's above other elements */
+}
+
+.soul-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(circle, 
+        rgba(255, 255, 255, 0.3), 
+        rgba(77, 171, 60, 0.2), 
+        rgba(255, 200, 0, 0.1), 
+        transparent);
+    border-radius: 50%;
+    animation: starPulse 4s ease-in-out infinite;
+    z-index: 1;
+}
+
+@keyframes starPulse {
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.6;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 1;
+    }
+}
+
+/* Fix for the elongated soul - make it a proper star */
+.soul {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+.soul svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 15px rgba(98, 216, 75, 0.8));
+}
+
+/* Ensure no nodes appear inside the star */
+.talent-node {
+    z-index: 5;
+}
+
+/* Talent Nodes Theme */
+/* Magic Branch (Left - Purple/Blue) */
+.talent-node.magic {
+    background: radial-gradient(circle, #1a1025, #0d081a);
+    border: 3px solid #6a4c93;
+    color: #c8b6e2;
+}
+
+.talent-node.magic:hover,
+.talent-node.magic.unlocked {
+    background: radial-gradient(circle, #2c1a40, #1a0d26);
+    border-color: #a374db;
+    color: #e0d0ff;
+    box-shadow: 0 0 20px rgba(163, 116, 219, 0.5);
+}
+
+.talent-node.magic.unlocked {
+    background: radial-gradient(circle, #6a4c93, #4a3268);
+}
+
+.talent-node.magic.max-rank {
+    background: radial-gradient(circle, #a374db, #6a4c93);
+    border-color: #c8b6e2;
+    box-shadow: 0 0 25px rgba(200, 182, 226, 0.6);
+    animation: magicPulse 2s infinite alternate;
+}
+
+@keyframes magicPulse {
+    0% { box-shadow: 0 0 15px rgba(163, 116, 219, 0.5); }
+    100% { box-shadow: 0 0 30px rgba(163, 116, 219, 0.8); }
+}
+
+/* Physical Branch (Right - Red/Orange) */
+.talent-node.physical {
+    background: radial-gradient(circle, #251a12, #170d06);
+    border: 3px solid #e37222;
+    color: #ffd8b6;
+}
+
+.talent-node.physical:hover,
+.talent-node.physical.unlocked {
+    background: radial-gradient(circle, #3d2a1a, #251a10);
+    border-color: #ff8c24;
+    color: #ffe0c0;
+    box-shadow: 0 0 20px rgba(255, 140, 36, 0.5);
+}
+
+.talent-node.physical.unlocked {
+    background: radial-gradient(circle, #e37222, #b85a1b);
+}
+
+.talent-node.physical.max-rank {
+    background: radial-gradient(circle, #ff8c24, #e37222);
+    border-color: #ffb347;
+    box-shadow: 0 0 25px rgba(255, 179, 71, 0.6);
+    animation: physicalPulse 2s infinite alternate;
+}
+
+@keyframes physicalPulse {
+    0% { box-shadow: 0 0 15px rgba(255, 140, 36, 0.5); }
+    100% { box-shadow: 0 0 30px rgba(255, 140, 36, 0.8); }
+}
+
+/* Weapon/Axe Branch (Center - Green/Yellow) */
+.talent-node.weapon {
+    background: radial-gradient(circle, #152218, #0a110c);
+    border: 3px solid #4dab3c;
+    color: #c0e8b8;
+}
+
+.talent-node.weapon:hover,
+.talent-node.weapon.unlocked {
+    background: radial-gradient(circle, #1f3324, #121e16);
+    border-color: #62d84b;
+    color: #d0f0c0;
+    box-shadow: 0 0 20px rgba(98, 216, 75, 0.5);
+}
+
+.talent-node.weapon.unlocked {
+    background: radial-gradient(circle, #4dab3c, #3a7f2d);
+}
+
+.talent-node.weapon.max-rank {
+    background: radial-gradient(circle, #62d84b, #4dab3c);
+    border-color: #90ee7e;
+    box-shadow: 0 0 25px rgba(144, 238, 126, 0.6);
+    animation: weaponPulse 2s infinite alternate;
+}
+
+@keyframes weaponPulse {
+    0% { box-shadow: 0 0 15px rgba(98, 216, 75, 0.5); }
+    100% { box-shadow: 0 0 30px rgba(98, 216, 75, 0.8); }
+}
+
+/* Ultimate talent */
+.ultimate-talent {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    z-index: 10;
+}
+
+.talent-node.ultimate {
+    width: 120px;
+    height: 120px;
+    background: radial-gradient(circle, #151515, #0a0a0a);
+    border: 3px solid #ffd700;
+    color: #fffacd;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+}
+
+.talent-node.ultimate:hover {
+    box-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
+}
+
+.talent-node.ultimate.unlocked {
+    background: radial-gradient(circle, #8B4513, #654321);
+    border-color: #ffd700;
+    animation: knightPulse 3s infinite alternate;
+}
+
+@keyframes knightPulse {
+    0% { 
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        border-color: #ffd700;
+    }
+    50% { 
+        box-shadow: 0 0 40px rgba(255, 215, 0, 0.8), 0 0 80px rgba(255, 215, 0, 0.4);
+        border-color: #fff5b6;
+    }
+    100% { 
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        border-color: #ffd700;
+    }
+}
+
+/* Connection Lines */
+.connection-line.magic {
+    stroke: #a374db;
+    filter: drop-shadow(0 0 3px rgba(163, 116, 219, 0.5));
+}
+
+.connection-line.physical {
+    stroke: #ff8c24;
+    filter: drop-shadow(0 0 3px rgba(255, 140, 36, 0.5));
+}
+
+.connection-line.weapon {
+    stroke: #62d84b;
+    filter: drop-shadow(0 0 3px rgba(98, 216, 75, 0.5));
+}
+
+.connection-line.weapon-req {
+    stroke: #ffd700;
+    stroke-dasharray: 5, 5;
+    filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.5));
+}
+
+/* UI Panels */
+.ui-panel {
+    background: linear-gradient(135deg, 
+        rgba(98, 168, 50, 0.9), 
+        rgba(59, 107, 33, 0.7),
+        rgba(98, 168, 50, 0.9));
+    border: 2px solid #62a832;
+    box-shadow: 
+        0 0 15px rgba(98, 168, 50, 0.5),
+        inset 0 0 15px rgba(255, 215, 0, 0.1);
+}
+
+.panel-header h3 {
+    color: #ffd700;
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+}
+
+.points-value {
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+/* Back to menu button styling */
+.back-button {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #4dab3c, #62a832);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: 2px solid #90ee7e;
+    text-decoration: none;
+    font-weight: bold;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.back-button:hover {
+    background: linear-gradient(135deg, #62a832, #4dab3c);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.back-button .button-icon {
+    font-size: 18px;
+}
+
+/* Talent Info Panel */
+.talent-info-panel {
+    background: linear-gradient(135deg, 
+        rgba(47, 79, 79, 0.95), 
+        rgba(25, 47, 25, 0.95));
+    border: 2px solid #62a832;
+    box-shadow: 
+        0 0 20px rgba(98, 168, 50, 0.4),
+        inset 0 0 20px rgba(255, 255, 255, 0.05);
+}
+
+.info-divider {
+    background: linear-gradient(90deg, transparent, #62a832, transparent);
+}
+
+.current-effect {
+    color: #90ee7e;
+}
+
+.next-effect {
+    color: #ffd700;
+}
+
+.reset-view-button {
+    background: linear-gradient(135deg, #62a832, #4dab3c);
+}
+
+.reset-view-button:hover {
+    background: linear-gradient(135deg, #4dab3c, #62a832);
+    box-shadow: 0 2px 5px rgba(98, 168, 50, 0.5);
+}
+
+/* Floating elements styling */
+.floating-soul.soul-1 {
+    background: radial-gradient(circle, rgba(98, 168, 50, 0.6), transparent);
+}
+
+.floating-soul.soul-2 {
+    background: radial-gradient(circle, rgba(255, 200, 0, 0.6), transparent);
+}
+
+.floating-soul.soul-3 {
+    background: radial-gradient(circle, rgba(163, 116, 219, 0.6), transparent);
+}
+
+.floating-rune {
+    color: rgba(98, 168, 50, 0.4);
+}
+
+/* Particle effects for Knight Transformation */
+.knight-particle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.9), rgba(255, 215, 0, 0.1));
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 2;
+    animation: knightParticle 3s infinite linear;
+    opacity: 0;
+}
+
+@keyframes knightParticle {
+    0% {
+        opacity: 0;
+        transform: translateY(0) rotate(0deg) scale(1);
+    }
+    10% {
+        opacity: 0.9;
+        transform: translateY(-10px) rotate(45deg) scale(1.2);
+    }
+    90% {
+        opacity: 0.9;
+        transform: translateY(-80px) rotate(315deg) scale(0.8);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-100px) rotate(360deg) scale(0.5);
+    }
+}
+
+/* Special name adjustment for nodes with longer names */
+.talent-node[data-id="executioner-benignant"] .talent-name {
+    font-size: 11px;
+    line-height: 1.1;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .title {
+        font-size: 2rem;
+    }
+    
+    .talent-node {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .talent-icon {
+        font-size: 20px;
+    }
+    
+    .talent-name {
+        font-size: 10px;
+    }
+    
+    .talent-node[data-id="executioner-benignant"] .talent-name {
+        font-size: 9px;
+    }
+}
+
+/* Animation for Knight Transformation activation */
+@keyframes knightTransform {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        filter: brightness(1);
+    }
+    20% {
+        transform: translate(-50%, -50%) scale(1.3);
+        filter: brightness(1.8);
+    }
+    40% {
+        transform: translate(-50%, -50%) scale(1.1);
+        filter: brightness(1.4);
+    }
+    60% {
+        transform: translate(-50%, -50%) scale(1.2);
+        filter: brightness(1.6);
+    }
+    80% {
+        transform: translate(-50%, -50%) scale(1.1);
+        filter: brightness(1.3);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        filter: brightness(1);
+    }
+}
+
+.talent-node.ultimate.activating {
+    animation: knightTransform 1.5s ease-out;
+}
+
+/* styles for Snaps Talent Tree - Fixed Layout */
+@import url('https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=Cinzel:wght@400;600&display=swap');
+
+/* Override some base styles for Snaps theme */
+.title {
+    color: #4dab3c;
+    text-shadow: 
+        0 0 10px rgba(77, 171, 60, 0.5),
+        0 0 20px rgba(30, 144, 255, 0.3),
+        0 0 30px rgba(255, 140, 0, 0.3);
+    animation: snapsGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes snapsGlow {
+    0% {
+        text-shadow: 
+            0 0 10px rgba(77, 171, 60, 0.5),
+            0 0 20px rgba(77, 171, 60, 0.3),
+            0 0 30px rgba(255, 200, 0, 0.3);
+    }
+    100% {
+        text-shadow: 
+            0 0 15px rgba(77, 171, 60, 0.8),
+            0 0 30px rgba(77, 171, 60, 0.5),
+            0 0 45px rgba(255, 200, 0, 0.5);
+    }
+}
+
+/* Background theme */
+body {
+    background-color: #0a0a14;
+    background-image: 
+        radial-gradient(circle at 30% 50%, rgba(77, 171, 60, 0.05) 0%, transparent 70%),
+        radial-gradient(circle at 70% 50%, rgba(255, 200, 0, 0.05) 0%, transparent 70%),
+        radial-gradient(circle at center, rgba(30, 144, 255, 0.02) 0%, transparent 70%);
+}
+
+/* Color theme for the soul/star container - Make the star more glowy */
+.soul-container {
+    filter: drop-shadow(0 0 15px rgba(77, 171, 60, 0.7));
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 180px;  /* Increased size */
+    height: 180px; /* Increased size */
+    z-index: 3;    /* Ensure it's above other elements */
+}
+
+.soul-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(circle, 
+        rgba(255, 255, 255, 0.3), 
+        rgba(77, 171, 60, 0.2), 
+        rgba(255, 200, 0, 0.1), 
+        transparent);
+    border-radius: 50%;
+    animation: starPulse 4s ease-in-out infinite;
+    z-index: 1;
+}
+
+@keyframes starPulse {
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.6;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 1;
+    }
+}
+
+/* Fix for the elongated soul - make it a proper star */
+.soul {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+.soul svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 15px rgba(98, 216, 75, 0.8));
+}
+
+/* Ensure no nodes appear inside the star */
+.talent-node {
+    z-index: 5;
+}
+
+/* Talent Nodes Theme */
+/* Magic Branch (Left - Purple/Blue) */
+.talent-node.magic {
+    background: radial-gradient(circle, #1a1025, #0d081a);
+    border: 3px solid #6a4c93;
+    color: #c8b6e2;
+}
+
+.talent-node.magic:hover,
+.talent-node.magic.unlocked {
+    background: radial-gradient(circle, #2c1a40, #1a0d26);
+    border-color: #a374db;
+    color: #e0d0ff;
+    box-shadow: 0 0 20px rgba(163, 116, 219, 0.5);
+}
+
+.talent-node.magic.unlocked {
+    background: radial-gradient(circle, #6a4c93, #4a3268);
+}
+
+.talent-node.magic.max-rank {
+    background: radial-gradient(circle, #a374db, #6a4c93);
+    border-color: #c8b6e2;
+    box-shadow: 0 0 25px rgba(200, 182, 226, 0.6);
+    animation: magicPulse 2s infinite alternate;
+}
+
+@keyframes magicPulse {
+    0% { box-shadow: 0 0 15px rgba(163, 116, 219, 0.5); }
+    100% { box-shadow: 0 0 30px rgba(163, 116, 219, 0.8); }
+}
+
+/* Physical Branch (Right - Red/Orange) */
+.talent-node.physical {
+    background: radial-gradient(circle, #251a12, #170d06);
+    border: 3px solid #e37222;
+    color: #ffd8b6;
+}
+
+.talent-node.physical:hover,
+.talent-node.physical.unlocked {
+    background: radial-gradient(circle, #3d2a1a, #251a10);
+    border-color: #ff8c24;
+    color: #ffe0c0;
+    box-shadow: 0 0 20px rgba(255, 140, 36, 0.5);
+}
+
+.talent-node.physical.unlocked {
+    background: radial-gradient(circle, #e37222, #b85a1b);
+}
+
+.talent-node.physical.max-rank {
+    background: radial-gradient(circle, #ff8c24, #e37222);
+    border-color: #ffb347;
+    box-shadow: 0 0 25px rgba(255, 179, 71, 0.6);
+    animation: physicalPulse 2s infinite alternate;
+}
+
+@keyframes physicalPulse {
+    0% { box-shadow: 0 0 15px rgba(255, 140, 36, 0.5); }
+    100% { box-shadow: 0 0 30px rgba(255, 140, 36, 0.8); }
+}
+
+/* Weapon/Axe Branch (Center - Green/Yellow) */
+.talent-node.weapon {
+    background: radial-gradient(circle, #152218, #0a110c);
+    border: 3px solid #4dab3c;
+    color: #c0e8b8;
+}
+
+.talent-node.weapon:hover,
+.talent-node.weapon.unlocked {
+    background: radial-gradient(circle, #1f3324, #121e16);
+    border-color: #62d84b;
+    color: #d0f0c0;
+    box-shadow: 0 0 20px rgba(98, 216, 75, 0.5);
+}
+
+.talent-node.weapon.unlocked {
+    background: radial-gradient(circle, #4dab3c, #3a7f2d);
+}
+
+.talent-node.weapon.max-rank {
+    background: radial-gradient(circle, #62d84b, #4dab3c);
+    border-color: #90ee7e;
+    box-shadow: 0 0 25px rgba(144, 238, 126, 0.6);
+    animation: weaponPulse 2s infinite alternate;
+}
+
+@keyframes weaponPulse {
+    0% { box-shadow: 0 0 15px rgba(98, 216, 75, 0.5); }
+    100% { box-shadow: 0 0 30px rgba(98, 216, 75, 0.8); }
+}
+
+/* Ultimate talent */
+.ultimate-talent {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+}
+
+.talent-node.ultimate {
+    width: 120px;
+    height: 120px;
+    background: radial-gradient(circle, #151515, #0a0a0a);
+    border: 3px solid #ffd700;
+    color: #fffacd;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+}
+
+.talent-node.ultimate:hover {
+    box-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
+
+}
+
+.talent-node.ultimate.unlocked {
+    background: radial-gradient(circle, #8B4513, #654321);
+    border-color: #ffd700;
+    animation: ultimatePulse 3s infinite alternate;
+}
+
+@keyframes ultimatePulse {
+    0% { 
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        border-color: #ffd700;
+    }
+    50% { 
+        box-shadow: 0 0 40px rgba(255, 215, 0, 0.8), 0 0 80px rgba(255, 215, 0, 0.4);
+        border-color: #fff5b6;
+    }
+    100% { 
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        border-color: #ffd700;
+    }
+}
+
+/* Connection Lines */
+.connection-line.magic {
+    stroke: #a374db;
+    filter: drop-shadow(0 0 3px rgba(163, 116, 219, 0.5));
+}
+
+.connection-line.physical {
+    stroke: #ff8c24;
+    filter: drop-shadow(0 0 3px rgba(255, 140, 36, 0.5));
+}
+
+.connection-line.weapon {
+    stroke: #62d84b;
+    filter: drop-shadow(0 0 3px rgba(98, 216, 75, 0.5));
+}
+
+.connection-line.weapon-req {
+    stroke: #ffd700;
+    stroke-dasharray: 5, 5;
+    filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.5));
+}
+
+/* UI Panels */
+.ui-panel {
+    background: linear-gradient(135deg, 
+        rgba(98, 168, 50, 0.9), 
+        rgba(59, 107, 33, 0.7),
+        rgba(98, 168, 50, 0.9));
+    border: 2px solid #62a832;
+    box-shadow: 
+        0 0 15px rgba(98, 168, 50, 0.5),
+        inset 0 0 15px rgba(255, 215, 0, 0.1);
+}
+
+.panel-header h3 {
+    color: #ffd700;
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+}
+
+.points-value {
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+/* Back to menu button styling */
+.back-button {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #4dab3c, #62a832);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: 2px solid #90ee7e;
+    text-decoration: none;
+    font-weight: bold;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.back-button:hover {
+    background: linear-gradient(135deg, #62a832, #4dab3c);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.back-button .button-icon {
+    font-size: 18px;
+}
+
+/* Talent Info Panel */
+.talent-info-panel {
+    background: linear-gradient(135deg, 
+        rgba(47, 79, 79, 0.95), 
+        rgba(25, 47, 25, 0.95));
+    border: 2px solid #62a832;
+    box-shadow: 
+        0 0 20px rgba(98, 168, 50, 0.4),
+        inset 0 0 20px rgba(255, 255, 255, 0.05);
+}
+
+.info-divider {
+    background: linear-gradient(90deg, transparent, #62a832, transparent);
+}
+
+.current-effect {
+    color: #90ee7e;
+}
+
+.next-effect {
+    color: #ffd700;
+}
+
+.reset-view-button {
+    background: linear-gradient(135deg, #62a832, #4dab3c);
+}
+
+.reset-view-button:hover {
+    background: linear-gradient(135deg, #4dab3c, #62a832);
+    box-shadow: 0 2px 5px rgba(98, 168, 50, 0.5);
+}
+
+/* Floating elements styling */
+.floating-soul.soul-1 {
+    background: radial-gradient(circle, rgba(98, 168, 50, 0.6), transparent);
+}
+
+.floating-soul.soul-2 {
+    background: radial-gradient(circle, rgba(255, 200, 0, 0.6), transparent);
+}
+
+.floating-soul.soul-3 {
+    background: radial-gradient(circle, rgba(163, 116, 219, 0.6), transparent);
+}
+
+.floating-rune {
+    color: rgba(98, 168, 50, 0.4);
+}
+
+/* Special name adjustment for nodes with longer names */
+.talent-node[data-id="executioner-benignant"] .talent-name {
+    font-size: 11px;
+    line-height: 1.1;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .title {
+        font-size: 2rem;
+    }
+    
+    .talent-node {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .talent-icon {
+        font-size: 20px;
+    }
+    
+    .talent-name {
+        font-size: 10px;
+    }
+    
+    .talent-node[data-id="executioner-benignant"] .talent-name {
+        font-size: 9px;
+    }
+}
+
+/* Animation for talent activation */
+.talent-node.point-spent-effect {
+    animation: pointSpentEffect 0.5s ease-out;
+}
+
+@keyframes pointSpentEffect {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        filter: brightness(1);
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.3);
+        filter: brightness(1.8);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        filter: brightness(1);
+    }
+}
+
+/* Add axe particle effects */
+.axe-particle {
+    position: fixed;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(98, 216, 75, 0.9), rgba(98, 216, 75, 0.1));
+    box-shadow: 0 0 5px rgba(98, 216, 75, 0.7);
+    z-index: 1;
+    pointer-events: none;
+    animation: axeParticleFloat 3s ease-out;
+    opacity: 0;
+}
+
+@keyframes axeParticleFloat {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(-50px) scale(0.1);
+        opacity: 0;
+    }
+}

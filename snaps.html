@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snaps Talent Tree</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="snaps-style.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+    <!-- Hammer.js for touch gestures -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+</head>
+<body>
+    <div class="background-animation">
+        <div class="floating-soul soul-1"></div>
+        <div class="floating-soul soul-2"></div>
+        <div class="floating-soul soul-3"></div>
+        <div class="floating-rune rune-1">▲</div>
+        <div class="floating-rune rune-2">◆</div>
+        <div class="floating-rune rune-3">★</div>
+    </div>
+
+    <!-- Static UI elements -->
+    <h1 class="title">SNAPS TALENT TREE</h1>
+    
+    <div class="ui-panel talent-points-panel">
+        <div class="panel-header">
+            <div class="panel-icon">🔮</div>
+            <h3>TALENT POINTS</h3>
+        </div>
+        <div class="points-container">
+            <div class="points-display">
+                <span class="points-label">Available</span>
+                <span class="points-value" id="available-points">0</span>
+            </div>
+            <div class="points-display">
+                <span class="points-label">Spent</span>
+                <span class="points-value spent" id="spent-points">0</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Back to main menu button -->
+    <a href="index.html" class="back-button">
+        <div class="button-icon">🏠</div>
+        BACK TO MENU
+    </a>
+    
+    <!-- Talent Information Panel -->
+    <div class="talent-info-panel" id="talent-info">
+        <div class="panel-header">
+            <div class="panel-icon">📜</div>
+            <h3>MONSTER TALENTS</h3>
+        </div>
+        <div class="info-content">
+            <p>Click on talents to unlock them with your available points.</p>
+            <p>Left-click to add points, right-click to remove points.</p>
+            <div class="info-divider"></div>
+            <p>Hover over talents to view their detailed effects.</p>
+            <p>Drag to move around the tree or use the mouse wheel to zoom.</p>
+            <p>Double click or tap to reset the view.</p>
+        </div>
+    </div>
+
+    <!-- Talent Tree Content -->
+    <div class="talent-tree-container">
+        <!-- Connection Lines SVG -->
+        <svg class="connection-lines" width="100%" height="100%" preserveAspectRatio="none">
+            <!-- MAGIC Path (Left) -->
+            <path class="connection-line magic" d="M 50% 50% L 33% 50%" fill="none" />
+            <path class="connection-line magic" d="M 33% 50% L 33% 30%" fill="none" />
+            <path class="connection-line magic" d="M 33% 50% L 33% 70%" fill="none" />
+            <path class="connection-line magic" d="M 33% 30% L 33% 15%" fill="none" />
+            <path class="connection-line magic" d="M 33% 70% L 33% 85%" fill="none" />
+            
+            <!-- Secondary magic connections -->
+            <path class="connection-line magic" d="M 33% 15% L 18% 15%" fill="none" />
+            <path class="connection-line magic" d="M 33% 30% L 18% 30%" fill="none" />
+            <path class="connection-line magic" d="M 33% 85% L 18% 85%" fill="none" />
+            <path class="connection-line magic" d="M 33% 70% L 18% 70%" fill="none" />
+            
+            <!-- Final tier magic connections -->
+            <path class="connection-line magic" d="M 18% 15% L 18% 30%" fill="none" />
+            <path class="connection-line magic" d="M 18% 30% L 7% 30%" fill="none" />
+            <path class="connection-line magic" d="M 18% 70% L 18% 85%" fill="none" />
+            <path class="connection-line magic" d="M 18% 85% L 7% 85%" fill="none" />
+            
+            <!-- PHYSICAL Path (Right) -->
+            <path class="connection-line physical" d="M 50% 50% L 67% 50%" fill="none" />
+            <path class="connection-line physical" d="M 67% 50% L 67% 30%" fill="none" />
+            <path class="connection-line physical" d="M 67% 50% L 67% 70%" fill="none" />
+            <path class="connection-line physical" d="M 67% 30% L 67% 15%" fill="none" />
+            <path class="connection-line physical" d="M 67% 70% L 67% 85%" fill="none" />
+            
+            <!-- Secondary physical connections -->
+            <path class="connection-line physical" d="M 67% 15% L 82% 15%" fill="none" />
+            <path class="connection-line physical" d="M 67% 30% L 82% 30%" fill="none" />
+            <path class="connection-line physical" d="M 67% 85% L 82% 85%" fill="none" />
+            <path class="connection-line physical" d="M 67% 70% L 82% 70%" fill="none" />
+            
+            <!-- Final tier physical connections -->
+            <path class="connection-line physical" d="M 82% 15% L 82% 30%" fill="none" />
+            <path class="connection-line physical" d="M 82% 30% L 93% 30%" fill="none" />
+            <path class="connection-line physical" d="M 82% 70% L 82% 85%" fill="none" />
+            <path class="connection-line physical" d="M 82% 85% L 93% 85%" fill="none" />
+            
+            <!-- WEAPON Path (Center) -->
+            <path class="connection-line weapon" d="M 50% 50% L 50% 35%" fill="none" />
+            <path class="connection-line weapon" d="M 50% 50% L 50% 65%" fill="none" />
+            <path class="connection-line weapon" d="M 50% 35% L 50% 20%" fill="none" />
+            <path class="connection-line weapon" d="M 50% 65% L 50% 80%" fill="none" />
+            <path class="connection-line weapon" d="M 50% 20% L 50% 7%" fill="none" />
+            
+            <!-- Special requirement connections -->
+            <path class="connection-line weapon-req" d="M 40% 20% L 33% 15%" fill="none" /> <!-- Flame Axe to Fire -->
+            <path class="connection-line weapon-req" d="M 60% 20% L 33% 30%" fill="none" /> <!-- Frost Axe to Frost -->
+            <path class="connection-line weapon-req" d="M 63% 55% L 7% 85%" fill="none" /> <!-- Axe Throw to Electric -->
+            
+            <!-- Ultimate connections -->
+            <path class="connection-line weapon-req" d="M 93% 30% L 50% 7%" fill="none" />
+            <path class="connection-line weapon-req" d="M 7% 30% L 50% 7%" fill="none" />
+            <path class="connection-line weapon-req" d="M 25% 25% L 50% 7%" fill="none" />
+        </svg>
+        
+        <!-- Central Star Core -->
+        <div class="soul-container">
+            <div class="soul-glow"></div>
+            <div class="soul">
+                <svg viewBox="0 0 100 100">
+                    <defs>
+                        <linearGradient id="starGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#62a832;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#3d6b1e;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M50,15 L61,40 L88,40 L67,55 L75,80 L50,65 L25,80 L33,55 L12,40 L39,40 Z" fill="url(#starGrad)" />
+                </svg>
+            </div>
+        </div>
+        
+        <!-- ============================= -->
+        <!-- MAGIC BRANCH (LEFT SIDE)  -->
+        <!-- ============================= -->
+        
+        <!-- Tier 1: Core -->
+        <div class="talent-node magic tier-1" data-id="elemental-affinity" 
+             style="top: 50%; left: 33%; transform: translate(-50%, -50%);"
+             onclick="talentClick('elemental-affinity')">
+            <div class="talent-icon">♨️</div>
+            <div class="talent-name">Fire Affinity</div>
+            <div class="talent-points" id="points-elemental-affinity">[0/5]</div>
+        </div>
+        
+        <!-- Tier 2: Specializations -->
+        <div class="talent-node magic tier-2" data-id="frost-snap" 
+             style="top: 30%; left: 33%; transform: translate(-50%, -50%);"
+             onclick="talentClick('frost-snap')">
+            <div class="talent-icon">❄️</div>
+            <div class="talent-name">Frost<br>Snap</div>
+            <div class="talent-points" id="points-frost-snap">[0/3]</div>
+        </div>
+        
+        <div class="talent-node magic tier-2" data-id="nature-energy" 
+             style="top: 70%; left: 33%; transform: translate(-50%, -50%);"
+             onclick="talentClick('nature-energy')">
+            <div class="talent-icon">🌿</div>
+            <div class="talent-name">Nature<br>Energy</div>
+            <div class="talent-points" id="points-nature-energy">[0/3]</div>
+        </div>
+        
+        <!-- Tier 3: Advanced -->
+        <div class="talent-node magic tier-3" data-id="mana-surge" 
+             style="top: 15%; left: 33%; transform: translate(-50%, -50%);"
+             onclick="talentClick('mana-surge')">
+            <div class="talent-icon">💧</div>
+            <div class="talent-name">Mana<br>Surge</div>
+            <div class="talent-points" id="points-mana-surge">[0/3]</div>
+        </div>
+        
+        <div class="talent-node magic tier-3" data-id="spell-mastery" 
+             style="top: 30%; left: 18%; transform: translate(-50%, -50%);"
+             onclick="talentClick('spell-mastery')">
+            <div class="talent-icon">📚</div>
+            <div class="talent-name">Spell<br>Mastery</div>
+            <div class="talent-points" id="points-spell-mastery">[0/3]</div>
+        </div>
+        
+        <div class="talent-node magic tier-3" data-id="bully-magic" 
+             style="top: 70%; left: 18%; transform: translate(-50%, -50%);"
+             onclick="talentClick('bully-magic')">
+            <div class="talent-icon">😈</div>
+            <div class="talent-name">Bully<br>Magic</div>
+            <div class="talent-points" id="points-bully-magic">[0/3]</div>
+        </div>
+        
+        <!-- Tier 4: Mastery -->
+        <div class="talent-node magic tier-4" data-id="pacifying" 
+             style="top: 30%; left: 7%; transform: translate(-50%, -50%);"
+             onclick="talentClick('pacifying')">
+            <div class="talent-icon">💫</div>
+            <div class="talent-name">Pacifying</div>
+            <div class="talent-points" id="points-pacifying">[0/2]</div>
+        </div>
+        
+        <div class="talent-node magic tier-4" data-id="electric-magic" 
+             style="top: 85%; left: 7%; transform: translate(-50%, -50%);"
+             onclick="talentClick('electric-magic')">
+            <div class="talent-icon">⚡</div>
+            <div class="talent-name">Electric<br>Magic</div>
+            <div class="talent-points" id="points-electric-magic">[0/1]</div>
+        </div>
+        
+        <!-- ============================= -->
+        <!-- PHYSICAL BRANCH (RIGHT SIDE)  -->
+        <!-- ============================= -->
+        
+        <!-- Tier 1: Core -->
+        <div class="talent-node physical tier-1" data-id="natural-strength" 
+             style="top: 50%; left: 67%; transform: translate(-50%, -50%);"
+             onclick="talentClick('natural-strength')">
+            <div class="talent-icon">💪</div>
+            <div class="talent-name">Natural Strength</div>
+            <div class="talent-points" id="points-natural-strength">[0/5]</div>
+        </div>
+        
+        <!-- Tier 2: Specializations -->
+        <div class="talent-node physical tier-2" data-id="tough-scales" 
+             style="top: 30%; left: 67%; transform: translate(-50%, -50%);"
+             onclick="talentClick('tough-scales')">
+            <div class="talent-icon">🐉</div>
+            <div class="talent-name">Tough<br>Scales</div>
+            <div class="talent-points" id="points-tough-scales">[0/3]</div>
+        </div>
+        
+        <div class="talent-node physical tier-2" data-id="intimidation" 
+             style="top: 70%; left: 67%; transform: translate(-50%, -50%);"
+             onclick="talentClick('intimidation')">
+            <div class="talent-icon">👹</div>
+            <div class="talent-name">Intimidation</div>
+            <div class="talent-points" id="points-intimidation">[0/3]</div>
+        </div>
+        
+        <!-- Tier 3: Advanced -->
+        <div class="talent-node physical tier-3" data-id="predator-instincts" 
+             style="top: 15%; left: 67%; transform: translate(-50%, -50%);"
+             onclick="talentClick('predator-instincts')">
+            <div class="talent-icon">👁️</div>
+            <div class="talent-name">Predator<br>Instincts</div>
+            <div class="talent-points" id="points-predator-instincts">[0/3]</div>
+        </div>
+        
+        <div class="talent-node physical tier-3" data-id="regeneration" 
+             style="top: 30%; left: 82%; transform: translate(-50%, -50%);"
+             onclick="talentClick('regeneration')">
+            <div class="talent-icon">♻️</div>
+            <div class="talent-name">Regeneration</div>
+            <div class="talent-points" id="points-regeneration">[0/3]</div>
+        </div>
+        
+        <div class="talent-node physical tier-3" data-id="mercy-act" 
+             style="top: 70%; left: 82%; transform: translate(-50%, -50%);"
+             onclick="talentClick('mercy-act')">
+            <div class="talent-icon">🙏</div>
+            <div class="talent-name">Mercy<br>ACT</div>
+            <div class="talent-points" id="points-mercy-act">[0/3]</div>
+        </div>
+        
+        <!-- Tier 4: Mastery -->
+        <div class="talent-node physical tier-4" data-id="parry-master" 
+             style="top: 30%; left: 93%; transform: translate(-50%, -50%);"
+             onclick="talentClick('parry-master')">
+            <div class="talent-icon">🔄</div>
+            <div class="talent-name">Parry<br>Master</div>
+            <div class="talent-points" id="points-parry-master">[0/2]</div>
+        </div>
+        
+        <div class="talent-node physical tier-4" data-id="alpha-presence" 
+             style="top: 85%; left: 93%; transform: translate(-50%, -50%);"
+             onclick="talentClick('alpha-presence')">
+            <div class="talent-icon">👑</div>
+            <div class="talent-name">Alpha<br>Presence</div>
+            <div class="talent-points" id="points-alpha-presence">[0/1]</div>
+        </div>
+        
+        <!-- ============================= -->
+        <!-- WEAPON BRANCH (CENTER COLUMN) -->
+        <!-- ============================= -->
+        
+        <!-- Tier 1: Foundation -->
+        <div class="talent-node weapon tier-1" data-id="axe-proficiency" 
+             style="top: 35%; left: 50%; transform: translate(-50%, -50%);"
+             onclick="talentClick('axe-proficiency')">
+            <div class="talent-icon">🪓</div>
+            <div class="talent-name">Axe<br>Proficiency</div>
+            <div class="talent-points" id="points-axe-proficiency">[0/5]</div>
+        </div>
+        
+        <!-- Tier 2: Development -->
+        <div class="talent-node weapon tier-2" data-id="sharp-edge" 
+             style="top: 20%; left: 50%; transform: translate(-50%, -50%);"
+             onclick="talentClick('sharp-edge')">
+            <div class="talent-icon">⚔️</div>
+            <div class="talent-name">Sharp<br>Edge</div>
+            <div class="talent-points" id="points-sharp-edge">[0/3]</div>
+        </div>
+        
+        <div class="talent-node weapon tier-2" data-id="metal-morphing" 
+             style="top: 65%; left: 50%; transform: translate(-50%, -50%);"
+             onclick="talentClick('metal-morphing')">
+            <div class="talent-icon">🔩</div>
+            <div class="talent-name">Metal<br>Morphing</div>
+            <div class="talent-points" id="points-metal-morphing">[0/3]</div>
+        </div>
+        
+        <!-- Tier 3: Mastery -->
+        <div class="talent-node weapon tier-3" data-id="flame-axe" 
+             style="top: 15%; left: 40%; transform: translate(-50%, -50%);"
+             onclick="talentClick('flame-axe')">
+            <div class="talent-icon">🔥</div>
+            <div class="talent-name">Flame<br>Axe</div>
+            <div class="talent-points" id="points-flame-axe">[0/3]</div>
+        </div>
+        
+        <div class="talent-node weapon tier-3" data-id="frost-axe" 
+             style="top: 15%; left: 60%; transform: translate(-50%, -50%);"
+             onclick="talentClick('frost-axe')">
+            <div class="talent-icon">❄️</div>
+            <div class="talent-name">Frost<br>Axe</div>
+            <div class="talent-points" id="points-frost-axe">[0/3]</div>
+        </div>
+        
+        <div class="talent-node weapon tier-3" data-id="ultimate-heal" 
+             style="top: 82.5%; left: 50%; transform: translate(-50%, -50%);"
+             onclick="talentClick('ultimate-heal')">
+            <div class="talent-icon">🌸</div>
+            <div class="talent-name">ULTIMATE<br>HEAL</div>
+            <div class="talent-points" id="points-ultimate-heal">[0/3]</div>
+        </div>
+        
+        <!-- Tier 4: Advanced -->
+        <div class="talent-node weapon tier-4" data-id="executioner-benignant" 
+             style="top: 15%; left: 25%; transform: translate(-50%, -50%);"
+             onclick="talentClick('executioner-benignant')">
+            <div class="talent-icon">💀</div>
+            <div class="talent-name">Executioner/<br>Benignant</div>
+            <div class="talent-points" id="points-executioner-benignant">[0/2]</div>
+        </div>
+        
+        <div class="talent-node weapon tier-4" data-id="fear-scent" 
+             style="top: 90%; left: 60%; transform: translate(-50%, -50%);"
+             onclick="talentClick('fear-scent')">
+            <div class="talent-icon">👃</div>
+            <div class="talent-name">Fear<br>Scent</div>
+            <div class="talent-points" id="points-fear-scent">[0/1]</div>
+        </div>
+    </div>
+    
+    <!-- Ultimate Talent - Knight Transformation -->
+    <div class="ultimate-talent">
+        <div class="talent-node ultimate tier-5" data-id="knight-transformation" 
+             onclick="talentClick('knight-transformation')">
+            <div class="talent-icon">🌟</div>
+            <div class="talent-name">Knight<br>Transformation</div>
+            <div class="talent-points" id="points-knight-transformation">[0/1]</div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDhhhZsh0WtM7IIEFoUApqeKDyKzcCmSZw",
+            authDomain: "ubtstree.firebaseapp.com",
+            databaseURL: "https://ubtstree-default-rtdb.firebaseio.com",
+            projectId: "ubtstree",
+            storageBucket: "ubtstree.firebasestorage.app",
+            messagingSenderId: "601038328524",
+            appId: "1:601038328524:web:885456f979249065f76869",
+            measurementId: "G-WPZKZPKWCW"
+        };
+
+        // Initialize Firebase
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                // Initialize Firebase
+                if (!firebase.apps.length) {
+                    firebase.initializeApp(firebaseConfig);
+                }
+                console.log("Firebase initialized successfully");
+            } catch (error) {
+                console.error('Error initializing Firebase:', error);
+            }
+        });
+    </script>
+    
+    <script type="module" src="snaps-script.js"></script>
+    <script type="module" src="snaps-animations.js"></script>
+</body>
+</html>
