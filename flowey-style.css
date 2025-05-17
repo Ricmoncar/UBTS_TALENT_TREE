@@ -1,0 +1,359 @@
+/* Flowey-specific CSS styles */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Uncial+Antiqua&display=swap');
+
+/* Background animations */
+.floating-petal, .floating-leaf {
+    position: absolute;
+    font-size: 24px;
+    animation: float 30s linear infinite;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+    opacity: 0.6;
+}
+
+.petal-1 {
+    top: 20%;
+    left: -50px;
+    animation-delay: 0s;
+    animation-duration: 40s;
+}
+
+.petal-2 {
+    top: 40%;
+    left: -50px;
+    animation-delay: 10s;
+    animation-duration: 35s;
+}
+
+.petal-3 {
+    top: 60%;
+    left: -50px;
+    animation-delay: 5s;
+    animation-duration: 45s;
+}
+
+.leaf-1 {
+    top: 35%;
+    left: -50px;
+    animation-delay: 15s;
+    animation-duration: 40s;
+}
+
+.leaf-2 {
+    top: 75%;
+    left: -50px;
+    animation-delay: 7s;
+    animation-duration: 38s;
+}
+
+.leaf-3 {
+    top: 10%;
+    left: -50px;
+    animation-delay: 20s;
+    animation-duration: 42s;
+}
+
+@keyframes float {
+    0% {
+        transform: translateX(-50px) rotate(0deg) translateY(0);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.7;
+    }
+    90% {
+        opacity: 0.7;
+    }
+    100% {
+        transform: translateX(calc(100vw + 50px)) rotate(360deg) translateY(30px);
+        opacity: 0;
+    }
+}
+
+/* Talent Tree Background - Flowey Theme */
+.talent-tree-container {
+    background: 
+        radial-gradient(ellipse at 70% 30%, rgba(255, 235, 59, 0.08), transparent),
+        radial-gradient(ellipse at 30% 70%, rgba(76, 175, 80, 0.08), transparent),
+        radial-gradient(ellipse at center, rgba(255, 255, 255, 0.02), transparent);
+}
+
+/* Soul Container / Central Flower */
+.soul-container .soul-glow {
+    background: radial-gradient(circle, 
+        rgba(255, 235, 59, 0.2), 
+        rgba(76, 175, 80, 0.1), 
+        transparent);
+    animation: flowerGlow 5s ease-in-out infinite;
+}
+
+@keyframes flowerGlow {
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.6;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.3);
+        opacity: 0.9;
+    }
+}
+
+/* Connection Lines */
+.connection-line.healing {
+    stroke: #66bb6a; /* Light green */
+    filter: drop-shadow(0 0 5px rgba(102, 187, 106, 0.5));
+}
+
+.connection-line.buff {
+    stroke: #ffca28; /* Amber */
+    filter: drop-shadow(0 0 5px rgba(255, 202, 40, 0.5));
+}
+
+.connection-line.growth {
+    stroke: #81c784; /* Medium green */
+    filter: drop-shadow(0 0 5px rgba(129, 199, 132, 0.5));
+}
+
+.connection-line.growth-req {
+    stroke: #b39ddb; /* Light purple */
+    stroke-dasharray: 5, 5;
+    filter: drop-shadow(0 0 5px rgba(179, 157, 219, 0.5));
+}
+
+/* Talent Nodes */
+.talent-node.healing {
+    background: radial-gradient(circle, #1b5e20, #104316); /* Dark green */
+    border: 2px solid #4caf50; /* Green */
+    color: #a5d6a7; /* Light green text */
+}
+
+.talent-node.healing:hover,
+.talent-node.healing.unlocked {
+    background: radial-gradient(circle, #2e7d32, #1b5e20); /* Medium green */
+    border-color: #66bb6a; /* Light green */
+    color: #e8f5e9; /* Very light green text */
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.7);
+}
+
+.talent-node.healing.max-rank {
+    background: radial-gradient(circle, #43a047, #2e7d32); /* Brighter green */
+    border-color: #81c784; /* Lighter green */
+    box-shadow: 0 0 25px rgba(76, 175, 80, 0.8);
+    animation: healingPulse 2s infinite alternate;
+}
+
+@keyframes healingPulse {
+    0% { box-shadow: 0 0 15px rgba(76, 175, 80, 0.7); }
+    100% { box-shadow: 0 0 30px rgba(76, 175, 80, 0.9); }
+}
+
+.talent-node.buff {
+    background: radial-gradient(circle, #f57f17, #bc5100); /* Dark amber */
+    border: 2px solid #ffc107; /* Amber */
+    color: #ffecb3; /* Light amber text */
+}
+
+.talent-node.buff:hover,
+.talent-node.buff.unlocked {
+    background: radial-gradient(circle, #ff8f00, #ef6c00); /* Medium amber */
+    border-color: #ffca28; /* Light amber */
+    color: #fff8e1; /* Very light amber text */
+    box-shadow: 0 0 20px rgba(255, 193, 7, 0.7);
+}
+
+.talent-node.buff.max-rank {
+    background: radial-gradient(circle, #ffa000, #ff8f00); /* Brighter amber */
+    border-color: #ffecb3; /* Lighter amber */
+    box-shadow: 0 0 25px rgba(255, 193, 7, 0.8);
+    animation: buffPulse 2s infinite alternate;
+}
+
+@keyframes buffPulse {
+    0% { box-shadow: 0 0 15px rgba(255, 193, 7, 0.7); }
+    100% { box-shadow: 0 0 30px rgba(255, 193, 7, 0.9); }
+}
+
+.talent-node.growth {
+    background: radial-gradient(circle, #33691e, #1b5e20); /* Darker forest green */
+    border: 2px solid #8bc34a; /* Light green */
+    color: #c5e1a5; /* Light lime text */
+}
+
+.talent-node.growth:hover,
+.talent-node.growth.unlocked {
+    background: radial-gradient(circle, #558b2f, #33691e); /* Medium forest green */
+    border-color: #9ccc65; /* Light lime */
+    color: #f1f8e9; /* Very light lime text */
+    box-shadow: 0 0 20px rgba(139, 195, 74, 0.7);
+}
+
+.talent-node.growth.max-rank {
+    background: radial-gradient(circle, #689f38, #558b2f); /* Brighter forest green */
+    border-color: #c5e1a5; /* Lighter lime */
+    box-shadow: 0 0 25px rgba(139, 195, 74, 0.8);
+    animation: growthPulse 2s infinite alternate;
+}
+
+@keyframes growthPulse {
+    0% { box-shadow: 0 0 15px rgba(139, 195, 74, 0.7); }
+    100% { box-shadow: 0 0 30px rgba(139, 195, 74, 0.9); }
+}
+
+.talent-node.ultimate {
+    background: radial-gradient(circle, #673ab7, #4527a0); /* Deep purple */
+    border: 3px solid #b39ddb; /* Light purple */
+    box-shadow: 0 0 30px rgba(179, 157, 219, 0.3);
+    color: #ede7f6; /* Very light purple */
+}
+
+.talent-node.ultimate:hover {
+    box-shadow: 0 0 40px rgba(179, 157, 219, 0.6);
+}
+
+.talent-node.ultimate.unlocked {
+    background: radial-gradient(circle, #9c27b0, #6a1b9a); /* Brighter purple */
+    animation: ultimatePulse 3s infinite alternate;
+}
+
+@keyframes ultimatePulse {
+    0% { box-shadow: 0 0 20px rgba(179, 157, 219, 0.5); }
+    50% { box-shadow: 0 0 40px rgba(179, 157, 219, 0.9), 0 0 80px rgba(103, 58, 183, 0.4); }
+    100% { box-shadow: 0 0 20px rgba(179, 157, 219, 0.5); }
+}
+
+/* Talent point activation animation */
+.point-spent-effect {
+    animation: pointSpentEffect 0.5s ease-out;
+}
+
+@keyframes pointSpentEffect {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        filter: brightness(1);
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.3);
+        filter: brightness(1.8);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        filter: brightness(1);
+    }
+}
+
+.point-removed-effect {
+    animation: pointRemovedEffect 0.5s ease-out;
+}
+
+@keyframes pointRemovedEffect {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(0.7);
+        opacity: 0.7;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+/* UI Panel theming */
+.talent-info-panel {
+    background: linear-gradient(135deg, 
+        rgba(46, 125, 50, 0.95), 
+        rgba(76, 175, 80, 0.95));
+    border: 2px solid #81c784;
+    box-shadow: 
+        0 0 20px rgba(76, 175, 80, 0.4),
+        inset 0 0 20px rgba(255, 255, 255, 0.05);
+}
+
+.talent-info-panel h3 {
+    color: #f1f8e9;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.talent-points-panel {
+    background: linear-gradient(135deg, 
+        rgba(251, 192, 45, 0.9), 
+        rgba(255, 160, 0, 0.9),
+        rgba(251, 192, 45, 0.9));
+    border: 2px solid #ffca28;
+    box-shadow: 
+        0 0 15px rgba(255, 193, 7, 0.5),
+        inset 0 0 15px rgba(255, 215, 0, 0.1);
+}
+
+/* Particles and Effects */
+.petal-particle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 100;
+}
+
+.petal-particle.healing {
+    background: radial-gradient(circle, rgba(76, 175, 80, 0.9), rgba(76, 175, 80, 0.3));
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.7);
+}
+
+.petal-particle.buff {
+    background: radial-gradient(circle, rgba(255, 193, 7, 0.9), rgba(255, 193, 7, 0.3));
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.7);
+}
+
+.petal-particle.growth {
+    background: radial-gradient(circle, rgba(139, 195, 74, 0.9), rgba(139, 195, 74, 0.3));
+    box-shadow: 0 0 10px rgba(139, 195, 74, 0.7);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .talent-node {
+        width: 80px;
+        height: 80px;
+        font-size: 14px;
+    }
+    
+    .talent-icon {
+        font-size: 16px;
+    }
+    
+    .talent-name {
+        font-size: 12px;
+    }
+}
+
+/* Garden Effect for Ultimate Talent */
+.garden-particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.garden-particle {
+    position: absolute;
+    font-size: 24px;
+    opacity: 0;
+    animation: gardenGrowth 4s ease-out forwards;
+}
+
+@keyframes gardenGrowth {
+    0% {
+        transform: scale(0.1);
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+}
